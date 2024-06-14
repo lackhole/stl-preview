@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ join(matrix.os, '-') }}-${{ matrix.build_type }}-${{ matrix.c_compiler }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ join(matrix.os, '-') }}-${{ matrix.build_type }}-${{ matrix.compiler_version }}
       cancel-in-progress: true
 
     strategy:
@@ -26,52 +26,53 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-12, macos-latest]
         build_type: [Debug, Release]
-        c_compiler: [gcc, clang, cl]
-#        include:
+        include:
             # Windows: cl
-#          - os: windows-latest
-#            c_compiler: cl
-#            cpp_compiler: cl
-#            # Ubuntu: gcc, clang
-#          - os: ubuntu-latest
-#            c_compiler: gcc
-#            cpp_compiler: g++
-#          - os: ubuntu-latest
-#            c_compiler: clang
-#            cpp_compiler: clang++
-#            # macOS: clang(Apple clang)
-#          - os: macos-12
-#            c_compiler: clang
-#            cpp_compiler: clang++
-#          - os: macos-latest
-#            c_compiler: clang
-#            cpp_compiler: clang++
-
-#          - c_compiler: gcc
-#            version: -9
-#          - c_compiler: gcc
-#            version: -10
-#          - c_compiler: gcc
-#            version: -11
-
-        exclude:
-            # Exclude on Windows: gcc, clang
           - os: windows-latest
-            c_compiler: gcc
-          - os: windows-latest
-            c_compiler: clang
-            # Exclude on Ubuntu: cl
+            c_compiler: cl
+            cpp_compiler: cl
+            # Ubuntu: gcc, clang
           - os: ubuntu-latest
-            c_compiler: cl
-            # Exclude on macOS: cl, gcc
+            compiler_version: 9
+            c_compiler: gcc-9
+            cpp_compiler: g++-9
+          - os: ubuntu-latest
+            compiler_version: 10
+            c_compiler: gcc-10
+            cpp_compiler: g++-10
+          - os: ubuntu-latest
+            compiler_version: 11
+            c_compiler: gcc-11
+            cpp_compiler: g++-11
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            # macOS: clang(Apple clang)
           - os: macos-12
-            c_compiler: cl
-          - os: macos-12
-            c_compiler: gcc
+            c_compiler: clang
+            cpp_compiler: clang++
           - os: macos-latest
-            c_compiler: cl
-          - os: macos-latest
-            c_compiler: gcc
+            c_compiler: clang
+            cpp_compiler: clang++
+
+#        exclude:
+#            # Exclude on Windows: gcc, clang
+#          - os: windows-latest
+#            c_compiler: gcc
+#          - os: windows-latest
+#            c_compiler: clang
+#            # Exclude on Ubuntu: cl
+#          - os: ubuntu-latest
+#            c_compiler: cl
+#            # Exclude on macOS: cl, gcc
+#          - os: macos-12
+#            c_compiler: cl
+#          - os: macos-12
+#            c_compiler: gcc
+#          - os: macos-latest
+#            c_compiler: cl
+#          - os: macos-latest
+#            c_compiler: gcc
 
     steps:
     - uses: actions/checkout@v4
@@ -85,8 +86,8 @@ jobs:
 
     - name: Configure CMake
       env:
-        CXX: ${{ matrix.cpp_compiler }}${{ matrix.version }}
-        CC: ${{ matrix.c_compiler }}${{ matrix.version }}
+        CXX: ${{ matrix.cpp_compiler }}
+        CC: ${{ matrix.c_compiler }}
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
