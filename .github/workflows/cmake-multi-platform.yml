@@ -141,8 +141,8 @@ jobs:
 
     - name: Configure CMake
       env:
-        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
-        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
+        CC: ${{ matrix.cc_compiler }}
+        CXX: ${{ matrix.cxx_compiler }}
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}
