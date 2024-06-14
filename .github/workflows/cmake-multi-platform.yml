@@ -119,11 +119,11 @@ jobs:
       working-directory: build
       run: ctest --build-config ${{ matrix.build_type }}
 
-  macos-clang:
+  macos-appleclang:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}
       cancel-in-progress: true
 
     strategy:
@@ -132,7 +132,6 @@ jobs:
         os: [macos-12, macos-latest]
         build_type: [Debug, Release]
         compiler: [clang]
-        compiler_version: [13, 14, 15]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
