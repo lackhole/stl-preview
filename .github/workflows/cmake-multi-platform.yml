@@ -52,10 +52,50 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [gcc]
-        compiler_version: [7, 8, 9, 10, 11]
+        compiler_version: [9, 10, 11]
         include:
           - cc_compiler: gcc
           - cxx_compiler: g++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      env:
+        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
+        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }}
+
+  ubuntu-clang:
+    runs-on: ${{ matrix.os }}
+
+    concurrency:
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+      cancel-in-progress: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug, Release]
+        compiler: [clang]
+        compiler_version: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        include:
+          - cc_compiler: clang
+          - cxx_compiler: clang++
 
     steps:
     - uses: actions/checkout@v4
