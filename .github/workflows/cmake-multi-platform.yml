@@ -53,14 +53,17 @@ jobs:
         build_type: [Debug, Release]
         compiler: [gcc]
         compiler_version: [7, 8, 9, 10, 11]
+        include:
+          - cc_compiler: gcc
+          - cxx_compiler: g++
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Configure CMake
       env:
-        CC: ${{ matrix.compiler }}-${{ matrix.compiler_version }}
-        CXX: ${{ matrix.compiler }}-${{ matrix.compiler_version }}
+        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
+        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}
