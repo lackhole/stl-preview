@@ -119,7 +119,7 @@ jobs:
       working-directory: build
       run: ctest --build-config ${{ matrix.build_type }}
 
-  ubuntu-android-ndk:
+  android-ndk:
     runs-on: ${{ matrix.os }}
 
     concurrency:
@@ -152,20 +152,16 @@ jobs:
     - run: |
         ls ${{ steps.setup-ndk.outputs.ndk-path }}
 
-#    - name: Configure CMake
-#      env:
-#        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
-#        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
-#      run: >
-#        cmake -B build
-#        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
-#        -DCMAKE_C_COMPILER=${{ env.CC }}
-#        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-#        -DPREVIEW_TEST=ON
-#        -S ${{ github.workspace }}
-#
-#    - name: Build
-#      run: cmake --build build --config ${{ matrix.build_type }}
+    - name: Configure CMake
+      run: >
+        cmake -B build
+        -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }}
 #
 #    - name: Test
 #      working-directory: build
