@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ join(matrix, '-') }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}
       cancel-in-progress: true
 
     strategy:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
       cancel-in-progress: true
 
     strategy:
@@ -52,15 +52,15 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [gcc]
-        gcc_version: [7, 8, 9, 10, 11]
+        compiler_version: [7, 8, 9, 10, 11]
 
     steps:
     - uses: actions/checkout@v4
 
     - name: Configure CMake
       env:
-        CC: ${{ matrix.compiler }}-${{ matrix.gcc_version }}
-        CXX: ${{ matrix.compiler }}-${{ matrix.gcc_version }}
+        CC: ${{ matrix.compiler }}-${{ matrix.compiler_version }}
+        CXX: ${{ matrix.compiler }}-${{ matrix.compiler_version }}
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}
