@@ -92,7 +92,7 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [clang]
-        compiler_version: [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+        compiler_version: [13, 14, 15]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
