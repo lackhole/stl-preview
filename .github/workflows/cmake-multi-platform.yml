@@ -147,7 +147,10 @@ jobs:
         echo ${{ steps.setup-ndk.outputs.ndk-path }}
 
     - run: |
-        tree $ANDROID_HOME/ndk
+        ls $ANDROID_HOME/ndk
+
+    - run: |
+        ls ${{ steps.setup-ndk.outputs.ndk-path }}
 
 #    - name: Configure CMake
 #      env:
