@@ -204,7 +204,7 @@ jobs:
     - name: Build
       run: |
         source emsdk/emsdk_env.sh
-        cmake --build build --config ${{ matrix.build_type }}
+        emmake cmake --build build --config ${{ matrix.build_type }}
 
     - name: Test
       working-directory: build
