@@ -9,6 +9,13 @@ if (ANDROID)
     target_include_directories(gtest PRIVATE ${GOOGLETEST_ROOT})
     target_include_directories(gtest PUBLIC ${GOOGLETEST_ROOT}/include)
     add_library(GTest::gtest_main ALIAS gtest)
+
+    if ("${ANDROID_SDK}" STREQUAL "")
+        set(ANDROID_SDK "${ANDROID_NDK}/../..")
+    endif ()
+
+    find_program(ADB adb REQUIRED PATHS "${ANDROID_SDK}/platform-tools")
+    message("adb: ${ADB}")
 else()
     include(FetchContent)
     FetchContent_Declare(
@@ -33,7 +40,12 @@ foreach(test_src ${test_srcs})
         GTest::gtest_main
         preview
     )
-    if (NOT ANDROID)
+    if (ANDROID)
+#        add_custom_command(TARGET ${test_name} POST_BUILD
+#            COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
+#            COMMAND ${ADB} push $<TARGET_FILE:${test_name}> /data/local/tmp/${ANDROID_ABI}/
+#            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${test_name}\")
+    else()
         gtest_discover_tests(${test_name})
     endif()
 endforeach ()
