@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ join(matrix, '-') }}
       cancel-in-progress: true
 
     strategy:
