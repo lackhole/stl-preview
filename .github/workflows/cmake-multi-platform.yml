@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix }}
       cancel-in-progress: true
 
     strategy:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix }}
       cancel-in-progress: true
 
     strategy:
