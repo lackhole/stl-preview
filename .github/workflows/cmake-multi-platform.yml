@@ -146,6 +146,9 @@ jobs:
         echo $ANDROID_HOME
         echo ${{ steps.setup-ndk.outputs.ndk-path }}
 
+    - run: |
+        tree $ANDROID_HOME/ndk
+
 #    - name: Configure CMake
 #      env:
 #        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
