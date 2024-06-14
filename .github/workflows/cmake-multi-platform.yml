@@ -42,6 +42,14 @@ jobs:
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
+
+          - c_compiler: gcc
+            version: -9
+          - c_compiler: gcc
+            version: -10
+          - c_compiler: gcc
+            version: -11
+
         exclude:
             # Exclude on Windows: gcc, clang
           - os: windows-latest
@@ -72,12 +80,15 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
+      env:
+        CXX: ${{ matrix.cpp_compiler }}${{ matrix.version }}
+        CC: ${{ matrix.c_compiler }}${{ matrix.version }}
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DPREVIEW_TEST=ON
         -S ${{ github.workspace }}
