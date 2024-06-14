@@ -44,7 +44,12 @@ foreach(test_src ${test_srcs})
 #            COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
 #            COMMAND ${ADB} push $<TARGET_FILE:${test_name}> /data/local/tmp/${ANDROID_ABI}/
 #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${test_name}\")
+    elseif (EMSCRIPTEN)
+        target_link_libraries(${test_name} "-sEXIT_RUNTIME=1 -sINITIAL_MEMORY=200MB")
     else()
+        if (MSVC)
+            target_compile_options(${test_name} PRIVATE "/bigobj")
+        endif()
         gtest_discover_tests(${test_name})
     endif()
 endforeach ()
