@@ -19,6 +19,7 @@ if (MSVC)
 endif ()
 
 if (PREVIEW_TEST)
+    include(CTest)
     enable_testing()
     add_subdirectory(test)
 endif ()
