@@ -167,6 +167,50 @@ jobs:
 #      working-directory: build
 #      run: ctest --build-config ${{ matrix.build_type }}
 
+  emscripten:
+    runs-on: ${{ matrix.os }}
+
+    concurrency:
+      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+      cancel-in-progress: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug, Release]
+        compiler: [emscripten]
+        compiler_version: [2.0.34, 3.0.0, 3.1.0, 3.1.20, 3.1.40, 3.1.60, latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Emscripten
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        ./emsdk install ${{ matrix.compiler_version }}
+        ./emsdk activate ${{ matrix.compiler_version }}
+
+    - name: Configure CMake
+      run: |
+        source emsdk/emsdk_env.sh
+        emcmake cmake -B build \
+            -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DPREVIEW_TEST=ON \
+            -DCMAKE_CROSSCOMPILING_EMULATOR=node \
+            -S ${{ github.workspace }}
+
+    - name: Build
+      run: |
+        source emsdk/emsdk_env.sh
+        cmake --build build --config ${{ matrix.build_type }}
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }}
+
   macos-appleclang:
     runs-on: ${{ matrix.os }}
 
