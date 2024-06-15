@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/bool_constant.h"
 
 namespace preview {
@@ -17,7 +18,8 @@ struct is_nothrow_convertible_impl : std::true_type {};
 
 template<typename From, typename To>
 struct is_nothrow_convertible_impl<From, To, false> :
-#if __cplusplus < 201703L
+#if PREVIEW_CXX_VERSION < 17
+    // N/A. Needs compiler support
     std::true_type
 #else
     bool_constant<noexcept( std::declval<void(&)(To) noexcept>()(std::declval<From>()) )>
@@ -27,6 +29,9 @@ struct is_nothrow_convertible_impl<From, To, false> :
 
 template<typename From, typename To>
 struct is_nothrow_convertible : detail::is_nothrow_convertible_impl<From, To> {};
+
+template<typename To, typename From>
+PREVIEW_INLINE_VARIABLE constexpr bool is_nothrow_convertible_v = is_nothrow_convertible<To, From>::value;
 
 } // namespace preview
 

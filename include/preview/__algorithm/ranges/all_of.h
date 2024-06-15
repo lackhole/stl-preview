@@ -8,6 +8,7 @@
 #include <functional>
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__algorithm/ranges/detail/check_input.h"
 #include "preview/__algorithm/ranges/find_if_not.h"
 #include "preview/__core/inline_variable.h"

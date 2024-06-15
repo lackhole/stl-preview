@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/detail/invoke.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
@@ -69,6 +70,18 @@ struct is_nothrow_invocable : detail::is_invocable_r_impl<void, F, Args...>::not
 
 template<typename R, typename F, typename ...Args>
 struct is_nothrow_invocable_r : detail::is_invocable_r_impl<R, F, Args...>::nothrow_invocable {};
+
+template<typename F, typename... Args>
+PREVIEW_INLINE_VARIABLE constexpr bool is_invocable_v = is_invocable<F, Args...>::value;
+
+template<typename F, typename... Args>
+PREVIEW_INLINE_VARIABLE constexpr bool is_invocable_r_v = is_invocable_r<F, Args...>::value;
+
+template<typename F, typename... Args>
+PREVIEW_INLINE_VARIABLE constexpr bool is_nothrow_invocable_v = is_nothrow_invocable<F, Args...>::value;
+
+template<typename F, typename... Args>
+PREVIEW_INLINE_VARIABLE constexpr bool is_nothrow_invocable_r_v = is_nothrow_invocable_r<F, Args...>::value;
 
 } // namespace preview
 

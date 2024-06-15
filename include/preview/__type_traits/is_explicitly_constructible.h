@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/negation.h"
 
@@ -20,7 +21,7 @@ struct is_explicitly_constructible :
     > {};
 
 template<typename T, typename... Args>
-using is_explicitly_constructible_t = typename is_explicitly_constructible<T, Args...>::type;
+PREVIEW_INLINE_VARIABLE constexpr bool is_explicitly_constructible_v = is_explicitly_constructible<T, Args...>::value;
 
 } // namespace preview
 

@@ -7,12 +7,16 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/disjunction.h"
 
 namespace preview {
 
 template<class T>
 struct is_class_or_enum : disjunction<std::is_class<T>, std::is_enum<T>> {};
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_class_or_enum_v = is_class_or_enum<T>::value;
 
 } // namespace preview
 

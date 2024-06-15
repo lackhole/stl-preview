@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/void_t.h"
 #include "preview/__utility/type_sequence.h"
 
@@ -48,7 +49,7 @@ struct template_arity_impl<C, 0, false> : std::integral_constant<std::size_t, st
 
 
 // get template parameter count of template class
-template<template<typename...> class C, std::size_t MaxSize = 6>
+template<template<typename...> class C, std::size_t MaxSize = 10>
 struct template_arity : detail::template_arity_impl<C, MaxSize>{};
 
 
@@ -58,9 +59,18 @@ struct mandatory_template_arity : detail::default_template_arity_impl<C, 0> {};
 
 
 // get default template parameter count of template class
-template<template<typename...> class C, std::size_t MaxSize = 6>
+template<template<typename...> class C, std::size_t MaxSize = 10>
 struct default_template_arity
     : std::integral_constant<std::size_t, template_arity<C, MaxSize>::value - mandatory_template_arity<C>::value> {};
+
+template<template<typename...> class C, std::size_t MaxSize = 10>
+PREVIEW_INLINE_VARIABLE constexpr std::size_t template_arity_v = template_arity<C, MaxSize>::value;
+
+template<template<typename...> class C>
+PREVIEW_INLINE_VARIABLE constexpr std::size_t mandatory_template_arity_v = mandatory_template_arity<C>::value;
+
+template<template<typename...> class C, std::size_t MaxSize = 10>
+PREVIEW_INLINE_VARIABLE constexpr std::size_t default_template_arity_v = default_template_arity<C, MaxSize>::value;
 
 } // namespace preview
 

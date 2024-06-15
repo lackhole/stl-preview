@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
@@ -25,13 +26,13 @@ template<typename To, typename From>
 struct is_list_initializable : detail::is_list_initializable_impl<To, From> {};
 
 template<typename To, typename From>
-using is_list_initializable_t = typename is_list_initializable<To, From>::type;
-
-template<typename To, typename From>
 struct is_copy_list_initializable : std::conditional_t<is_list_initializable<To, From>::value, std::is_convertible<From, To>, std::false_type> {};
 
 template<typename To, typename From>
-using is_copy_list_initializable_t = typename is_copy_list_initializable<To, From>::type;
+PREVIEW_INLINE_VARIABLE constexpr bool is_list_initializable_v = is_list_initializable<To, From>::value;
+
+template<typename To, typename From>
+PREVIEW_INLINE_VARIABLE constexpr bool is_copy_list_initializable_v = is_copy_list_initializable<To, From>::value;
 
 } // namespace preview
 

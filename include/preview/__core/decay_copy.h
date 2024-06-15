@@ -11,5 +11,4 @@
 // See P0849R8 https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p0849r8.html
 #define preview_decay_copy(x) std::decay_t<decltype(x)>(x)
 
-
 #endif // PREVIEW_CORE_DECAY_COPY_H_

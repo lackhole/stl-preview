@@ -7,7 +7,7 @@
 
 #include <cstddef>
 
-#include "preview/__core/byte.h"
+#include "preview/byte.h"
 #include "preview/__span/dynamic_extent.h"
 #include "preview/__span/span.h"
 

@@ -11,7 +11,7 @@
 
 #else
 
-#include "preview/__core/inline_variable.h"
+#include "preview/core.h"
 
 #endif
 

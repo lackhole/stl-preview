@@ -5,7 +5,9 @@
 #ifndef PREVIEW_CORE_NODISCARD_H_
 #define PREVIEW_CORE_NODISCARD_H_
 
-#if __cplusplus < 201703L
+#include "preview/__core/std_version.h"
+
+#if PREVIEW_CXX_VERSION < 17
 #  if defined(__GNUC__) && (__GNUC__ >= 4)
 #    define PREVIEW_NODISCARD __attribute__ ((warn_unused_result))
 #  elif defined(_MSC_VER) && (_MSC_VER >= 1700)

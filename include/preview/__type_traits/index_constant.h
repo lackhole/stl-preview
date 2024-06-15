@@ -1,7 +1,3 @@
-//
-// Created by lux on 2024. 6. 15..
-//
-
 #ifndef PREVIEW_TYPE_TRAITS_INDEX_CONSTANT_H_
 #define PREVIEW_TYPE_TRAITS_INDEX_CONSTANT_H_
 

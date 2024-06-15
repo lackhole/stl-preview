@@ -7,6 +7,7 @@
 #
 # include <type_traits>
 #
+# include "preview/core.h"
 # include "preview/__type_traits/void_t.h"
 
 namespace preview {
@@ -16,6 +17,9 @@ struct is_explicitly_convertible : std::false_type {};
 
 template<typename From, typename To>
 struct is_explicitly_convertible<From, To, void_t<decltype(static_cast<To>(std::declval<From>()))>> : std::true_type {};
+
+template<typename From, typename To>
+PREVIEW_INLINE_VARIABLE constexpr bool is_explicitly_convertible_v = is_explicitly_convertible<From, To>::value;
 
 } // namespace preview
 

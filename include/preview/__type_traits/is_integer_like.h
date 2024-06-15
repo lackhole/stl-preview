@@ -8,6 +8,7 @@
 #include <limits>
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
@@ -51,6 +52,15 @@ struct is_unsigned_integer_like
           bool_constant<std::numeric_limits<T>::is_specialized>
         >
       > {};
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_integer_like_v = is_integer_like<T>::value;
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_signed_integer_like_v = is_signed_integer_like<T>::value;
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_unsigned_integer_like_v = is_unsigned_integer_like<T>::value;
 
 } // namespace preview
 

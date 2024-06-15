@@ -4,6 +4,7 @@
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
+#include "preview/__core/std_version.h"
 
 namespace preview {
 
@@ -17,9 +18,9 @@ template<> struct is_character<wchar_t> : std::true_type {};
 template<> struct is_character<char16_t> : std::true_type {};
 template<> struct is_character<char32_t> : std::true_type {};
 
-#if __cplusplus >= 202002L
+#if PREVIEW_CXX_VERSION >= 20
 template<> struct is_character<char8_t> : std::true_type {};
-#endif // __cplusplus >= 202002L
+#endif // PREVIEW_CXX_VERSION >= 20
 
 template<typename... B>
 PREVIEW_INLINE_VARIABLE constexpr bool is_character_v = is_character<B...>::value;

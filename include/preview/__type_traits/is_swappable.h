@@ -25,7 +25,7 @@ namespace internal {
 
 namespace swappable_test_std {
 
-# if __cplusplus < 201703L
+# if PREVIEW_CXX_VERSION < 17
 
 template<typename T, typename U>
 struct is_swappable_with_impl : conjunction<
@@ -109,9 +109,6 @@ struct is_nothrow_swappable_with_impl : std::is_nothrow_swappable_with<T, U> {};
 template<typename T, typename U>
 struct is_swappable_with : internal::is_swappable_with_impl<T, U> {};
 
-template<typename T, typename U>
-PREVIEW_INLINE_VARIABLE constexpr bool is_swappable_with_v = is_swappable_with<T, U>::value;
-
 template<typename T>
 struct is_swappable :
     std::conditional_t<
@@ -120,17 +117,20 @@ struct is_swappable :
         is_swappable_with<std::add_lvalue_reference_t<T>, std::add_lvalue_reference_t<T>>
     > {};
 
+template<typename T, typename U>
+struct is_nothrow_swappable_with : internal::is_nothrow_swappable_with_impl<T, U> {};
+
+template<typename T>
+struct is_nothrow_swappable : is_nothrow_swappable_with<T&, T&> {};
+
+template<typename T, typename U>
+PREVIEW_INLINE_VARIABLE constexpr bool is_swappable_with_v = is_swappable_with<T, U>::value;
+
 template<typename T>
 PREVIEW_INLINE_VARIABLE constexpr bool is_swappable_v = is_swappable<T>::value;
 
 template<typename T, typename U>
-struct is_nothrow_swappable_with : internal::is_nothrow_swappable_with_impl<T, U> {};
-
-template<typename T, typename U>
 PREVIEW_INLINE_VARIABLE constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::value;
-
-template<typename T>
-struct is_nothrow_swappable : is_nothrow_swappable_with<T&, T&> {};
 
 template<typename T>
 PREVIEW_INLINE_VARIABLE constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;

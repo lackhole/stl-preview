@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "preview/core.h"
+
 namespace preview {
 namespace detail {
 template <class T, std::size_t = sizeof(T)>
@@ -18,6 +20,9 @@ std::false_type is_complete_impl(...);
 
 template <class T>
 using is_complete = decltype(detail::is_complete_impl(std::declval<T*>()));
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_complete_v = is_complete<T>::value;
 
 } // namespace preview
 

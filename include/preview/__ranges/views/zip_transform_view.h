@@ -16,6 +16,7 @@
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__core/constexpr.h"
+#include "preview/__core/std_version.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/sized_sentinel_for.h"
@@ -47,7 +48,7 @@ namespace detail {
 
 template<bool Const, typename Base, typename F, typename ViewPack, bool = forward_range<Base>::value /* false */>
 struct zip_transform_view_iterator_category {
-#if __cplusplus < 202002L
+#if PREVIEW_CXX_VERSION < 20
   using iterator_category = iterator_ignore;
 #endif
 };

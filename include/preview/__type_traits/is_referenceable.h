@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
@@ -16,6 +17,9 @@ struct is_referencable : std::false_type {};
 
 template<typename T>
 struct is_referencable<T, void_t<T&>> : std::true_type {};
+
+template<typename T>
+PREVIEW_INLINE_VARIABLE constexpr bool is_referencable_v = is_referencable<T>::value;
 
 } // namespace preview
 
