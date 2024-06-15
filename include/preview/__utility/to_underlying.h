@@ -5,10 +5,13 @@
 #ifndef PREVIEW_UTILITY_TO_UNDERLYING_H_
 #define PREVIEW_UTILITY_TO_UNDERLYING_H_
 
+#include <type_traits>
+
 namespace preview {
 
 template<typename Enum>
-constexpr std::underlying_type_t<Enum> to_underlying(Enum e) noexcept {
+constexpr std::enable_if_t<std::is_enum<Enum>::value, std::underlying_type_t<Enum>>
+to_underlying(Enum e) noexcept {
   return static_cast<std::underlying_type_t<Enum>>(e);
 }
 

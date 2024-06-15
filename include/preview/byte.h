@@ -4,9 +4,11 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "preview/__core/std_version.h"
+
 namespace preview {
 
-#if __cplusplus < 201703L
+#if PREVIEW_CXX_VERSION < 17
 
 class byte {
  public:
