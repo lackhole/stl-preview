@@ -19,5 +19,5 @@ TEST(VERSIONED(conjunction), basics) {
 }
 
 TEST(VERSIONED(conjunction), instantiate) {
-  EXPECT_TRUE((preview::conjunction_v<std::is_integral<float>, NumberOnly<void>>));
+  EXPECT_FALSE((preview::conjunction_v<std::is_integral<float>, NumberOnly<void>>));
 }
