@@ -2,4 +2,4 @@
 #include "gtest.h"
 
 // TODO: Write test
-TEST(VERSIONED(memory_test), basics) {}
+TEST(VERSIONED(Memory), basics) {}

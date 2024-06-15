@@ -3,4 +3,4 @@
 #include "gtest.h"
 
 // TODO: Write test
-TEST(VERSIONED(concepts_test), basics) {}
+TEST(VERSIONED(Concepts), basics) {}
