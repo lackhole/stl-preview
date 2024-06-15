@@ -9,8 +9,8 @@
 
 namespace preview {
 
-template<typename Enum>
-constexpr std::enable_if_t<std::is_enum<Enum>::value, std::underlying_type_t<Enum>>
+template<typename Enum, std::enable_if_t<std::is_enum<Enum>::value, int> = 0>
+constexpr std::underlying_type_t<Enum>
 to_underlying(Enum e) noexcept {
   return static_cast<std::underlying_type_t<Enum>>(e);
 }
