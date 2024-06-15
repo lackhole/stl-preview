@@ -68,6 +68,8 @@
 #include "preview/__iterator/sentinel_for.h"
 #include "preview/__iterator/sized_sentinel_for.h"
 #include "preview/__iterator/sortable.h"
+#include "preview/__iterator/std_common_iterator.h"
+#include "preview/__iterator/std_counted_iterator.h"
 #include "preview/__iterator/unreachable_sentinel.h"
 #include "preview/__iterator/weakly_incrementable.h"
 
