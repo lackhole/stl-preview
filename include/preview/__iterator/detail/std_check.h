@@ -1,0 +1,16 @@
+//
+// Created by YongGyu Lee on 2024. 6. 16..
+//
+
+#ifndef PREVIEW_ITERATOR_DETAIL_STD_CHECK_H_
+#define PREVIEW_ITERATOR_DETAIL_STD_CHECK_H_
+
+#include "preview/core.h"
+
+# if PREVIEW_CXX_VERSION >= 20 && (PREVIEW_ANDROID == 0 || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
+#   define PREVIEW_STD_HAVE_CXX20_ITERATOR 1
+# else
+#   define PREVIEW_STD_HAVE_CXX20_ITERATOR 0
+#endif
+
+#endif // PREVIEW_ITERATOR_DETAIL_STD_CHECK_H_

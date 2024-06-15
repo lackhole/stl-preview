@@ -1,6 +1,7 @@
 #ifndef PREVIEW_CORE_H_
 #define PREVIEW_CORE_H_
 
+#include "preview/__core/android_version.h"
 #include "preview/__core/assert.h"
 #include "preview/__core/constexpr.h"
 #include "preview/__core/decay_copy.h"
