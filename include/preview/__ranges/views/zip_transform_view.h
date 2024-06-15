@@ -15,6 +15,7 @@
 #include "preview/__concepts/invocable.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/move_constructible.h"
+#include "preview/__core/constexpr.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/sized_sentinel_for.h"
@@ -145,7 +146,7 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
         remove_cvref_t<invoke_result_t<F&, range_reference_t<Views>...>>>;
     using difference_type = range_difference_t<Base>;
 
-#if __cplusplus < 202002L
+#if PREVIEW_CXX_VERSION < 20
     using pointer = void;
     using reference = invoke_result_t<deref_fn, const F&, decltype(*std::declval<ziperator<Const>&>())>;
 #endif
@@ -160,7 +161,9 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
         : parent_(std::move(i.parent_)), inner_(std::move(i.inner_)) {}
 
     constexpr decltype(auto) operator*() const
-        noexcept(noexcept(preview::invoke(deref_fn{}, *parent_->fun_, *inner_)))
+        noexcept(noexcept(preview::invoke(deref_fn{},
+                                          *std::declval<const iterator&>().parent_->fun_,
+                                          *std::declval<const iterator&>().inner_)))
     {
       return deref_fn{}(*parent_->fun_, *inner_);
     }
