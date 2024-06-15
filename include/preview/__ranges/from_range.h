@@ -5,18 +5,19 @@
 #ifndef PREVIEW_RANGES_FROM_RANGE_H_
 #define PREVIEW_RANGES_FROM_RANGE_H_
 
-#if __cplusplus >= 202302L
+#include "preview/core.h"
+
+#if PREVIEW_CXX_VERSION >= 23
 #include <ranges>
+#include <version>
 #endif
 
 #include "preview/__core/inline_variable.h"
 
-
 namespace preview {
-namespace ranges {
 
-#if __cplusplus >= 202302L
-using from_range_t = std::ranges::from_range_t;
+#if defined(__cpp_lib_containers_ranges) && __cpp_lib_containers_ranges >= 202202L
+using from_range_t = std::from_range_t;
 #else
 struct from_range_t {
   explicit from_range_t() = default;
@@ -25,7 +26,6 @@ struct from_range_t {
 
 PREVIEW_INLINE_VARIABLE constexpr from_range_t from_range{};
 
-} // namespace ranges
 } // namespace preview
 
 #endif // PREVIEW_RANGES_FROM_RANGE_H_
