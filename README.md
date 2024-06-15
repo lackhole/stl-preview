@@ -20,717 +20,837 @@ Use the latest STL implementation in C++14
 
 ## Features
 
-* `<algorithm>`
+* `<algorithm>` (61/114)
 
-  |                                                                               | Introduced in | Latest standard | Implementation status |
-  |-------------------------------------------------------------------------------|---------------|-----------------|-----------------------|
-  | `clamp`                                                                       | ![][c17]      | ![][c20]        |                       |
-  | `for_each_n`                                                                  | ![][c17]      | ![][c20]        |                       |
-  | `sample`                                                                      | ![][c17]      | ![][c23]        |                       |
-  | `shift_left`<br/>`shift_right`                                                | ![][c20]      |                 |                       |
-  | `ranges::in_fun_result`                                                       | ![][c20]      |                 |                       |
-  | `ranges::in_in_result`                                                        | ![][c20]      |                 |                       |
-  | `ranges::in_out_result`                                                       | ![][c20]      |                 |                       |
-  | `ranges::in_in_out_result`                                                    | ![][c20]      |                 |                       |
-  | `ranges::in_out_out_result`                                                   | ![][c20]      |                 |                       |
-  | `ranges::min_max_result`                                                      | ![][c20]      |                 |                       |
-  | `ranges::in_found_result`                                                     | ![][c20]      |                 |                       |
-  | `ranges::in_value_result`                                                     | ![][c23]      |                 |                       |
-  | `ranges::out_value_result`                                                    | ![][c23]      |                 |                       |
-  | `ranges::all_of`<br/>`ranges::any_of`<br/>`ranges::none_of`                   | ![][c20]      |                 |                       |
-  | `ranges::for_each`<br/>`ranges::for_each_n`                                   | ![][c20]      |                 |                       |
-  | `ranges::count`<br/>`ranges::count_if`                                        | ![][c20]      |                 |                       |
-  | `ranges::mismatch`                                                            | ![][c20]      |                 |                       |
-  | `ranges::find`<br/>`ranges::find_if`<br/>`ranges::find_if_not`                | ![][c20]      |                 |                       |
-  | `ranges::find_last`<br/>`ranges::find_last_if`<br/>`ranges::find_last_if_not` | ![][c23]      |                 |                       |
-  | `ranges::find_end`                                                            | ![][c20]      |                 |                       |
-  | `ranges::find_first_of`                                                       | ![][c20]      |                 |                       |
-  | `ranges::adjacent_find`                                                       | ![][c20]      |                 |                       |
-  | `ranges::search`<br/>`ranges::search_n`                                       | ![][c20]      |                 |                       |
-  | `ranges::contains`<br/>`ranges::contains_subrange`                            | ![][c23]      |                 |                       |
-  | `ranges::starts_with`<br/>`ranges::ends_with`                                 | ![][c23]      |                 |                       |
-  | `ranges::fold_left`<br/>`ranges::fold_left_first`                             | ![][c23]      |                 |                       |
-  | `ranges::fold_right`<br/>`ranges::fold_right_last`                            | ![][c23]      |                 |                       |
-  | `ranges::fold_left_with_iter`<br/>`ranges::fold_left_first_with_iter`         | ![][c23]      |                 |                       |
-  | `ranges::copy`<br/>`ranges::copy_if`<br/>`ranges::copy_n`                     | ![][c20]      |                 |                       |
-  | `ranges::copy_backward`                                                       | ![][c20]      |                 |                       |
-  | `ranges::move`<br/>`ranges::move_backward`                                    | ![][c20]      |                 |                       |
-  | `ranges::fill`<br/>`ranges::fill_n`                                           | ![][c20]      |                 |                       |
-  | `ranges::transform`                                                           | ![][c20]      |                 |                       |
-  | `ranges::generate`<br/>`ranges::generate_n`                                   | ![][c20]      |                 |                       |
-  | `ranges::remove`<br/>`ranges::remove_if`                                      | ![][c20]      |                 |                       |
-  | `ranges::remove_copy`<br/>`ranges::remove_copy_if`                            | ![][c20]      |                 |                       |
-  | `ranges::replace`<br/>`ranges::replace_if`                                    | ![][c20]      |                 |                       |
-  | `ranges::replace_copy`<br/>`ranges::replace_copy_if`                          | ![][c20]      |                 |                       |
-  | `ranges::swap_ranges`                                                         | ![][c20]      |                 |                       |
-  | `ranges::reverse`<br/>`ranges::reverse_copy`                                  | ![][c20]      |                 |                       |
-  | `ranges::rotate`<br/>`ranges::rotate_copy`                                    | ![][c20]      |                 |                       |
-  | `ranges::shift_left`<br/>`ranges::shift_right`                                | ![][c23]      |                 |                       |
-  | `ranges::sample`                                                              | ![][c20]      |                 |                       |
-  | `ranges::shuffle`                                                             | ![][c20]      |                 |                       |
-  | `ranges::unique`<br/>`ranges::unique_copy`                                    | ![][c20]      |                 |                       |
-  | `ranges::is_partitioned`                                                      | ![][c20]      |                 |                       |
-  | `ranges::partition`<br/>`ranges::partition_copy`                              | ![][c20]      |                 |                       |
-  | `ranges::stable_partition`<br/>`ranges::partition_point`                      | ![][c20]      |                 |                       |
-  | `ranges::is_sorted`<br/>`ranges::is_sorted_until`                             | ![][c20]      |                 |                       |
-  | `ranges::sort`                                                                | ![][c20]      |                 |                       |
-  | `ranges::partial_sort`<br/>`ranges::partial_sort_copy`                        | ![][c20]      |                 |                       |
-  | `ranges::stable_sort`                                                         | ![][c20]      |                 |                       |
-  | `ranges::nth_element`                                                         | ![][c20]      |                 |                       |
-  | `ranges::lower_bound`<br/>`ranges::upper_bound`                               | ![][c20]      |                 |                       |
-  | `ranges::binary_search`                                                       | ![][c20]      |                 |                       |
-  | `ranges::equal_range`                                                         | ![][c20]      |                 |                       |
-  | `ranges::merge`<br/>`ranges::inplace_merge`                                   | ![][c20]      |                 |                       |
-  | `ranges::includes`                                                            | ![][c20]      |                 |                       |
-  | `ranges::set_difference`                                                      | ![][c20]      |                 |                       |
-  | `ranges::set_intersection`                                                    | ![][c20]      |                 |                       |
-  | `ranges::set_symmetric_difference`                                            | ![][c20]      |                 |                       |
-  | `ranges::set_union`                                                           | ![][c20]      |                 |                       |
-  | `ranges::is_heap`<br/>`ranges::is_heap_until`                                 | ![][c20]      |                 |                       |
-  | `ranges::make_heap`                                                           | ![][c20]      |                 |                       |
-  | `ranges::push_heap`<br/>`ranges::pop_heap`                                    | ![][c20]      |                 |                       |
-  | `ranges::sort_heap`                                                           | ![][c20]      |                 |                       |
-  | `ranges::max`<br/>`ranges::max_element`                                       | ![][c20]      |                 |                       |
-  | `ranges::min`<br/>`ranges::min_element`                                       | ![][c20]      |                 |                       |
-  | `ranges::minmax`<br/>`ranges::minmax_element`                                 | ![][c20]      |                 |                       |
-  | `ranges::clamp`                                                               | ![][c20]      |                 |                       |
-  | `ranges::equal`                                                               | ![][c20]      |                 |                       |
-  | `ranges::lexicographical_compare`                                             | ![][c20]      |                 |                       |
-  | `ranges::is_permutation`                                                      | ![][c20]      |                 |                       |
-  | `ranges::next_permutation`                                                    | ![][c20]      |                 |                       |
-  | `ranges::prev_permutation`                                                    | ![][c20]      |                 |                       |
+  |                                     | Introduced | Revision   |
+  |-------------------------------------|------------|------------|
+  | `clamp`                             | ![][c17ok] | ![][c20ok] |
+  | `for_each_n`                        | ![][c17ok] | ![][c20ok] |
+  | `sample`                            | ![][c17no] | ![][c23no] |
+  | `shift_left`                        | ![][c20ok] |            |
+  | `shift_right`                       | ![][c20ok] |            |
+  | `ranges::in_fun_result`             | ![][c20ok] |            |
+  | `ranges::in_in_result`              | ![][c20ok] |            |
+  | `ranges::in_out_result`             | ![][c20ok] |            |
+  | `ranges::in_in_out_result`          | ![][c20ok] |            |
+  | `ranges::in_out_out_result`         | ![][c20ok] |            |
+  | `ranges::min_max_result`            | ![][c20ok] |            |
+  | `ranges::in_found_result`           | ![][c20ok] |            |
+  | `ranges::in_value_result`           | ![][c23ok] |            |
+  | `ranges::out_value_result`          | ![][c23ok] |            |
+  | `ranges::all_of`                    | ![][c20ok] |            |
+  | `ranges::any_of`                    | ![][c20ok] |            |
+  | `ranges::none_of`                   | ![][c20ok] |            |
+  | `ranges::for_each`                  | ![][c20ok] |            |
+  | `ranges::for_each_n`                | ![][c20ok] |            |
+  | `ranges::count`                     | ![][c20ok] |            |
+  | `ranges::count_if`                  | ![][c20ok] |            |
+  | `ranges::mismatch`                  | ![][c20ok] |            |
+  | `ranges::find`                      | ![][c20ok] |            |
+  | `ranges::find_if`                   | ![][c20ok] |            |
+  | `ranges::find_if_not`               | ![][c20ok] |            |
+  | `ranges::find_last`                 | ![][c23ok] |            |
+  | `ranges::find_last_if` `            | ![][c23ok] |            |
+  | `ranges::find_last_if_not`          | ![][c23ok] |            |
+  | `ranges::find_end`                  | ![][c20ok] |            |
+  | `ranges::find_first_of`             | ![][c20ok] |            |
+  | `ranges::adjacent_find`             | ![][c20no] |            |
+  | `ranges::search`                    | ![][c20ok] |            |
+  | `ranges::search_n`                  | ![][c20no] |            |
+  | `ranges::contains`                  | ![][c23ok] |            |
+  | `ranges::contains_subrange`         | ![][c23ok] |            |
+  | `ranges::starts_with`               | ![][c23no] |            |
+  | `ranges::ends_with`                 | ![][c23no] |            |
+  | `ranges::fold_left`                 | ![][c23ok] |            |
+  | `ranges::fold_left_first`           | ![][c23no] |            |
+  | `ranges::fold_right`                | ![][c23no] |            |
+  | `ranges::fold_right_last`           | ![][c23no] |            |
+  | `ranges::fold_left_with_iter`       | ![][c23no] |            |
+  | `ranges::fold_left_first_with_iter` | ![][c23no] |            |
+  | `ranges::copy`                      | ![][c20ok] |            |
+  | `ranges::copy_if`                   | ![][c20no] |            |
+  | `ranges::copy_n`                    | ![][c20no] |            |
+  | `ranges::copy_backward`             | ![][c20no] |            |
+  | `ranges::move`                      | ![][c20no] |            |
+  | `ranges::move_backward`             | ![][c20no] |            |
+  | `ranges::fill`                      | ![][c20no] |            |
+  | `ranges::fill_n`                    | ![][c20no] |            |
+  | `ranges::transform`                 | ![][c20no] |            |
+  | `ranges::generate`                  | ![][c20no] |            |
+  | `ranges::generate_n`                | ![][c20no] |            |
+  | `ranges::remove`                    | ![][c20no] |            |
+  | `ranges::remove_if`                 | ![][c20no] |            |
+  | `ranges::remove_copy`               | ![][c20no] |            |
+  | `ranges::remove_copy_if`            | ![][c20no] |            |
+  | `ranges::replace`                   | ![][c20no] |            |
+  | `ranges::replace_if`                | ![][c20no] |            |
+  | `ranges::replace_copy`              | ![][c20no] |            |
+  | `ranges::replace_copy_if`           | ![][c20no] |            |
+  | `ranges::swap_ranges`               | ![][c20ok] |            |
+  | `ranges::reverse`                   | ![][c20no] |            |
+  | `ranges::reverse_copy`              | ![][c20no] |            |
+  | `ranges::rotate`                    | ![][c20no] |            |
+  | `ranges::rotate_copy`               | ![][c20no] |            |
+  | `ranges::shift_left`                | ![][c23no] |            |
+  | `ranges::shift_right`               | ![][c23no] |            |
+  | `ranges::sample`                    | ![][c20no] |            |
+  | `ranges::shuffle`                   | ![][c20no] |            |
+  | `ranges::unique`                    | ![][c20no] |            |
+  | `ranges::unique_copy`               | ![][c20no] |            |
+  | `ranges::is_partitioned`            | ![][c20no] |            |
+  | `ranges::partition`                 | ![][c20no] |            |
+  | `ranges::partition_copy`            | ![][c20no] |            |
+  | `ranges::stable_partition`          | ![][c20no] |            |
+  | `ranges::partition_point`           | ![][c20no] |            |
+  | `ranges::is_sorted`                 | ![][c20no] |            |
+  | `ranges::is_sorted_until`           | ![][c20no] |            |
+  | `ranges::sort`                      | ![][c20ok] |            |
+  | `ranges::partial_sort`              | ![][c20no] |            |
+  | `ranges::partial_sort_copy`         | ![][c20no] |            |
+  | `ranges::stable_sort`               | ![][c20no] |            |
+  | `ranges::nth_element`               | ![][c20no] |            |
+  | `ranges::lower_bound`               | ![][c20no] |            |
+  | `ranges::upper_bound`               | ![][c20no] |            |
+  | `ranges::binary_search`             | ![][c20no] |            |
+  | `ranges::equal_range`               | ![][c20no] |            |
+  | `ranges::merge`                     | ![][c20no] |            |
+  | `ranges::inplace_merge`             | ![][c20no] |            |
+  | `ranges::includes`                  | ![][c20no] |            |
+  | `ranges::set_difference`            | ![][c20no] |            |
+  | `ranges::set_intersection`          | ![][c20ok] |            |
+  | `ranges::set_symmetric_difference`  | ![][c20no] |            |
+  | `ranges::set_union`                 | ![][c20no] |            |
+  | `ranges::is_heap`                   | ![][c20no] |            |
+  | `ranges::is_heap_until`             | ![][c20no] |            |
+  | `ranges::make_heap`                 | ![][c20ok] |            |
+  | `ranges::push_heap`                 | ![][c20no] |            |
+  | `ranges::pop_heap`                  | ![][c20ok] |            |
+  | `ranges::sort_heap`                 | ![][c20ok] |            |
+  | `ranges::max`                       | ![][c20ok] |            |
+  | `ranges::max_element`               | ![][c20ok] |            |
+  | `ranges::min`                       | ![][c20ok] |            |
+  | `ranges::min_element`               | ![][c20ok] |            |
+  | `ranges::minmax`                    | ![][c20no] |            |
+  | `ranges::minmax_element`            | ![][c20no] |            |
+  | `ranges::clamp`                     | ![][c20no] |            |
+  | `ranges::equal`                     | ![][c20ok] |            |
+  | `ranges::lexicographical_compare`   | ![][c20ok] |            |
+  | `ranges::is_permutation`            | ![][c20no] |            |
+  | `ranges::next_permutation`          | ![][c20no] |            |
+  | `ranges::prev_permutation`          | ![][c20no] |            |
 
-* `<any>`
+* `<any>` (0/5)
 
-  |                | Introduced in | Latest standard | Implementation status |
-  |----------------|---------------|-----------------|-----------------------|
-  | `any`          | ![][c17]      |                 |                       |
-  | `bad_any_cast` | ![][c17]      |                 |                       |
-  | `swap(any)`    | ![][c17]      |                 |                       |
-  | `make_any`     | ![][c17]      |                 |                       |
-  | `any_cast`     | ![][c17]      |                 |                       |
+  |                | Introduced | Revision |
+  |----------------|------------|----------|
+  | `any`          | ![][c17no] |          |
+  | `bad_any_cast` | ![][c17no] |          |
+  | `swap(any)`    | ![][c17no] |          |
+  | `make_any`     | ![][c17no] |          |
+  | `any_cast`     | ![][c17no] |          |
 
-* `<array>`
+* `<array>` (1/1)
 
-  |            | Introduced in | Latest standard | Implementation status |
-  |------------|---------------|-----------------|-----------------------|
-  | `to_array` | ![][c20]      |                 |                       | 
+  |            | Introduced | Revision |
+  |------------|------------|----------|
+  | `to_array` | ![][c20ok] |          | 
 
-* `<atomic>`
+* `<atomic>` (0/17)
 
-  |                                                        | Introduced in   | Latest standard | Implementation status |
-  |--------------------------------------------------------|-----------------|-----------------|-----------------------|
-  | `atomic_ref`                                           | ![][c20]        |                 |                       | 
-  | `atomic_signed_lock_free`                              | ![][c20]        |                 |                       | 
-  | `atomic_unsigned_lock_free`                            | ![][c20]        |                 |                       | 
-  | `atomic_wait`<br/>`atomic_wait_explicit`               | ![][c20]        |                 |                       | 
-  | `atomic_notify_one`<br/>`atomic_notify_all`            | ![][c20]        |                 |                       | 
-  | `atomic_flag_test`<br/>`atomic_flag_test_explicit`     | ![][c20]        |                 |                       | 
-  | `atomic_flag_wait`<br/>`atomic_flag_wait_explicit`     | ![][c20]        |                 |                       | 
-  | `atomic_flag_notify_one`<br/>`atomic_flag_notifly_all` | ![][c20]        |                 |                       | 
-  | `atomic_fetch_max`<br/>`atomic_fetch_max_explicit`     | ![][c26]        |                 |                       | 
-  | `atomic_fetch_min`<br/>`atomic_fetch_min_explicit`     | ![][c26]        |                 |                       | 
+  |                             | Introduced | Revision |
+  |-----------------------------|------------|----------|
+  | `atomic_ref`                | ![][c20no] |          | 
+  | `atomic_signed_lock_free`   | ![][c20no] |          | 
+  | `atomic_unsigned_lock_free` | ![][c20no] |          | 
+  | `atomic_wait`               | ![][c20no] |          | 
+  | `atomic_wait_explicit`      | ![][c20no] |          | 
+  | `atomic_notify_one`         | ![][c20no] |          | 
+  | `atomic_notify_all`         | ![][c20no] |          | 
+  | `atomic_flag_test`          | ![][c20no] |          | 
+  | `atomic_flag_test_explicit` | ![][c20no] |          | 
+  | `atomic_flag_wait`          | ![][c20no] |          | 
+  | `atomic_flag_wait_explicit` | ![][c20no] |          | 
+  | `atomic_flag_notify_one`    | ![][c20no] |          | 
+  | `atomic_flag_notifly_all`   | ![][c20no] |          | 
+  | `atomic_fetch_max`          | ![][c26no] |          | 
+  | `atomic_fetch_max_explicit` | ![][c26no] |          | 
+  | `atomic_fetch_min`          | ![][c26no] |          | 
+  | `atomic_fetch_min_explicit` | ![][c26no] |          | 
 
-* `<barrier>`
+* `<barrier>` (0/1)
 
-  |           | Introduced in | Latest standard | Implementation status |
-  |-----------|---------------|-----------------|-----------------------|
-  | `barrier` | ![][c20]      |                 |                       |
+  |           | Introduced | Revision |
+  |-----------|------------|----------|
+  | `barrier` | ![][c20no] |          |
 
-* `<bit>`
+* `<bit>` (0/14)
 
-  |                  | Introduced in  | Latest standard | Implementation status |
-  |------------------|----------------|-----------------|-----------------------|
-  | `endian`         | ![][c20]       |                 |                       |
-  | `bit_cast`       | ![][c20]       |                 |                       |
-  | `byteswap`       | ![][c23]       |                 |                       |
-  | `has_single_bit` | ![][c20]       |                 |                       |
-  | `bit_ceil`       | ![][c20]       |                 |                       |
-  | `bit_floor`      | ![][c20]       |                 |                       |
-  | `bit_width`      | ![][c20]       |                 |                       |
-  | `rotl`           | ![][c20]       |                 |                       |
-  | `rotr`           | ![][c20]       |                 |                       |
-  | `countl_zero`    | ![][c20]       |                 |                       |
-  | `countl_one`     | ![][c20]       |                 |                       |
-  | `countr_zero`    | ![][c20]       |                 |                       |
-  | `countr_one`     | ![][c20]       |                 |                       |
-  | `popcount`       | ![][c20]       |                 |                       |
+  |                  | Introduced | Revision |
+  |------------------|------------|----------|
+  | `endian`         | ![][c20no] |          |
+  | `bit_cast`       | ![][c20no] |          |
+  | `byteswap`       | ![][c23no] |          |
+  | `has_single_bit` | ![][c20no] |          |
+  | `bit_ceil`       | ![][c20no] |          |
+  | `bit_floor`      | ![][c20no] |          |
+  | `bit_width`      | ![][c20no] |          |
+  | `rotl`           | ![][c20no] |          |
+  | `rotr`           | ![][c20no] |          |
+  | `countl_zero`    | ![][c20no] |          |
+  | `countl_one`     | ![][c20no] |          |
+  | `countr_zero`    | ![][c20no] |          |
+  | `countr_one`     | ![][c20no] |          |
+  | `popcount`       | ![][c20no] |          |
 
-* `<charconv>`
+* `<charconv>` (0/5)
 
-  |                     | Introduced in | Latest standard | Implementation status |
-  |---------------------|---------------|-----------------|-----------------------|
-  | `chars_format`      | ![][c17]      |                 |                       |
-  | `from_chars_result` | ![][c17]      |                 |                       |
-  | `to_chars_result`   | ![][c17]      |                 |                       |
-  | `from_chars`        | ![][c17]      | ![][c23]        |                       |
-  | `to_chars`          | ![][c17]      | ![][c23]        |                       |
+  |                     | Introduced | Revision   |
+  |---------------------|------------|------------|
+  | `chars_format`      | ![][c17no] |            |
+  | `from_chars_result` | ![][c17no] |            |
+  | `to_chars_result`   | ![][c17no] |            |
+  | `from_chars`        | ![][c17no] | ![][c23no] |
+  | `to_chars`          | ![][c17no] | ![][c23no] |
 
 * `<chrono>`
 
-  |                                          | Introduced in | Latest standard | Implementation status |
-  |------------------------------------------|---------------|-----------------|-----------------------|
-  | `chrono::abs(std::chrono::duration)`     | ![][c17]      |                 |                       |
-  | `chrono::ceil(std::chrono::duration)`    | ![][c17]      |                 |                       |
-  | `chrono::floor(std::chrono::duration)`   | ![][c17]      |                 |                       |
-  | `chrono::round(std::chrono::duration)`   | ![][c17]      |                 |                       |
-  | `chrono::ceil(std::chrono::time_point)`  | ![][c17]      |                 |                       |
-  | `chrono::floor(std::chrono::time_point)` | ![][c17]      |                 |                       |
-  | `chrono::round(std::chrono::time_point)` | ![][c17]      |                 |                       |
+  |                           | Introduced | Revision                         |
+  |---------------------------|------------|----------------------------------|
+  | `std::chrono::duration`   | ![][c11]   | ![][c17no] ![][c20no] ![][c26no] |
+  | `std::chrono::time_point` | ![][c11]   | ![][c17no] ![][c20no] ![][c26no] |
+  | `clock_time_conversion`   | ![][c20no] |                                  |
+  | `is_clock`                | ![][c20no] |                                  |
+  | `utc_clock`               | ![][c20no] |                                  |
+  | `tai_clock`               | ![][c20no] |                                  |
+  | `gps_clock`               | ![][c20no] |                                  |
+  | `file_clock`              | ![][c20no] |                                  |
+  | `local_t`                 | ![][c20no] |                                  |
+  | `last_spec`               | ![][c20no] |                                  |
+  | `day`                     | ![][c20no] |                                  |
+  | `month`                   | ![][c20no] |                                  |
+  | `year`                    | ![][c20no] |                                  |
+  | `weekday`                 | ![][c20no] |                                  |
+  | `weekday_indexed`         | ![][c20no] |                                  |
+  | `weekday_last`            | ![][c20no] |                                  |
+  | `month_day`               | ![][c20no] |                                  |
+  | `month_day_last`          | ![][c20no] |                                  |
+  | `month_weekday`           | ![][c20no] |                                  |
+  | `month_weekday_last`      | ![][c20no] |                                  |
+  | `year_month`              | ![][c20no] |                                  |
+  | `year_month_day`          | ![][c20no] |                                  |
+  | `year_month_day_last`     | ![][c20no] |                                  |
+  | `year_month_weekday`      | ![][c20no] |                                  |
+  | `year_month_weekday_last` | ![][c20no] |                                  |
+  | `hh_mm_ss`                | ![][c20no] |                                  |
+  | `tzdb`                    | ![][c20no] |                                  |
+  | `tzdb_list`               | ![][c20no] |                                  |
+  | `tzdb_zone`               | ![][c20no] |                                  |
+  | `get_tzdb`                | ![][c20no] |                                  |
+  | `get_tzdb_list`           | ![][c20no] |                                  |
+  | `reload_tzdb`             | ![][c20no] |                                  |
+  | `remote_version`          | ![][c20no] |                                  |
+  | `locate_zone`             | ![][c20no] |                                  |
+  | `sys_info`                | ![][c20no] |                                  |
+  | `local_info`              | ![][c20no] |                                  |
+  | `choose`                  | ![][c20no] |                                  |
+  | `zoned_traits`            | ![][c20no] |                                  |
+  | `zoned_time`              | ![][c20no] |                                  |
+  | `time_zone_link`          | ![][c20no] |                                  |
+  | `nonexistent_local_time`  | ![][c20no] |                                  |
+  | `ambiguous_local_time`    | ![][c20no] |                                  |
+  | `leap_second`             | ![][c20no] |                                  |
+  | `leap_second_info`        | ![][c20no] |                                  |
+  | `get_leap_second_info`    | ![][c20no] |                                  |
+  | `is_am`<br/>`is_pm`       | ![][c20no] |                                  |
+  | `make_12`<br/>`make_24`   | ![][c20no] |                                  |
 
 * `<cmath>`
 
-  |                  | Introduced in | Latest standard | Implementation status |
-  |------------------|---------------|-----------------|-----------------------|
-  | `assoc_laguerre` | ![][c17]      | ![][c23]        |                       |
-  | `assoc_legendre` | ![][c17]      | ![][c23]        |                       |
-  | `beta`           | ![][c17]      | ![][c23]        |                       |
-  | `comp_ellint_1`  | ![][c17]      | ![][c23]        |                       |
-  | `comp_ellint_2`  | ![][c17]      | ![][c23]        |                       |
-  | `comp_ellint_3`  | ![][c17]      | ![][c23]        |                       |
-  | `cyl_bessel_i`   | ![][c17]      | ![][c23]        |                       |
-  | `cyl_bessel_j`   | ![][c17]      | ![][c23]        |                       |
-  | `cyl_bessel_k`   | ![][c17]      | ![][c23]        |                       |
-  | `cyl_neumann`    | ![][c17]      | ![][c23]        |                       |
-  | `ellint_1`       | ![][c17]      | ![][c23]        |                       |
-  | `ellint_2`       | ![][c17]      | ![][c23]        |                       |
-  | `ellint_3`       | ![][c17]      | ![][c23]        |                       |
-  | `expint`         | ![][c17]      | ![][c23]        |                       |
-  | `hermite`        | ![][c17]      | ![][c23]        |                       |
-  | `legendre`       | ![][c17]      | ![][c23]        |                       |
-  | `laguerre`       | ![][c17]      | ![][c23]        |                       |
-  | `riemann_zeta`   | ![][c17]      | ![][c23]        |                       |
-  | `sph_bessel`     | ![][c17]      | ![][c23]        |                       |
-  | `sph_legendre`   | ![][c17]      | ![][c23]        |                       |
-  | `sph_neumann`    | ![][c17]      | ![][c23]        |                       |
-  | `hypot(x, y, z)` | ![][c17]      | ![][c26]        |                       |
+  |                  | Introduced | Revision   |
+  |------------------|------------|------------|
+  | `assoc_laguerre` | ![][c17no] | ![][c23no] |
+  | `assoc_legendre` | ![][c17no] | ![][c23no] |
+  | `beta`           | ![][c17no] | ![][c23no] |
+  | `comp_ellint_1`  | ![][c17no] | ![][c23no] |
+  | `comp_ellint_2`  | ![][c17no] | ![][c23no] |
+  | `comp_ellint_3`  | ![][c17no] | ![][c23no] |
+  | `cyl_bessel_i`   | ![][c17no] | ![][c23no] |
+  | `cyl_bessel_j`   | ![][c17no] | ![][c23no] |
+  | `cyl_bessel_k`   | ![][c17no] | ![][c23no] |
+  | `cyl_neumann`    | ![][c17no] | ![][c23no] |
+  | `ellint_1`       | ![][c17no] | ![][c23no] |
+  | `ellint_2`       | ![][c17no] | ![][c23no] |
+  | `ellint_3`       | ![][c17no] | ![][c23no] |
+  | `expint`         | ![][c17no] | ![][c23no] |
+  | `hermite`        | ![][c17no] | ![][c23no] |
+  | `legendre`       | ![][c17no] | ![][c23no] |
+  | `laguerre`       | ![][c17no] | ![][c23no] |
+  | `riemann_zeta`   | ![][c17no] | ![][c23no] |
+  | `sph_bessel`     | ![][c17no] | ![][c23no] |
+  | `sph_legendre`   | ![][c17no] | ![][c23no] |
+  | `sph_neumann`    | ![][c17no] | ![][c23no] |
+  | `hypot(x, y, z)` | ![][c17no] | ![][c26no] |
 
 * `<compare>` N/A
 
 * `<concepts>`
 
-  |                         | Introduced in | Latest standard | Implementation status |
-  |-------------------------|---------------|-----------------|-----------------------|
-  | `same_as`               | ![][c20]      |                 |                       |
-  | `derived_from`          | ![][c20]      |                 |                       |
-  | `convertible_to`        | ![][c20]      |                 |                       |
-  | `common_reference_with` | ![][c20]      |                 |                       |
-  | `common_with`           | ![][c20]      |                 |                       |
-  | `integral`              | ![][c20]      |                 |                       |
-  | `signed_integral`       | ![][c20]      |                 |                       |
-  | `unsigned_integral`     | ![][c20]      |                 |                       |
-  | `floating_point`        | ![][c20]      |                 |                       |
-  | `assignable_from`       | ![][c20]      |                 |                       |
-  | `swappable`             | ![][c20]      |                 |                       |
-  | `destructible`          | ![][c20]      |                 |                       |
-  | `constructible_from`    | ![][c20]      |                 |                       |
-  | `default_initializable` | ![][c20]      |                 |                       |
-  | `move_constructible`    | ![][c20]      |                 |                       |
-  | `copy_constructible`    | ![][c20]      |                 |                       |
-  | `equality_comparable`   | ![][c20]      |                 |                       |
-  | `totally_ordered`       | ![][c20]      |                 |                       |
-  | `movable`               | ![][c20]      |                 |                       |
-  | `copyable`              | ![][c20]      |                 |                       |
-  | `semiregular`           | ![][c20]      |                 |                       |
-  | `regular`               | ![][c20]      |                 |                       |
-  | `invocable`             | ![][c20]      |                 |                       |
-  | `regular_invocable`     | ![][c20]      |                 |                       |
-  | `predicate`             | ![][c20]      |                 |                       |
-  | `relation`              | ![][c20]      |                 |                       |
-  | `equivalence_relation`  | ![][c20]      |                 |                       |
-  | `strict_weak_order`     | ![][c20]      |                 |                       |
-  | `ranges::swap`          | ![][c20]      |                 |                       |
+  |                         | Introduced | Revision |
+  |-------------------------|------------|----------|
+  | `same_as`               | ![][c20ok] |          |
+  | `derived_from`          | ![][c20ok] |          |
+  | `convertible_to`        | ![][c20ok] |          |
+  | `common_reference_with` | ![][c20ok] |          |
+  | `common_with`           | ![][c20ok] |          |
+  | `integral`              | ![][c20ok] |          |
+  | `signed_integral`       | ![][c20ok] |          |
+  | `unsigned_integral`     | ![][c20ok] |          |
+  | `floating_point`        | ![][c20ok] |          |
+  | `assignable_from`       | ![][c20ok] |          |
+  | `swappable`             | ![][c20ok] |          |
+  | `destructible`          | ![][c20ok] |          |
+  | `constructible_from`    | ![][c20ok] |          |
+  | `default_initializable` | ![][c20ok] |          |
+  | `move_constructible`    | ![][c20ok] |          |
+  | `copy_constructible`    | ![][c20ok] |          |
+  | `equality_comparable`   | ![][c20ok] |          |
+  | `totally_ordered`       | ![][c20ok] |          |
+  | `movable`               | ![][c20ok] |          |
+  | `copyable`              | ![][c20ok] |          |
+  | `semiregular`           | ![][c20ok] |          |
+  | `regular`               | ![][c20ok] |          |
+  | `invocable`             | ![][c20ok] |          |
+  | `regular_invocable`     | ![][c20ok] |          |
+  | `predicate`             | ![][c20ok] |          |
+  | `relation`              | ![][c20ok] |          |
+  | `equivalence_relation`  | ![][c20ok] |          |
+  | `strict_weak_order`     | ![][c20ok] |          |
+  | `ranges::swap`          | ![][c20ok] |          |
 
 * `<coroutine>` N/A
 
-* `<cstddef>`
+* `<cstddef>` (2/2)
 
-  |              | Introduced in  | Latest standard | Implementation status |
-  |--------------|----------------|-----------------|-----------------------|
-  | `byte`       | ![][c17]       |                 | ![][c17]              |
-  | `to_integer` | ![][c17]       |                 |                       |
+  |              | Introduced | Revision |
+  |--------------|------------|----------|
+  | `byte`       | ![][c17ok] |          |
+  | `to_integer` | ![][c17ok] |          |
 
 * `<exception>`
 
-  |                       | Introduced in | Latest standard | Implementation status |
-  |-----------------------|---------------|-----------------|-----------------------|
-  | `uncaught_exceptions` | ![][c17]      |                 | N/A                   |
+  |                       | Introduced       | Revision |
+  |-----------------------|------------------|----------|
+  | `uncaught_exceptions` | ![][c17no] (N/A) |          |
 
-* `<expected>`
+* `<expected>` (4/4)
 
-  |                             | Introduced in | Latest standard | Implementation status |
-  |-----------------------------|---------------|-----------------|-----------------------|
-  | `expected`                  | ![][c23]      |                 |                       |
-  | `unexpected`                | ![][c23]      |                 |                       |
-  | `bad_expected_access`       | ![][c23]      |                 |                       |
-  | `unexpect`<br/>`unexpect_t` | ![][c23]      |                 |                       |
+  |                             | Introduced | Revision |
+  |-----------------------------|------------|----------|
+  | `expected`                  | ![][c23ok] |          |
+  | `unexpected`                | ![][c23ok] |          |
+  | `bad_expected_access`       | ![][c23ok] |          |
+  | `unexpect`<br/>`unexpect_t` | ![][c23ok] |          |
 
 * `<execution>` N/A
 
-* `<flat_map>`
+* `<flat_map>` (0/4)
 
-  |                                               | Introduced in | Latest standard | Implementation status |
-  |-----------------------------------------------|---------------|-----------------|-----------------------|
-  | `flat_map`                                    | ![][c23]      |                 |                       |
-  | `flat_multimap`                               | ![][c23]      |                 |                       |
-  | `sorted_unique`<br/>`sorted_unique_t`         | ![][c23]      |                 |                       |
-  | `sorted_equivalent`<br/>`sorted_equivalent_t` | ![][c23]      |                 |                       |
+  |                                               | Introduced | Revision |
+  |-----------------------------------------------|------------|----------|
+  | `flat_map`                                    | ![][c23no] |          |
+  | `flat_multimap`                               | ![][c23no] |          |
+  | `sorted_unique`<br/>`sorted_unique_t`         | ![][c23no] |          |
+  | `sorted_equivalent`<br/>`sorted_equivalent_t` | ![][c23no] |          |
 
-* `<flat_set>`
+* `<flat_set>` (0/2)
 
-  |                                               | Introduced in | Latest standard | Implementation status |
-  |-----------------------------------------------|---------------|-----------------|-----------------------|
-  | `flat_set`                                    | ![][c23]      |                 |                       |
-  | `flat_multiset`                               | ![][c23]      |                 |                       |
+  |                 | Introduced | Revision |
+  |-----------------|---------------|-----------------|
+  | `flat_set`      | ![][c23no]      |                 |
+  | `flat_multiset` | ![][c23no]      |                 |
 
 * `<format>`
 
-  |                      | Introduced in | Latest standard | Implementation status |
-  |----------------------|---------------|-----------------|-----------------------|
-  |                      |               |                 |                       |
+  |                      | Introduced | Revision |
+  |----------------------|------------|----------|
+  |                      |            |          |
 
 * `<filesystem>` N/A
 
-* `<functional>`
+* `<functional>` (6/16)
 
-  |                                 | Introduced in  | Latest standard | Implementation status |
-  |---------------------------------|----------------|-----------------|-----------------------|
-  | `default_searcher`              | ![][c17]       | ![][c20]        |                       |
-  | `boyer_moore_searcher`          | ![][c17]       |                 |                       |
-  | `boyer_moore_horspool_searcher` | ![][c17]       |                 |                       |
-  | `invoke`                        | ![][c17]       |                 |                       |
-  | `invoke_r`                      | ![][c23]       |                 |                       |
-  | `not_fn`                        | ![][c17]       | ![][c26]        |                       |
-  | `bind_front`                    | ![][c20]       |                 |                       |
-  | `bind_back`                     | ![][c23]       |                 |                       |
-  | `identity`                      | ![][c20]       |                 |                       |
-  | `unwrap_reference`              | ![][c20]       |                 |                       |
-  | `unwrap_ref_decay`              | ![][c20]       |                 |                       |
-  | `ranges::equal_to`...           | ![][c20]       |                 |                       |
-  | `ranges::three_way`             | ![][c20]       |                 | N/A                   |
-  | `move_only_function`            | ![][c23]       |                 |                       |
-  | `copyable_function`             | ![][c26]       |                 |                       |
-  | `function_ref`                  | ![][c26]       |                 |                       |
+  |                                 | Introduced | Revision   |
+  |---------------------------------|------------|------------|
+  | `default_searcher`              | ![][c17no] | ![][c20no] |
+  | `boyer_moore_searcher`          | ![][c17no] |            |
+  | `boyer_moore_horspool_searcher` | ![][c17no] |            |
+  | `invoke`                        | ![][c17ok] |            |
+  | `invoke_r`                      | ![][c23ok] |            |
+  | `not_fn`                        | ![][c17no] | ![][c26no] |
+  | `bind_front`                    | ![][c20ok] |            |
+  | `bind_back`                     | ![][c23ok] |            |
+  | `identity`                      | ![][c20ok] |            |
+  | `unwrap_reference`              | ![][c20no] |            |
+  | `unwrap_ref_decay`              | ![][c20no] |            |
+  | `ranges::equal_to`...           | ![][c20ok] |            |
+  | `ranges::three_way`             | ![][c20no] |            |
+  | `move_only_function`            | ![][c23no] |            |
+  | `copyable_function`             | ![][c26no] |            |
+  | `function_ref`                  | ![][c26no] |            |
 
 * `<hazard_pointer>`
 
-  |                           | Introduced in | Latest standard | Implementation status |
-  |---------------------------|---------------|-----------------|-----------------------|
-  | `hazard_pointer_obj_base` | ![][c26]      |                 |                       |
-  | `hazard_pointer`          | ![][c26]      |                 |                       |
-  | `make_hazard_pointer`     | ![][c26]      |                 |                       |
+  |                           | Introduced | Revision |
+  |---------------------------|------------|----------|
+  | `hazard_pointer_obj_base` | ![][c26no] |          |
+  | `hazard_pointer`          | ![][c26no] |          |
+  | `make_hazard_pointer`     | ![][c26no] |          |
 
 * `<latch>`
 
-  |         | Introduced in | Latest standard | Implementation status |
-  |---------|---------------|-----------------|-----------------------|
-  | `latch` | ![][c20]      |                 |                       |
+  |         | Introduced | Revision |
+  |---------|------------|----------|
+  | `latch` | ![][c20no] |          |
 
 * `<linalg>`
 
-  |                                                         | Introduced in | Latest standard | Implementation status |
-  |---------------------------------------------------------|---------------|-----------------|-----------------------|
-  | `layout_blas_packed`                                    | ![][c26]      |                 |                       |
-  | `scaled_accessor`                                       | ![][c26]      |                 |                       |
-  | `conjugated_accessor`                                   | ![][c26]      |                 |                       |
-  | `layout_transpose`                                      | ![][c26]      |                 |                       |
-  | `column_major`<br/>`column_major_t`                     | ![][c26]      |                 |                       |
-  | `row_major`<br/>`row_major_t`                           | ![][c26]      |                 |                       |
-  | `upper_triangle`<br/>`upper_triangle_t`                 | ![][c26]      |                 |                       |
-  | `lower_triangle`<br/>`lower_triangle_t`                 | ![][c26]      |                 |                       |
-  | `implicit_unit_diagonal`<br/>`implicit_unit_diagonal_t` | ![][c26]      |                 |                       |
-  | `explicit_unit_diagonal`<br/>`explicit_unit_diagonal_t` | ![][c26]      |                 |                       |
-  | `scaled`                                                | ![][c26]      |                 |                       |
-  | `conjugated`                                            | ![][c26]      |                 |                       |
-  | `transposed`                                            | ![][c26]      |                 |                       |
-  | `conjugated_transposed`                                 | ![][c26]      |                 |                       |
-  | `setup_givens_rotation`                                 | ![][c26]      |                 |                       |
-  | `apply_givens_rotation`                                 | ![][c26]      |                 |                       |
-  | `swap_elements`                                         | ![][c26]      |                 |                       |
-  | `scale`                                                 | ![][c26]      |                 |                       |
-  | `copy`                                                  | ![][c26]      |                 |                       |
-  | `add`                                                   | ![][c26]      |                 |                       |
-  | `dot`<br/>`dotc`                                        | ![][c26]      |                 |                       |
-  | `vector_sum_of_squares`                                 | ![][c26]      |                 |                       |
-  | `vector_two_norm`                                       | ![][c26]      |                 |                       |
-  | `vector_abs_sum`                                        | ![][c26]      |                 |                       |
-  | `vector_idx_abs_max`                                    | ![][c26]      |                 |                       |
-  | `matrix_frob_norm`                                      | ![][c26]      |                 |                       |
-  | `matrix_one_norm`                                       | ![][c26]      |                 |                       |
-  | `matrix_inf_norm`                                       | ![][c26]      |                 |                       |
-  | `matrix_vector_product`                                 | ![][c26]      |                 |                       |
-  | `symmetric_matrix_vector_product`                       | ![][c26]      |                 |                       |
-  | ...                                                     | ![][c26]      |                 |                       |
+  |                                                         | Introduced | Revision |
+  |---------------------------------------------------------|------------|----------|
+  | `layout_blas_packed`                                    | ![][c26no] |          |
+  | `scaled_accessor`                                       | ![][c26no] |          |
+  | `conjugated_accessor`                                   | ![][c26no] |          |
+  | `layout_transpose`                                      | ![][c26no] |          |
+  | `column_major`<br/>`column_major_t`                     | ![][c26no] |          |
+  | `row_major`<br/>`row_major_t`                           | ![][c26no] |          |
+  | `upper_triangle`<br/>`upper_triangle_t`                 | ![][c26no] |          |
+  | `lower_triangle`<br/>`lower_triangle_t`                 | ![][c26no] |          |
+  | `implicit_unit_diagonal`<br/>`implicit_unit_diagonal_t` | ![][c26no] |          |
+  | `explicit_unit_diagonal`<br/>`explicit_unit_diagonal_t` | ![][c26no] |          |
+  | `scaled`                                                | ![][c26no] |          |
+  | `conjugated`                                            | ![][c26no] |          |
+  | `transposed`                                            | ![][c26no] |          |
+  | `conjugated_transposed`                                 | ![][c26no] |          |
+  | `setup_givens_rotation`                                 | ![][c26no] |          |
+  | `apply_givens_rotation`                                 | ![][c26no] |          |
+  | `swap_elements`                                         | ![][c26no] |          |
+  | `scale`                                                 | ![][c26no] |          |
+  | `copy`                                                  | ![][c26no] |          |
+  | `add`                                                   | ![][c26no] |          |
+  | `dot`<br/>`dotc`                                        | ![][c26no] |          |
+  | `vector_sum_of_squares`                                 | ![][c26no] |          |
+  | `vector_two_norm`                                       | ![][c26no] |          |
+  | `vector_abs_sum`                                        | ![][c26no] |          |
+  | `vector_idx_abs_max`                                    | ![][c26no] |          |
+  | `matrix_frob_norm`                                      | ![][c26no] |          |
+  | `matrix_one_norm`                                       | ![][c26no] |          |
+  | `matrix_inf_norm`                                       | ![][c26no] |          |
+  | `matrix_vector_product`                                 | ![][c26no] |          |
+  | `symmetric_matrix_vector_product`                       | ![][c26no] |          |
+  | ...                                                     | ![][c26no] |          |
 
 * `<mdspan>`
 
-  |                                   | Introduced in | Latest standard | Implementation status |
-  |-----------------------------------|---------------|-----------------|-----------------------|
-  | `mdspan`                          | ![][c23]      |                 |                       |
-  | `extents`                         | ![][c23]      |                 |                       |
-  | `layout_left`                     | ![][c23]      |                 |                       |
-  | `layout_right`                    | ![][c23]      |                 |                       |
-  | `layout_stride`                   | ![][c23]      |                 |                       |
-  | `layout_stride`                   | ![][c23]      |                 |                       |
-  | `submdspan`                       | ![][c26]      |                 |                       |
-  | `submdspan_extents`               | ![][c26]      |                 |                       |
-  | `strided_slice`                   | ![][c26]      |                 |                       |
-  | `submdspan_mapping_result`        | ![][c26]      |                 |                       |
-  | `full_extent`<br/>`full_extent_t` | ![][c26]      |                 |                       |
+  |                                   | Introduced | Revision |
+  |-----------------------------------|------------|----------|
+  | `mdspan`                          | ![][c23no] |          |
+  | `extents`                         | ![][c23no] |          |
+  | `layout_left`                     | ![][c23no] |          |
+  | `layout_right`                    | ![][c23no] |          |
+  | `layout_stride`                   | ![][c23no] |          |
+  | `layout_stride`                   | ![][c23no] |          |
+  | `submdspan`                       | ![][c26no] |          |
+  | `submdspan_extents`               | ![][c26no] |          |
+  | `strided_slice`                   | ![][c26no] |          |
+  | `submdspan_mapping_result`        | ![][c26no] |          |
+  | `full_extent`<br/>`full_extent_t` | ![][c26no] |          |
 
 * `<memory>`
 
-  |                                                   | Introduced in | Latest standard | Implementation status |
-  |---------------------------------------------------|---------------|-----------------|-----------------------|
-  | `aligned_alloc`                                   | ![][c17]      |                 | N/A                   |
-  | `destroy_at`                                      | ![][c17]      | ![][c20]        |                       |
-  | `destroy`                                         | ![][c17]      | ![][c20]        |                       |
-  | `destroy_n`                                       | ![][c17]      | ![][c20]        |                       |
-  | `reinterpret_pointer_cast`                        | ![][c17]      | ![][c20]        |                       |
-  | `uninitialized_default_construct`                 | ![][c17]      | ![][c20]        |                       |
-  | `uninitialized_default_construct_n`               | ![][c17]      | ![][c20]        |                       |
-  | `uninitialized_move`                              | ![][c17]      | ![][c20]        |                       |
-  | `uninitialized_move_n`                            | ![][c17]      | ![][c20]        |                       |
-  | `uninitialized_value_construct`                   | ![][c17]      |                 |                       |
-  | `uninitialized_value_construct_n`                 | ![][c17]      |                 |                       |
-  | `assume_aligned`                                  | ![][c20]      |                 |                       |
-  | `construct_at`                                    | ![][c20]      |                 |                       |
-  | `destroy_at`                                      | ![][c20]      |                 |                       |
-  | `make_obj_using_allocator`                        | ![][c20]      |                 |                       |
-  | `make_shared_for_overwrite`                       | ![][c20]      |                 |                       |
-  | `make_unique_for_overwrite`                       | ![][c20]      |                 |                       |
-  | `to_address`                                      | ![][c20]      |                 |                       |
-  | `uninitialized_construct_using_allocator`         | ![][c20]      |                 |                       |
-  | `uses_allocator_construction_args`                | ![][c20]      |                 |                       |
-  | `operator<<(std::unique_ptr)`                     | ![][c20]      |                 |                       |
-  | `ranges::construct_at`                            | ![][c20]      |                 |                       |
-  | `ranges::destroy`                                 | ![][c20]      |                 |                       |
-  | `ranges::destroy_n`                               | ![][c20]      |                 |                       |
-  | `ranges::destroy_at`                              | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_copy`                      | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_copy_n`                    | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_fill`                      | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_fill_n`                    | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_move`                      | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_move_n`                    | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_default_construct`         | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_default_construct_n`       | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_value_construct`           | ![][c20]      |                 |                       |
-  | `ranges::uninitialized_value_construct_n`         | ![][c20]      |                 |                       |
-  | `inout_ptr`<br/>`inout_ptr_t`                     | ![][c23]      |                 |                       |
-  | `out_ptr`<br/>`out_ptr_t`                         | ![][c23]      |                 |                       |
-  | `start_lifetime_as`<br/>`start_lifetime_as_array` | ![][c23]      |                 |                       |
-  | `owner_hash`                                      | ![][c26]      |                 |                       |
-  | `owner_equal`                                     | ![][c26]      |                 |                       |
+  |                                                   | Introduced | Revision   |
+  |---------------------------------------------------|------------|------------|
+  | `aligned_alloc`                                   | ![][c17no] |            |
+  | `assume_aligned`                                  | ![][c20no] |            |
+  | `construct_at`                                    | ![][c20ok] |            |
+  | `destroy_at`                                      | ![][c17ok] | ![][c20ok] |
+  | `destroy`                                         | ![][c17ok] | ![][c20ok] |
+  | `destroy_n`                                       | ![][c17no] | ![][c20no] |
+  | `reinterpret_pointer_cast`                        | ![][c17no] | ![][c20no] |
+  | `uninitialized_default_construct`                 | ![][c17no] | ![][c20no] |
+  | `uninitialized_default_construct_n`               | ![][c17no] | ![][c20no] |
+  | `uninitialized_move`                              | ![][c17no] | ![][c20no] |
+  | `uninitialized_move_n`                            | ![][c17no] | ![][c20no] |
+  | `uninitialized_value_construct`                   | ![][c17no] |            |
+  | `uninitialized_value_construct_n`                 | ![][c17no] |            |
+  | `make_obj_using_allocator`                        | ![][c20no] |            |
+  | `make_shared_for_overwrite`                       | ![][c20no] |            |
+  | `make_unique_for_overwrite`                       | ![][c20no] |            |
+  | `to_address`                                      | ![][c20ok] |            |
+  | `uninitialized_construct_using_allocator`         | ![][c20no] |            |
+  | `uses_allocator_construction_args`                | ![][c20no] |            |
+  | `operator<<(std::unique_ptr)`                     | ![][c20no] |            |
+  | `pointer_traits`                                  | ![][c11]   | ![][c20ok] |
+  | `ranges::construct_at`                            | ![][c20no] |            |
+  | `ranges::destroy`                                 | ![][c20no] |            |
+  | `ranges::destroy_n`                               | ![][c20no] |            |
+  | `ranges::destroy_at`                              | ![][c20no] |            |
+  | `ranges::uninitialized_copy`                      | ![][c20no] |            |
+  | `ranges::uninitialized_copy_n`                    | ![][c20no] |            |
+  | `ranges::uninitialized_fill`                      | ![][c20no] |            |
+  | `ranges::uninitialized_fill_n`                    | ![][c20no] |            |
+  | `ranges::uninitialized_move`                      | ![][c20no] |            |
+  | `ranges::uninitialized_move_n`                    | ![][c20no] |            |
+  | `ranges::uninitialized_default_construct`         | ![][c20no] |            |
+  | `ranges::uninitialized_default_construct_n`       | ![][c20no] |            |
+  | `ranges::uninitialized_value_construct`           | ![][c20no] |            |
+  | `ranges::uninitialized_value_construct_n`         | ![][c20no] |            |
+  | `inout_ptr`<br/>`inout_ptr_t`                     | ![][c23no] |            |
+  | `out_ptr`<br/>`out_ptr_t`                         | ![][c23no] |            |
+  | `start_lifetime_as`<br/>`start_lifetime_as_array` | ![][c23no] |            |
+  | `owner_hash`                                      | ![][c26no] |            |
+  | `owner_equal`                                     | ![][c26no] |            |
 
 * `<memory_resource>` N/A
 
 * `<mutex>`
 
-  |                                           | Introduced in | Latest standard | Implementation status |
-  |-------------------------------------------|---------------|-----------------|-----------------------|
-  | `scoped_lock`                             | ![][c17]      |                 |                       |
+  |               | Introduced | Revision |
+  |---------------|------------|----------|
+  | `scoped_lock` | ![][c17no] |          |
 
 * `<new>`
 
-  |                                           | Introduced in | Latest standard | Implementation status |
-  |-------------------------------------------|---------------|-----------------|-----------------------|
-  | `hardware_destructive_interference_size`  | ![][c17]      |                 | N/A                   |
-  | `hardware_constructive_interference_size` | ![][c17]      |                 | N/A                   |
-  | `launder`                                 | ![][c17]      |                 | N/A                   |
+  |                                           | Introduced | Revision |
+  |-------------------------------------------|------------|----------|
+  | `hardware_destructive_interference_size`  | ![][c17no] |          |
+  | `hardware_constructive_interference_size` | ![][c17no] |          |
+  | `launder`                                 | ![][c17no] |          |
 
 * `<numbers>`
 
-  |              | Introduced in | Latest standard | Implementation status |
-  |--------------|---------------|-----------------|-----------------------|
-  | `e`          | ![][c20]      |                 |                       |
-  | `log2e`      | ![][c20]      |                 |                       |
-  | `log10e`     | ![][c20]      |                 |                       |
-  | `pi`         | ![][c20]      |                 |                       |
-  | `inv_pi`     | ![][c20]      |                 |                       |
-  | `inv_sqrtpi` | ![][c20]      |                 |                       |
-  | `ln2`        | ![][c20]      |                 |                       |
-  | `ln10`       | ![][c20]      |                 |                       |
-  | `sqrt2`      | ![][c20]      |                 |                       |
-  | `sqrt3`      | ![][c20]      |                 |                       |
-  | `inv_sqrt3`  | ![][c20]      |                 |                       |
-  | `egamma`     | ![][c20]      |                 |                       |
-  | `phi`        | ![][c20]      |                 |                       |
+  |              | Introduced | Revision |
+  |--------------|------------|----------|
+  | `e`          | ![][c20no] |          |
+  | `log2e`      | ![][c20no] |          |
+  | `log10e`     | ![][c20no] |          |
+  | `pi`         | ![][c20no] |          |
+  | `inv_pi`     | ![][c20no] |          |
+  | `inv_sqrtpi` | ![][c20no] |          |
+  | `ln2`        | ![][c20no] |          |
+  | `ln10`       | ![][c20no] |          |
+  | `sqrt2`      | ![][c20no] |          |
+  | `sqrt3`      | ![][c20no] |          |
+  | `inv_sqrt3`  | ![][c20no] |          |
+  | `egamma`     | ![][c20no] |          |
+  | `phi`        | ![][c20no] |          |
 
 * `<numeric>`
 
-  |                            | Introduced in  | Latest standard | Implementation status |
-  |----------------------------|----------------|-----------------|-----------------------|
-  | `exclusive_scan`           | ![][c17]       | ![][c20]        |                       |
-  | `transform_exclusive_scan` | ![][c17]       | ![][c20]        |                       |
-  | `inclusive_scan`           | ![][c17]       | ![][c20]        |                       |
-  | `transform_inclusive_scan` | ![][c17]       | ![][c20]        |                       |
-  | `gcd`                      | ![][c17]       |                 |                       |
-  | `lcm`                      | ![][c17]       |                 |                       |
-  | `reduce`                   | ![][c17]       |                 | N/A                   |
-  | `transform_reduce`         | ![][c17]       |                 | N/A                   |
-  | `midpoint`                 | ![][c17]       |                 |                       |
-  | `ranges::iota`             | ![][c23]       |                 |                       |
-  | `add_sat`                  | ![][c26]       |                 |                       |
-  | `sub_sat`                  | ![][c26]       |                 |                       |
-  | `mul_sat`                  | ![][c26]       |                 |                       |
-  | `div_sat`                  | ![][c26]       |                 |                       |
-  | `saturate_cast`            | ![][c26]       |                 |                       |
+  |                            | Introduced | Revision   |
+  |----------------------------|------------|------------|
+  | `exclusive_scan`           | ![][c17no] | ![][c20no] |
+  | `transform_exclusive_scan` | ![][c17no] | ![][c20no] |
+  | `inclusive_scan`           | ![][c17no] | ![][c20no] |
+  | `transform_inclusive_scan` | ![][c17no] | ![][c20no] |
+  | `gcd`                      | ![][c17no] |            |
+  | `lcm`                      | ![][c17no] |            |
+  | `reduce`                   | ![][c17no] |            |
+  | `transform_reduce`         | ![][c17no] |            |
+  | `midpoint`                 | ![][c17no] |            |
+  | `ranges::iota`             | ![][c23no] |            |
+  | `add_sat`                  | ![][c26no] |            |
+  | `sub_sat`                  | ![][c26no] |            |
+  | `mul_sat`                  | ![][c26no] |            |
+  | `div_sat`                  | ![][c26no] |            |
+  | `saturate_cast`            | ![][c26no] |            |
 
 * `<optional>`
 
-  |                       | Introduced in | Latest standard | Implementation status |
-  |-----------------------|---------------|-----------------|-----------------------|
-  | `optional`            | ![][c17]      | ![][c23]        |                       |
-  | `bad_optional_access` | ![][c17]      |                 |                       |
-  | `std::hash<optional>` | ![][c17]      |                 |                       |
-  | `nullopt`             | ![][c17]      |                 |                       |
-  | `nullopt_t`           | ![][c17]      |                 |                       |
-  | `swap(optional)`      | ![][c17]      |                 |                       |
-  | `make_optional`       | ![][c17]      |                 |                       |
+  |                       | Introduced | Revision   |
+  |-----------------------|------------|------------|
+  | `optional`            | ![][c17ok] | ![][c23ok] |
+  | `bad_optional_access` | ![][c17ok] |            |
+  | `std::hash<optional>` | ![][c17ok] |            |
+  | `nullopt`             | ![][c17ok] |            |
+  | `nullopt_t`           | ![][c17ok] |            |
+  | `swap(optional)`      | ![][c17ok] |            |
+  | `make_optional`       | ![][c17ok] |            |
 
 * `<random>`
 
-  |                                | Introduced in | Latest standard | Implementation status |
-  |--------------------------------|---------------|-----------------|-----------------------|
-  | `uniform_random_bit_generator` | ![][c20]      |                 |                       |
+  |                                | Introduced | Revision |
+  |--------------------------------|------------|----------|
+  | `uniform_random_bit_generator` | ![][c20no] |          |
 
 * `<ranges>`
 
-  |                                                                   | Introduced in | Latest standard | Implementation status |
-  |-------------------------------------------------------------------|---------------|-----------------|-----------------------|
-  | `ranges::range`                                                   | ![][c20]      |                 |                       |
-  | `ranges::borrowed_range`                                          | ![][c20]      |                 |                       |
-  | `ranges::sized_range`                                             | ![][c20]      |                 |                       |
-  | `ranges::view`                                                    | ![][c20]      |                 |                       |
-  | `ranges::input_range`                                             | ![][c20]      |                 |                       |
-  | `ranges::output_range`                                            | ![][c20]      |                 |                       |
-  | `ranges::forward_range`                                           | ![][c20]      |                 |                       |
-  | `ranges::bidirectional_range`                                     | ![][c20]      |                 |                       |
-  | `ranges::random_access_range`                                     | ![][c20]      |                 |                       |
-  | `ranges::contiguous_range`                                        | ![][c20]      |                 |                       |
-  | `ranges::common_range`                                            | ![][c20]      |                 |                       |
-  | `ranges::viewable_range`                                          | ![][c20]      |                 |                       |
-  | `ranges::constant_range`                                          | ![][c20]      |                 |                       |
-  | `ranges::to`                                                      | ![][c23]      |                 |                       |
-  | `ranges::iterator_t`                                              | ![][c20]      |                 |                       |
-  | `ranges::const_iterator_t`                                        | ![][c23]      |                 |                       |
-  | `ranges::sentinel_t`                                              | ![][c20]      |                 |                       |
-  | `ranges::const_sentinel_t`                                        | ![][c23]      |                 |                       |
-  | `ranges::range_difference_t`                                      | ![][c20]      |                 |                       |
-  | `ranges::range_size_t`                                            | ![][c20]      |                 |                       |
-  | `ranges::range_value_t`                                           | ![][c20]      |                 |                       |
-  | `ranges::range_refernce_t`                                        | ![][c20]      |                 |                       |
-  | `ranges::range_const_reference_t`                                 | ![][c20]      |                 |                       |
-  | `ranges::range_rvalue_reference_t`                                | ![][c20]      |                 |                       |
-  | `ranges::range_common_reference_t`                                | ![][c20]      |                 |                       |
-  | `ranges::view_interface`                                          | ![][c20]      |                 |                       |
-  | `ranges::subrange`                                                | ![][c20]      |                 |                       |
-  | `std::tuple_size<ranges::subrange>`                               | ![][c20]      |                 |                       |
-  | `std::tuple_element<ranges::subrange>`                            | ![][c20]      |                 |                       |
-  | `std::get(ranges::subrange)`                                      | ![][c20]      |                 |                       |
-  | `ranges::dangling`                                                | ![][c20]      |                 |                       |
-  | `ranges::borrowed_iterator_t`<br/>`ranges::borrowed_subrange_t`   | ![][c20]      |                 |                       |
-  | `ranges::range_adaptor_closure`                                   | ![][c23]      |                 |                       |
-  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20]      |                 |                       |
-  | `ranges::single_view`<br/>`views::single`                         | ![][c20]      |                 |                       |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20]      |                 |                       |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20]      |                 |                       |
-  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20]      |                 |                       |
-  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23]      |                 |                       |
-  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23]      |                 |                       |
-  | `views::all_t`<br/>`views::all`                                   | ![][c20]      |                 |                       |
-  | `ranges::ref_view`                                                | ![][c20]      |                 |                       |
-  | `ranges::owning_view`                                             | ![][c20]      |                 |                       |
-  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20]      |                 |                       |
-  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20]      |                 |                       |
-  | `ranges::take_view`<br/>`views::take`                             | ![][c20]      |                 |                       |
-  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20]      |                 |                       |
-  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20]      |                 |                       |
-  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20]      |                 |                       |
-  | `ranges::join_view`<br/>`views::join`                             | ![][c20]      |                 |                       |
-  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20]      |                 |                       |
-  | `ranges::split_view`<br/>`views::split`                           | ![][c20]      |                 |                       |
-  | `views::counted`                                                  | ![][c20]      |                 |                       |
-  | `ranges::common_view`<br/>`views::common`                         | ![][c20]      |                 |                       |
-  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20]      |                 |                       |
-  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23]      |                 |                       |
-  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23]      |                 |                       |
-  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20]      |                 |                       |
-  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20]      |                 |                       |
-  | `ranges::values_view`<br/>`views::values`                         | ![][c20]      |                 |                       |
-  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23]      |                 |                       |
-  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23]      |                 |                       |
-  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23]      |                 |                       |
-  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23]      |                 |                       |
-  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23]      |                 |                       |
-  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23]      |                 |                       |
-  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23]      |                 |                       |
-  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23]      |                 |                       |
-  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23]      |                 |                       |
-  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23]      |                 |                       |
-  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26]      |                 |                       |
-  | `ranges::begin`                                                   | ![][c20]      |                 |                       |
-  | `ranges::end`                                                     | ![][c20]      |                 |                       |
-  | `ranges::cbegin`                                                  | ![][c20]      |                 |                       |
-  | `ranges::cend`                                                    | ![][c20]      |                 |                       |
-  | `ranges::crbegin`                                                 | ![][c20]      |                 |                       |
-  | `ranges::crend`                                                   | ![][c20]      |                 |                       |
-  | `ranges::size`                                                    | ![][c20]      |                 |                       |
-  | `ranges::ssize`                                                   | ![][c20]      |                 |                       |
-  | `ranges::empty`                                                   | ![][c20]      |                 |                       |
-  | `ranges::data`                                                    | ![][c20]      |                 |                       |
-  | `ranges::cdata`                                                   | ![][c20]      |                 |                       |
-  | `ranges::subrange_kind`                                           | ![][c20]      |                 |                       |
-  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c20]      |                 |                       |
+  |                                                                   | Introduced           | Revision   |
+  |-------------------------------------------------------------------|----------------------|------------|
+  | `ranges::range`                                                   | ![][c20ok]           |            |
+  | `ranges::borrowed_range`                                          | ![][c20ok]           |            |
+  | `ranges::sized_range`                                             | ![][c20ok]           |            |
+  | `ranges::view`                                                    | ![][c20ok]           |            |
+  | `ranges::input_range`                                             | ![][c20ok]           |            |
+  | `ranges::output_range`                                            | ![][c20ok]           |            |
+  | `ranges::forward_range`                                           | ![][c20ok]           |            |
+  | `ranges::bidirectional_range`                                     | ![][c20ok]           |            |
+  | `ranges::random_access_range`                                     | ![][c20ok]           |            |
+  | `ranges::contiguous_range`                                        | ![][c20ok]           |            |
+  | `ranges::common_range`                                            | ![][c20ok]           |            |
+  | `ranges::viewable_range`                                          | ![][c20ok]           |            |
+  | `ranges::constant_range`                                          | ![][c20ok]           |            |
+  | `ranges::to`                                                      | ![][c23ok] (Partial) |            |
+  | `ranges::iterator_t`                                              | ![][c20ok]           |            |
+  | `ranges::const_iterator_t`                                        | ![][c23ok]           |            |
+  | `ranges::sentinel_t`                                              | ![][c20ok]           |            |
+  | `ranges::const_sentinel_t`                                        | ![][c23ok]           |            |
+  | `ranges::range_difference_t`                                      | ![][c20ok]           |            |
+  | `ranges::range_size_t`                                            | ![][c20ok]           |            |
+  | `ranges::range_value_t`                                           | ![][c20ok]           |            |
+  | `ranges::range_refernce_t`                                        | ![][c20ok]           |            |
+  | `ranges::range_const_reference_t`                                 | ![][c20ok]           |            |
+  | `ranges::range_rvalue_reference_t`                                | ![][c20ok]           |            |
+  | `ranges::range_common_reference_t`                                | ![][c20ok]           |            |
+  | `ranges::view_interface`                                          | ![][c20ok]           |            |
+  | `ranges::subrange`                                                | ![][c20ok]           |            |
+  | `ranges::dangling`                                                | ![][c20ok]           |            |
+  | `ranges::borrowed_iterator_t`                                     | ![][c20ok]           |            |
+  | `ranges::borrowed_subrange_t`                                     | ![][c20ok]           |            |
+  | `ranges::range_adaptor_closure`                                   | ![][c23ok]           |            |
+  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20ok]           |            |
+  | `ranges::single_view`<br/>`views::single`                         | ![][c20ok]           |            |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]           |            |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]           |            |
+  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20ok]           |            |
+  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23ok]           |            |
+  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23ok]           |            |
+  | `views::all_t`<br/>`views::all`                                   | ![][c20ok]           |            |
+  | `ranges::ref_view`                                                | ![][c20ok]           |            |
+  | `ranges::owning_view`                                             | ![][c20ok]           |            |
+  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]           |            |
+  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           |            |
+  | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]           |            |
+  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]           |            |
+  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           |            |
+  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]           |            |
+  | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]           |            |
+  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20ok]           |            |
+  | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]           |            |
+  | `views::counted`                                                  | ![][c20ok]           |            |
+  | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]           |            |
+  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20ok]           |            |
+  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23ok]           |            |
+  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23no]           |            |
+  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20ok]           |            |
+  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20ok]           |            |
+  | `ranges::values_view`<br/>`views::values`                         | ![][c20ok]           |            |
+  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23ok]           |            |
+  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23ok]           |            |
+  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23ok]           |            |
+  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23no]           |            |
+  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23no]           |            |
+  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23ok]           |            |
+  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23no]           |            |
+  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]           |            |
+  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]           |            |
+  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]           |            |
+  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok]           |            |
+  | `ranges::begin`                                                   | ![][c20ok]           |            |
+  | `ranges::end`                                                     | ![][c20ok]           |            |
+  | `ranges::cbegin`                                                  | ![][c20ok]           |            |
+  | `ranges::cend`                                                    | ![][c20ok]           |            |
+  | `ranges::crbegin`                                                 | ![][c20ok]           |            |
+  | `ranges::crend`                                                   | ![][c20ok]           |            |
+  | `ranges::size`                                                    | ![][c20ok]           |            |
+  | `ranges::ssize`                                                   | ![][c20ok]           |            |
+  | `ranges::empty`                                                   | ![][c20ok]           |            |
+  | `ranges::data`                                                    | ![][c20ok]           |            |
+  | `ranges::cdata`                                                   | ![][c20ok]           | ![][c23ok] |
+  | `ranges::subrange_kind`                                           | ![][c20ok]           |            |
+  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]           |            |
 
 * `<semaphore>`
 
-  |                      | Introduced in | Latest standard | Implementation status |
-  |----------------------|---------------|-----------------|-----------------------|
-  | `counting_semaphore` | ![][c20]      |                 |                       |
-  | `binary_semaphore`   | ![][c20]      |                 |                       |
+  |                      | Introduced | Revision |
+  |----------------------|------------|----------|
+  | `counting_semaphore` | ![][c20no] |          |
+  | `binary_semaphore`   | ![][c20no] |          |
 
 * `<stop_token>`
 
-  |                 | Introduced in | Latest standard | Implementation status |
-  |-----------------|---------------|-----------------|-----------------------|
-  | `stop_token`    | ![][c20]      |                 |                       |
-  | `stop_source`   | ![][c20]      |                 |                       |
-  | `stop_callback` | ![][c20]      |                 |                       |
-  | `nostopstate_t` | ![][c20]      |                 |                       |
-  | `nostopstate`   | ![][c20]      |                 |                       |
+  |                 | Introduced | Revision |
+  |-----------------|------------|----------|
+  | `stop_token`    | ![][c20no] |          |
+  | `stop_source`   | ![][c20no] |          |
+  | `stop_callback` | ![][c20no] |          |
+  | `nostopstate_t` | ![][c20no] |          |
+  | `nostopstate`   | ![][c20no] |          |
 
 * `<string>`
 
-  |                               | Introduced in | Latest standard | Implementation status |
-  |-------------------------------|---------------|-----------------|-----------------------|
-  | `erase(std::basic_string)`    | ![][c20]      | ![][c26]        |                       |
-  | `erase_if(std::basic_string)` | ![][c20]      | ![][c26]        |                       |
+  |                               | Introduced | Revision   |
+  |-------------------------------|------------|------------|
+  | `erase(std::basic_string)`    | ![][c20no] | ![][c26no] |
+  | `erase_if(std::basic_string)` | ![][c20no] | ![][c26no] |
 
 * `<string_view>`
 
-  |                                | Introduced in | Latest standard | Implementation status |
-  |--------------------------------|---------------|-----------------|-----------------------|
-  | `basic_string_view`            | ![][c17]      | ![][c20]        |                       |
-  | `std::hash<basic_string_view>` | ![][c17]      |                 |                       |
-  | `swap(optional)`               | ![][c17]      |                 |                       |
-  | `operator""_sv`                | ![][c17]      |                 |                       |
+  |                                | Introduced | Revision   |
+  |--------------------------------|------------|------------|
+  | `basic_string_view`            | ![][c17ok] | ![][c20ok] |
+  | `std::hash<basic_string_view>` | ![][c17ok] |            |
+  | `swap(optional)`               | ![][c17ok] |            |
+  | `operator""_sv`                | ![][c17ok] |            |
 
 * `<source_location>` N/A
 
 * `<syncstream>`
 
-  |                            | Introduced in | Latest standard | Implementation status |
-  |----------------------------|---------------|-----------------|-----------------------|
-  | `basic_syncbuf`            | ![][c20]      |                 |                       |
-  | `basic_osyncstream`        | ![][c20]      |                 |                       |
-  | `std::swap(basic_syncbuf)` | ![][c20]      |                 |                       |
+  |                            | Introduced | Revision |
+  |----------------------------|------------|----------|
+  | `basic_syncbuf`            | ![][c20no] |          |
+  | `basic_osyncstream`        | ![][c20no] |          |
+  | `std::swap(basic_syncbuf)` | ![][c20no] |          |
 
 * `<span>`
 
-  |                     | Introduced in | Latest standard | Implementation status |
-  |---------------------|---------------|-----------------|-----------------------|
-  | `span`              | ![][c20]      | ![][c26]        |                       |
-  | `dynamic_extent`    | ![][c20]      |                 |                       |
-  | `as_bytes`          | ![][c20]      |                 |                       |
-  | `as_writable_bytes` | ![][c20]      |                 |                       |
+  |                     | Introduced | Revision   |
+  |---------------------|------------|------------|
+  | `span`              | ![][c20ok] | ![][c26ok] |
+  | `dynamic_extent`    | ![][c20ok] |            |
+  | `as_bytes`          | ![][c20ok] |            |
+  | `as_writable_bytes` | ![][c20ok] |            |
 
 * `<spanstream>`
 
-  |                     | Introduced in | Latest standard | Implementation status |
-  |---------------------|---------------|-----------------|-----------------------|
-  | `basic_spanbuf`     | ![][c23]      |                 |                       |
-  | `basic_ispanstream` | ![][c23]      |                 |                       |
-  | `basic_ospanstream` | ![][c23]      |                 |                       |
-  | `basic_spanstream`  | ![][c23]      |                 |                       |
+  |                     | Introduced | Revision |
+  |---------------------|------------|----------|
+  | `basic_spanbuf`     | ![][c23no] |          |
+  | `basic_ispanstream` | ![][c23no] |          |
+  | `basic_ospanstream` | ![][c23no] |          |
+  | `basic_spanstream`  | ![][c23no] |          |
 
 * `<thread>`
 
-  |                   | Introduced in | Latest standard | Implementation status |
-  |-------------------|---------------|-----------------|-----------------------|
-  | `jthread`         | ![][c20]      |                 |                       |
+  |           | Introduced | Revision |
+  |-----------|------------|----------|
+  | `jthread` | ![][c20no] |          |
 
 * `<tuple>`
 
-  |                       | Introduced in | Latest standard | Implementation status |
-  |-----------------------|---------------|-----------------|-----------------------|
-  | `apply`               | ![][c17]      | ![][c23]        |                       |
-  | `make_from_tuple`     | ![][c17]      | ![][c23]        |                       |
+  |                   | Introduced | Revision   |
+  |-------------------|------------|------------|
+  | `apply`           | ![][c17ok] | ![][c23ok] |
+  | `make_from_tuple` | ![][c17ok] | ![][c23ok] |
 
 * `<type_traits>`
 
-  |                                                 | Introduced in | Latest standard | Implementation status |
-  |-------------------------------------------------|---------------|-----------------|-----------------------|
-  | `conjunction`                                   | ![][c17]      |                 | ![][c17]              |
-  | `bool_constant`                                 | ![][c17]      |                 |                       |
-  | `disjunction`                                   | ![][c17]      |                 |                       |
-  | `has_unique_object_representations`             | ![][c17]      |                 | N/A                   |
-  | `is_aggregate`                                  | ![][c17]      |                 | N/A                   |
-  | `is_swappable`                                  | ![][c17]      |                 |                       |
-  | `is_invocable`                                  | ![][c17]      |                 |                       |
-  | `invoke_result`                                 | ![][c17]      |                 |                       |
-  | `negation`                                      | ![][c17]      |                 |                       |
-  | `void_t`                                        | ![][c17]      |                 |                       |
-  | `common_reference`<br/>`basic_common_reference` | ![][c20]      |                 |                       |
-  | `is_bounded_array`                              | ![][c20]      |                 |                       |
-  | `is_constant_evaluated`                         | ![][c20]      |                 |                       |
-  | `is_corresponding_member`                       | ![][c20]      |                 |                       |
-  | `is_layout_compatible`                          | ![][c20]      |                 | N/A                   |
-  | `is_nothrow_convertible`                        | ![][c20]      |                 |                       |
-  | `is_pointer_interconvertible_base_of`           | ![][c20]      |                 |                       |
-  | `is_pointer_interconvertible_with_class`        | ![][c20]      |                 |                       |
-  | `is_scoped_enum`                                | ![][c20]      |                 | N/A                   |
-  | `is_unbounded_array`                            | ![][c20]      |                 |                       |
-  | `remove_cvref`                                  | ![][c20]      |                 |                       |
-  | `type_identity`                                 | ![][c20]      |                 |                       |
-  | `is_implicit_lifetime`                          | ![][c23]      |                 | N/A                   |
-  | `is_within_lifetime`                            | ![][c26]      |                 | N/A                   |
+  |                                                 | Introduced     | Revision              |
+  |-------------------------------------------------|----------------|-----------------------|
+  | `common_type`                                   | ![][c14]       | ![][c20ok] ![][c23ok] |
+  | `conjunction`                                   | ![][c17ok]     |                       |
+  | `bool_constant`                                 | ![][c17ok]     |                       |
+  | `disjunction`                                   | ![][c17ok]     |                       |
+  | `has_unique_object_representations`             | ![][c17no] N/A |                       |
+  | `is_aggregate`                                  | ![][c17no] N/A |                       |
+  | `is_swappable`                                  | ![][c17ok]     |                       |
+  | `is_invocable`                                  | ![][c17ok]     |                       |
+  | `invoke_result`                                 | ![][c17ok]     |                       |
+  | `negation`                                      | ![][c17ok]     |                       |
+  | `void_t`                                        | ![][c17ok]     |                       |
+  | `common_reference`<br/>`basic_common_reference` | ![][c20ok]     |                       |
+  | `is_bounded_array`                              | ![][c20ok]     |                       |
+  | `is_constant_evaluated`                         | ![][c20no] N/A |                       |
+  | `is_corresponding_member`                       | ![][c20no] N/A |                       |
+  | `is_layout_compatible`                          | ![][c20no] N/A |                       |
+  | `is_nothrow_convertible`                        | ![][c20ok]     |                       |
+  | `is_pointer_interconvertible_base_of`           | ![][c20no] N/A |                       |
+  | `is_pointer_interconvertible_with_class`        | ![][c20no] N/A |                       |
+  | `is_scoped_enum`                                | ![][c20no] N/A |                       |
+  | `is_unbounded_array`                            | ![][c20ok]     |                       |
+  | `remove_cvref`                                  | ![][c20ok]     |                       |
+  | `type_identity`                                 | ![][c20ok]     |                       |
+  | `is_implicit_lifetime`                          | ![][c23no] N/A |                       |
+  | `is_within_lifetime`                            | ![][c26no] N/A |                       |
+  | `arity`                                         | Extended       |                       |
+  | `conditional`                                   | Extended       |                       |
+  | `copy_cvref`                                    | Extended       |                       |
+  | `copy_template`                                 | Extended       |                       |
+  | `has_typename_xxx`                              | Extended       |                       |
+  | `is_complete`                                   | Extended       |                       |
+  | `is_explicitly_constructible`                   | Extended       |                       |
+  | `is_explicitly_convertible`                     | Extended       |                       |
+  | `is_implicitly_constructible`                   | Extended       |                       |
+  | `is_initializer_list`                           | Extended       |                       |
+  | `is_integer_like`                               | Extended       |                       |
+  | `is_list_initializable`                         | Extended       |                       |
+  | `is_referenceable`                              | Extended       |                       |
+  | `is_specialization`                             | Extended       |                       |
+  | `maybe_const`                                   | Extended       |                       |
+  | `template_arity`                                | Extended       |                       |
 
 * `<utility>`
 
-  |                             | Introduced in | Latest standard | Implementation status |
-  |-----------------------------|---------------|-----------------|-----------------------|
-  | `as_const`                  | ![][c17]      |                 |                       |
-  | `in_place`<br/>`in_place_t` | ![][c17]      |                 |                       |
-  | `cmp_equal`                 | ![][c20]      |                 |                       |
-  | `in_range`                  | ![][c20]      |                 |                       |
-  | `forward_like`              | ![][c23]      |                 |                       |
-  | `to_underlying`             | ![][c23]      |                 |                       |
-  | `nontype`<br/>`nontype_t`   | ![][c23]      |                 |                       |
-  | `unreachable`               | ![][c23]      |                 | N/A                   |
+  |                             | Introduced     | Revision |
+  |-----------------------------|----------------|----------|
+  | `as_const`                  | ![][c17ok]     |          |
+  | `in_place`<br/>`in_place_t` | ![][c17ok]     |          |
+  | `cmp_equal`                 | ![][c20ok]     |          |
+  | `in_range`                  | ![][c20ok]     |          |
+  | `forward_like`              | ![][c23no]     |          |
+  | `to_underlying`             | ![][c23ok]     |          |
+  | `nontype`<br/>`nontype_t`   | ![][c23ok]     |          |
+  | `unreachable`               | ![][c23no] N/A |          |
 
 * `<variant>`
 
-  |                       | Introduced in | Latest standard | Implementation status |
-  |-----------------------|---------------|-----------------|-----------------------|
-  | `variant`             | ![][c17]      | ![][c26]        |                       |
-  | `monostate`           | ![][c17]      |                 |                       |
-  | `bad_variant_access`  | ![][c17]      |                 |                       |
-  | `variant_size`        | ![][c17]      |                 |                       |
-  | `variant_alternative` | ![][c17]      |                 |                       |
-  | `std::hash<variant>`  | ![][c17]      |                 |                       |
-  | `variant_npos`        | ![][c17]      |                 |                       |
-  | `visit`               | ![][c17]      |                 |                       |
-  | `std::get(variant)`   | ![][c17]      |                 |                       |
-  | `get_if`              | ![][c17]      |                 |                       |
-  | `swap(variant)`       | ![][c17]      |                 |                       |
+  |                       | Introduced | Revision   |
+  |-----------------------|------------|------------|
+  | `variant`             | ![][c17ok] | ![][c26ok] |
+  | `monostate`           | ![][c17ok] |            |
+  | `bad_variant_access`  | ![][c17ok] |            |
+  | `variant_size`        | ![][c17ok] |            |
+  | `variant_alternative` | ![][c17ok] |            |
+  | `std::hash<variant>`  | ![][c17ok] |            |
+  | `variant_npos`        | ![][c17ok] |            |
+  | `visit`               | ![][c17ok] |            |
+  | `get_if`              | ![][c17ok] |            |
 
 * `<version>`
 
-  |                      | Introduced in | Latest standard | Implementation status |
-  |----------------------|---------------|-----------------|-----------------------|
-  |                      |               |                 |                       |
+  |                      | Introduced | Revision |
+  |----------------------|------------|----------|
+  |                      |            |          |
 
 * Others
 
-  |                       | Introduced in | Latest standard | Implementation status |
-  |-----------------------|---------------|-----------------|-----------------------|
-  | `size(C)`             | ![][c17]      | ![][c20]        |                       |
-  | `empty(C)`            | ![][c17]      | ![][c20]        |                       |
-  | `data(C)`             | ![][c17]      |                 |                       |
+  |            | Introduced | Revision   |
+  |------------|------------|------------|
+  | `size(C)`  | ![][c17ok] | ![][c20ok] |
+  | `empty(C)` | ![][c17no] | ![][c20no] |
+  | `data(C)`  | ![][c17no] |            |
 
+
+[c11]: https://img.shields.io/badge/C++11-grey
+[c14]: https://img.shields.io/badge/C++14-grey
 [c17]: https://img.shields.io/badge/C++17-0055AA
 [c20]: https://img.shields.io/badge/C++20-4477BB
 [c23]: https://img.shields.io/badge/C++23-skyblue
-[c26]: https://img.shields.io/badge/C++26-77EEFF
+[c26]: https://img.shields.io/badge/C++26-99EEFF
+
+[c17no]: https://img.shields.io/badge/C++17-red
+[c17ok]: https://img.shields.io/badge/C++14-C++17-0055AA
+
+[c20no]: https://img.shields.io/badge/C++20-red
+[c20ok]: https://img.shields.io/badge/C++14-C++20-4477BB
+[c20ok17]: https://img.shields.io/badge/C++17-C++20-4477BB
+
+[c23no]: https://img.shields.io/badge/C++23-red
+[c23ok]: https://img.shields.io/badge/C++14-C++23-skyblue
+[c23ok17]: https://img.shields.io/badge/C++17-C++23-skyblue
+[c23ok20]: https://img.shields.io/badge/C++20-C++23-skyblue
+
+[c26no]: https://img.shields.io/badge/C++26-red
+[c26ok]: https://img.shields.io/badge/c++14-C++26-CCEEFF
+[c26ok17]: https://img.shields.io/badge/C++17-C++26-77EEFF
+[c26ok20]: https://img.shields.io/badge/C++20-C++26-77EEFF
+[c26ok23]: https://img.shields.io/badge/C++23-C++26-77EEFF
