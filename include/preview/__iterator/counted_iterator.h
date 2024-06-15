@@ -14,6 +14,7 @@
 #include "preview/__concepts/common_with.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/dereferenceable.h"
+#include "preview/__iterator/detail/std_check.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/bidirectional_iterator.h"
@@ -306,7 +307,7 @@ struct iterator_traits<counted_iterator<I>>
 
 } // namespace preview
 
-#if __cplusplus >= 202002L
+#if PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 namespace std {
 
