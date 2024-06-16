@@ -101,19 +101,14 @@ template<typename Visitor, typename... Variants, std::enable_if_t<conjunction<
 constexpr auto
 visit(Visitor&& vis, Variants&&... vars)
     -> decltype(
-        detail::visitor_global<sizeof...(Variants), detail::variant_visit_result_t<Visitor, detail::as_variant_t<Variants>...>>{}.visit(
+        visit<detail::variant_visit_result_t<Visitor, detail::as_variant_t<Variants>...>>(
             std::forward<Visitor>(vis),
-            std::index_sequence<>{},
-            detail::as_variant(std::forward<Variants>(vars))...
+            std::forward<Variants>(vars)...
         )
     )
 {
   using R = detail::variant_visit_result_t<Visitor, detail::as_variant_t<Variants>...>;
-  return detail::visitor_global<sizeof...(Variants), R>{}.visit(
-      std::forward<Visitor>(vis),
-      std::index_sequence<>{},
-      detail::as_variant(std::forward<Variants>(vars))...
-  );
+  return visit<R>(std::forward<Visitor>(vis), std::forward<Variants>(vars)...);
 }
 
 namespace detail {
