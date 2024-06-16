@@ -1,7 +1,10 @@
 #include "preview/ranges.h"
+#include "preview/string_view.h"
 #include "gtest.h"
 
 #include <algorithm>
+#include <list>
+#include <vector>
 
 // TODO: Write test
 TEST(VERSIONED(Ranges), basics) {}
