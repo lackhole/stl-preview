@@ -12,6 +12,7 @@
 
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__iterator/default_sentinel_t.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iter_move.h"
@@ -34,6 +35,7 @@
 #include "preview/__ranges/view_interface.h"
 #include "preview/__tuple/tuple_transform.h"
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/maybe_const.h"
@@ -188,14 +190,12 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
    public:
     using iterator_category = input_iterator_tag;
     using iterator_concept =
-        std::conditional_t<
-            detail::cartesian_product_is_random_access<Const, First, Vs...>::value, random_access_iterator_tag,
-        std::conditional_t<
-            detail::cartesian_product_is_bidirectional<Const, First, Vs...>::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            forward_range<maybe_const<Const, First>>::value, forward_iterator_tag,
+        conditional_t<
+            detail::cartesian_product_is_random_access<Const, First, Vs...>, random_access_iterator_tag,
+            detail::cartesian_product_is_bidirectional<Const, First, Vs...>, bidirectional_iterator_tag,
+            forward_range<maybe_const<Const, First>>, forward_iterator_tag,
             input_iterator_tag
-        >>>;
+        >;
     using value_type = std::tuple<
         range_value_t<maybe_const<Const, First>>,
         range_value_t<maybe_const<Const, Vs   >>... >;
@@ -203,7 +203,7 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
         range_reference_t<maybe_const<Const, First>>,
         range_reference_t<maybe_const<Const, Vs   >>... >;
     using difference_type = int;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
 #endif
 

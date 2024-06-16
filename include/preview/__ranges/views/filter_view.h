@@ -15,6 +15,7 @@
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/input_iterator.h"
@@ -38,6 +39,7 @@
 #include "preview/__ranges/sentinel_t.h"
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/view_interface.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/has_operator_arrow.h"
@@ -75,7 +77,7 @@ class filter_view_cache<V, false> {
 
 template<typename V, bool = forward_range<V>::value /* false */>
 struct filter_view_iterator_category {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -87,12 +89,11 @@ struct filter_view_iterator_category<V, true> {
 
  public:
   using iterator_category =
-     std::conditional_t<
-         derived_from<C, bidirectional_iterator_tag>::value, bidirectional_iterator_tag,
-     std::conditional_t<
-         derived_from<C, forward_iterator_tag>::value, forward_iterator_tag,
+     conditional_t<
+         derived_from<C, bidirectional_iterator_tag>, bidirectional_iterator_tag,
+         derived_from<C, forward_iterator_tag>, forward_iterator_tag,
          C
-     >>;
+     >;
 };
 
 template<typename I, bool = input_iterator<I>::value /* false */>
@@ -121,15 +122,14 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
   class iterator : public detail::filter_view_iterator_category<V> {
    public:
     using iterator_concept =
-        std::conditional_t<
-            bidirectional_range<V>::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            forward_range<V>::value, forward_iterator_tag,
+        conditional_t<
+            bidirectional_range<V>, bidirectional_iterator_tag,
+            forward_range<V>, forward_iterator_tag,
             input_iterator_tag
-        >>;
+        >;
     using value_type = range_value_t<V>;
     using difference_type = range_difference_t<V>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = range_reference_t<V>;
 #endif

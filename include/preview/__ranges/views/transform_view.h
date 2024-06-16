@@ -13,6 +13,7 @@
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__concepts/invocable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/sized_sentinel_for.h"
 #include "preview/__functional/invoke.h"
@@ -32,6 +33,7 @@
 #include "preview/__ranges/view_interface.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
 #include "preview/__type_traits/maybe_const.h"
@@ -66,7 +68,7 @@ class transform_view : public view_interface<transform_view<V, F>> {
 
   template<typename Base, bool v = forward_range<Base>::value /* false */>
   struct transform_view_iterator_category {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using iterator_category = iterator_ignore;
 #endif
   };
@@ -74,7 +76,7 @@ class transform_view : public view_interface<transform_view<V, F>> {
   struct transform_view_iterator_category<Base, true> {
     using iterator_category =
       std::conditional_t<
-        std::is_reference<invoke_result_t<F&, range_reference_t<Base>>>::value,
+          std::is_reference<invoke_result_t<F&, range_reference_t<Base>>>::value,
           detail::transform_view_iterator_category_2<typename iterator_traits<iterator_t<Base>>::iterator_category>,
           input_iterator_tag
       >;
@@ -95,17 +97,15 @@ class transform_view : public view_interface<transform_view<V, F>> {
     friend class transform_view;
    public:
     using iterator_concept =
-      std::conditional_t<
-        random_access_range<Base>::value, random_access_iterator_tag,
-      std::conditional_t<
-        bidirectional_range<Base>::value, bidirectional_iterator_tag,
-      std::conditional_t<
-        forward_range<Base>::value, forward_iterator_tag,
+      conditional_t<
+        random_access_range<Base>, random_access_iterator_tag,
+        bidirectional_range<Base>, bidirectional_iterator_tag,
+        forward_range<Base>, forward_iterator_tag,
         input_iterator_tag
-      >>>;
+      >;
     using value_type = remove_cvref_t<invoke_result_t<F&, range_reference_t<Base>>>;
     using difference_type = range_difference_t<Base>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = invoke_result_t<decltype(std::declval<F&>()), decltype(*std::declval<iterator_t<Base>&>())>;
 #endif

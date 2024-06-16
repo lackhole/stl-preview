@@ -21,6 +21,7 @@
 #include "preview/__ranges/views/all.h"
 #include "preview/__tuple/tuple_fold.h"
 #include "preview/__tuple/tuple_transform.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/common_type.h"
 #include "preview/__type_traits/common_reference.h"
@@ -89,14 +90,12 @@ struct concat_view : view_interface<concat_view<Rngs...>> {
   struct iterator {
     using iterator_category = input_iterator_tag;
     using iterator_concept =
-        std::conditional_t<
-            conjunction<random_access_range<Rngs>...>::value, random_access_iterator_tag,
-        std::conditional_t<
-            conjunction<bidirectional_range<Rngs>...>::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            conjunction<forward_range<Rngs>...>::value, forward_iterator_tag,
+        conditional_t<
+            conjunction<random_access_range<Rngs>...>, random_access_iterator_tag,
+            conjunction<bidirectional_range<Rngs>...>, bidirectional_iterator_tag,
+            conjunction<forward_range<Rngs>...>, forward_iterator_tag,
             input_iterator_tag
-        >>>;
+        >;
     using value_type = common_type_t<range_value_t<maybe_const<IsConst, Rngs>>...>;
     using difference_type = common_type_t<range_difference_t<Rngs>...>;
     using reference = common_reference_t<range_reference_t<maybe_const<IsConst, Rngs>>...>;

@@ -15,6 +15,7 @@
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
 #include "preview/__concepts/totally_ordered.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/bidirectional_iterator.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/forward_iterator.h"
@@ -30,6 +31,7 @@
 #include "preview/__memory/addressof.h"
 #include "preview/__memory/to_address.h"
 #include "preview/__type_traits/common_reference.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/is_nothrow_convertible.h"
@@ -48,7 +50,7 @@ struct basic_const_iterator_category {
 
 template<typename Iter>
 struct basic_const_iterator_category<Iter, false> {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -56,16 +58,13 @@ struct basic_const_iterator_category<Iter, false> {
 template<typename Iter>
 struct basic_const_iterator_concept {
   using iterator_concept =
-    std::conditional_t<
-      contiguous_iterator<Iter>::value, contiguous_iterator_tag,
-    std::conditional_t<
-      random_access_iterator<Iter>::value, random_access_iterator_tag,
-    std::conditional_t<
-      bidirectional_iterator<Iter>::value, bidirectional_iterator_tag,
-    std::conditional_t<
-      forward_iterator<Iter>::value, forward_iterator_tag,
+    conditional_t<
+      contiguous_iterator<Iter>, contiguous_iterator_tag,
+      random_access_iterator<Iter>, random_access_iterator_tag,
+      bidirectional_iterator<Iter>, bidirectional_iterator_tag,
+      forward_iterator<Iter>, forward_iterator_tag,
       input_iterator_tag
-    >>>>;
+    >;
 };
 
 template<typename I, bool = input_iterator<I>::value /* false */>

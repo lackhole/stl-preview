@@ -12,6 +12,7 @@
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
@@ -30,6 +31,7 @@
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/view_interface.h"
 #include "preview/__ranges/views/all.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/common_type.h"
 #include "preview/__type_traits/has_operator_arrow.h"
@@ -43,27 +45,26 @@ namespace detail {
 
 template<typename Base>
 using join_view_iterator_concept =
-    std::conditional_t<
+    conditional_t<
         conjunction<
             std::is_reference<range_reference_t<Base>>,
             bidirectional_range<Base>,
             bidirectional_range<range_reference_t<Base>>
-        >::value,
-        bidirectional_iterator_tag,
-    std::conditional_t<
+        >, bidirectional_iterator_tag,
+
         conjunction<
             std::is_reference<range_reference_t<Base>>,
             forward_range<Base>,
             forward_range<range_reference_t<Base>>
-        >::value,
-        forward_iterator_tag,
+        >, forward_iterator_tag,
+
         input_iterator_tag
-    >>;
+    >;
 
 // Defined only if IteratorConcept models forward_iterator_tag
 template<typename Base, typename IteratorConcept = join_view_iterator_concept<Base>>
 struct join_view_iterator_category {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -76,20 +77,19 @@ struct join_view_iterator_category<Base, forward_iterator_tag> {
 
  public:
   using iterator_category =
-      std::conditional_t<
+      conditional_t<
           conjunction<
               derived_from<OuterC, bidirectional_iterator_tag>,
               derived_from<InnerC, bidirectional_iterator_tag>
-          >::value,
-          bidirectional_iterator_tag,
-      std::conditional_t<
+          >, bidirectional_iterator_tag,
+
           conjunction<
               derived_from<OuterC, forward_iterator_tag>,
               derived_from<InnerC, forward_iterator_tag>
-          >::value,
-          forward_iterator_tag,
+          >, forward_iterator_tag,
+
           input_iterator_tag
-      >>;
+      >;
 };
 
 } // namespace detail
@@ -126,7 +126,7 @@ class join_view : public view_interface<join_view<V>> {
 
     using value_type = range_value_t<range_reference_t<Base>>;
     using difference_type = common_type_t<range_difference_t<Base>, range_difference_t<range_reference_t<Base>>>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = decltype(**std::declval<movable_box<InnerIter>&>());
 #endif

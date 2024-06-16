@@ -5,7 +5,7 @@
 #ifndef PREVIEW_ITERATOR_STD_COUNTED_ITERATOR_H_
 #define PREVIEW_ITERATOR_STD_COUNTED_ITERATOR_H_
 
-#include "preview/__iterator/detail/std_check.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 
 #if PREVIEW_STD_HAVE_CXX20_ITERATOR
 

@@ -17,6 +17,7 @@
 #include "preview/__concepts/totally_ordered.h"
 #include "preview/__concepts/weakly_equality_comparable_with.h"
 #include "preview/__core/inline_variable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/incrementable.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
@@ -27,6 +28,7 @@
 #include "preview/__ranges/borrowed_range.h"
 #include "preview/__ranges/view_interface.h"
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
@@ -105,14 +107,12 @@ struct iota_view_iterator_category<I, false> {};
 
 template<typename I>
 struct iota_view_iterator_concept
-    : std::conditional_t<
-        iv_advanceable<I>::value, type_identity<random_access_iterator_tag>,
-      std::conditional_t<
-        iv_decrementable<I>::value, type_identity<bidirectional_iterator_tag>,
-      std::conditional_t<
-        incrementable<I>::value, type_identity<forward_iterator_tag>,
+    : conditional_t<
+        iv_advanceable<I>, type_identity<random_access_iterator_tag>,
+        iv_decrementable<I>, type_identity<bidirectional_iterator_tag>,
+        incrementable<I>, type_identity<forward_iterator_tag>,
         type_identity<input_iterator_tag>
-      >>> {};
+      > {};
 
 template<typename W, typename Bound, typename IV>
 struct iv_ctor_iterator_last {
@@ -149,7 +149,7 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     using difference_type = detail::iota_diff_t<W>;
     using iterator_concept = typename detail::iota_view_iterator_concept<W>::type;
 
-#if PREVIEW_CXX_VERSION < 20
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = std::conditional_t<incrementable<W>::value, W, void>;
 #endif

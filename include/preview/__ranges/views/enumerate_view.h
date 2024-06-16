@@ -38,6 +38,7 @@
 #include "preview/__ranges/views/all.h"
 #endif
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/maybe_const.h"
 #include "preview/__utility/cxx20_rel_ops.h"
@@ -77,14 +78,12 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
    public:
     using iterator_category = input_iterator_tag;
     using iterator_concept =
-        std::conditional_t<
-            random_access_range<Base>::value, random_access_iterator_tag,
-        std::conditional_t<
-            bidirectional_range<Base>::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            forward_range<Base>::value, forward_iterator_tag,
+        conditional_t<
+            random_access_range<Base>, random_access_iterator_tag,
+            bidirectional_range<Base>, bidirectional_iterator_tag,
+            forward_range<Base>, forward_iterator_tag,
             input_iterator_tag
-        >>>;
+        >;
     using difference_type = range_difference_t<Base>;
     using value_type = Tuple<difference_type, range_value_t<Base>>;
     using pointer = void;

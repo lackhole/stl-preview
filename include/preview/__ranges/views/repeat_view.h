@@ -14,6 +14,7 @@
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/unreachable_sentinel.h"
 #include "preview/__memory/addressof.h"
@@ -47,7 +48,7 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
     using value_type = W;
     using difference_type = std::conditional_t<
         is_signed_integer_like<index_type>::value, index_type, detail::iota_diff_t<index_type>>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference =  const W&;
 #endif

@@ -13,6 +13,7 @@
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__functional/equal_to.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirectly_comparable.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__memory/addressof.h"
@@ -65,7 +66,7 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     using iterator_category = input_iterator_tag;
     using value_type = subrange<iterator_t<V>>;
     using difference_type = range_difference_t<V>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = value_type;
 #endif

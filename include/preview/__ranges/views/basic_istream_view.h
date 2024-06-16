@@ -12,6 +12,7 @@
 
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/movable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/default_sentinel_t.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__memory/addressof.h"
@@ -43,7 +44,7 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
     using iterator_concept = input_iterator_tag;
     using difference_type = std::ptrdiff_t;
     using value_type = Val;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using iterator_category = iterator_ignore;
     using pointer = void;
     using reference = Val&;

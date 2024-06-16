@@ -13,6 +13,7 @@
 #include "preview/__algorithm/ranges/min.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/equality_comparable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iter_move.h"
 #include "preview/__iterator/iter_swap.h"
@@ -40,6 +41,7 @@
 #include "preview/__tuple/tuple_transform.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/common_type.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/maybe_const.h"
@@ -59,7 +61,7 @@ struct zip_view_iterator_category {
 
 template<>
 struct zip_view_iterator_category<false> {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -136,18 +138,16 @@ class zip_view : public view_interface<zip_view<Views...>> {
 
    public:
     using iterator_concept =
-        std::conditional_t<
-            all_random_access::value, random_access_iterator_tag,
-        std::conditional_t<
-            all_bidirectional::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            all_forward::value, forward_iterator_tag,
+        conditional_t<
+            all_random_access, random_access_iterator_tag,
+            all_bidirectional, bidirectional_iterator_tag,
+            all_forward, forward_iterator_tag,
             input_iterator_tag
-        >>>;
+        >;
     using value_type = std::tuple<maybe_const<Const, Views>...>;
     using difference_type = common_type_t<range_difference_t<maybe_const<Const, Views>>...>;
 
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = decltype(preview::tuple_transform(
             std::declval<std::tuple<iterator_t<maybe_const<Const, Views>>...>&>(),

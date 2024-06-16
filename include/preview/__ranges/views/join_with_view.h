@@ -13,6 +13,7 @@
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/iter_move.h"
@@ -38,6 +39,7 @@
 #include "preview/__ranges/views/single.h"
 #include "preview/__type_traits/common_reference.h"
 #include "preview/__type_traits/common_type.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/maybe_const.h"
 #include "preview/__type_traits/negation.h"
@@ -79,7 +81,7 @@ class join_with_view_base<V, Pattern, Derived, false> : public join_with_view_ba
 template<typename Base, typename InnerBase, typename PatternBase>
 struct join_with_view_iterator_concept {
   using iterator_concept =
-      std::conditional_t<
+      conditional_t<
           conjunction<
               has_typename_type<range_reference<Base>>,
               std::is_reference<range_reference_t<Base>>,
@@ -88,16 +90,17 @@ struct join_with_view_iterator_concept {
               bidirectional_range<PatternBase>,
               common_range<InnerBase>,
               common_range<PatternBase>
-          >::value, bidirectional_iterator_tag,
-      std::conditional_t<
+          >, bidirectional_iterator_tag,
+
           conjunction<
               has_typename_type<range_reference<Base>>,
               std::is_reference<range_reference_t<Base>>,
               forward_range<InnerBase>,
               forward_range<PatternBase>
-          >::value, forward_iterator_tag,
+          >, forward_iterator_tag,
+
           input_iterator_tag
-      >>;
+      >;
 };
 
 template<typename Base, typename InnerBase, typename PatternBase,
@@ -106,7 +109,7 @@ struct join_with_view_iterator_category
     : join_with_view_iterator_concept<Base, InnerBase, PatternBase>
 {
   // iterator_category is defined iif IterConcept denotes forward_iterator_tag
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -122,29 +125,27 @@ struct join_with_view_iterator_category<Base, InnerBase, PatternBase, forward_it
 
  public:
   using iterator_category =
-      std::conditional_t<
+      conditional_t<
           negation<std::is_reference<
               common_reference_t<range_reference_t<InnerBase>, range_reference_t<PatternBase>>
-          >>::value,
-          input_iterator_tag,
-      std::conditional_t<
+          >>, input_iterator_tag,
+
           conjunction<
               derived_from<OuterC, bidirectional_iterator_tag>,
               derived_from<InnerC, bidirectional_iterator_tag>,
               derived_from<PatternC, bidirectional_iterator_tag>,
               common_range<range_reference_t<Base>>,
               common_range<PatternBase>
-          >::value,
-          bidirectional_iterator_tag,
-      std::conditional_t<
+          >, bidirectional_iterator_tag,
+
           conjunction<
               derived_from<OuterC, forward_iterator_tag>,
               derived_from<InnerC, forward_iterator_tag>,
               derived_from<PatternC, forward_iterator_tag>
-          >::value,
-          forward_iterator_tag,
+          >, forward_iterator_tag,
+
           input_iterator_tag
-      >>>;
+      >;
 };
 
 template<typename Base, typename InnerBase, typename PatternBase, bool Cache = forward_range<Base>::value/* false */>
@@ -211,7 +212,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
             range_difference_t<Base>,
             range_difference_t<InnerBase>,
             range_difference_t<PatternBase>>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
       using pointer = void;
       using reference = common_reference_t<range_reference_t<InnerBase>, range_reference_t<PatternBase>>;
 #endif
@@ -241,8 +242,8 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
       }
 
       constexpr decltype(auto) operator*() const {
-      using reference = common_reference_t<range_reference_t<InnerBase>, range_reference_t<PatternBase>>;
-        return inner_it_.visit([](auto&& it) -> reference { return *it; });
+        using reference_type = common_reference_t<range_reference_t<InnerBase>, range_reference_t<PatternBase>>;
+        return inner_it_.visit([](auto&& it) -> reference_type { return *it; });
       }
 
       constexpr iterator& operator++() {
