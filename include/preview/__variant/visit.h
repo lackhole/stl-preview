@@ -98,8 +98,16 @@ constexpr R visit(Visitor&& vis, Variants&&... vars) {
 template<typename Visitor, typename... Variants, std::enable_if_t<conjunction<
     is_invocable<detail::as_variant_niebloid, Variants>...
 >::value, int> = 0>
-constexpr decltype(auto)
-visit(Visitor&& vis, Variants&&... vars) {
+constexpr auto
+visit(Visitor&& vis, Variants&&... vars)
+    -> decltype(
+        detail::visitor_global<sizeof...(Variants), detail::variant_visit_result_t<Visitor, detail::as_variant_t<Variants>...>>{}.visit(
+            std::forward<Visitor>(vis),
+            std::index_sequence<>{},
+            detail::as_variant(std::forward<Variants>(vars))...
+        )
+    )
+{
   using R = detail::variant_visit_result_t<Visitor, detail::as_variant_t<Variants>...>;
   return detail::visitor_global<sizeof...(Variants), R>{}.visit(
       std::forward<Visitor>(vis),
