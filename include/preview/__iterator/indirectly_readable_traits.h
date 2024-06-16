@@ -23,8 +23,8 @@ struct value_typer {
 
 template<
     typename T,
-    bool = has_typename_value_type<T>::value,
-    bool = has_typename_element_type<T>::value
+    bool = has_typename_value_type<T>::value, /* false */
+    bool = has_typename_element_type<T>::value /* false */
 >
 struct indirectly_readable_traits_impl {};
 

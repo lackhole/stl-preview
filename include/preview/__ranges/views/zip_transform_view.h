@@ -17,6 +17,7 @@
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__core/constexpr.h"
 #include "preview/__core/std_version.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/sized_sentinel_for.h"
@@ -34,6 +35,7 @@
 #include "preview/__ranges/view_interface.h"
 #include "preview/__ranges/views/all.h"
 #include "preview/__ranges/views/zip_view.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
 #include "preview/__type_traits/is_referenceable.h"
@@ -48,7 +50,7 @@ namespace detail {
 
 template<bool Const, typename Base, typename F, typename ViewPack, bool = forward_range<Base>::value /* false */>
 struct zip_transform_view_iterator_category {
-#if PREVIEW_CXX_VERSION < 20
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -65,16 +67,13 @@ struct zip_transform_view_iterator_category<Const, Base, F, type_sequence<Views.
 
  public:
   using iterator_category =
-      std::conditional_t<
-          negation<is_referencable< invoke_result_t<MF&, range_reference_t<maybe_const<Const, Views>>...> >>::value, input_iterator_tag,
-      std::conditional_t<
-          POT_derived_from<random_access_iterator_tag>::value, random_access_iterator_tag,
-      std::conditional_t<
-          POT_derived_from<bidirectional_iterator_tag>::value, bidirectional_iterator_tag,
-      std::conditional_t<
-          POT_derived_from<forward_iterator_tag>::value, forward_iterator_tag,
+      conditional_t<
+          negation<is_referencable< invoke_result_t<MF&, range_reference_t<maybe_const<Const, Views>>...> >>, input_iterator_tag,
+          POT_derived_from<random_access_iterator_tag>, random_access_iterator_tag,
+          POT_derived_from<bidirectional_iterator_tag>, bidirectional_iterator_tag,
+          POT_derived_from<forward_iterator_tag>, forward_iterator_tag,
           input_iterator_tag
-      >>>>;
+      >;
 };
 
 } // namespace detail
@@ -147,7 +146,7 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
         remove_cvref_t<invoke_result_t<F&, range_reference_t<Views>...>>>;
     using difference_type = range_difference_t<Base>;
 
-#if PREVIEW_CXX_VERSION < 20
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = invoke_result_t<deref_fn, const F&, decltype(*std::declval<ziperator<Const>&>())>;
 #endif

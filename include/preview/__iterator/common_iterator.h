@@ -18,6 +18,7 @@
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/incrementable_traits.h"
 #include "preview/__iterator/indirectly_readable.h"
@@ -350,7 +351,7 @@ namespace detail {
 
 template<typename I, bool = std::is_integral<iter_difference_t<I>>::value /* false */>
 struct common_iterator_category {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };

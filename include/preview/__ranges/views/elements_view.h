@@ -14,6 +14,7 @@
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/move_constructible.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__ranges/begin.h"
@@ -33,6 +34,7 @@
 #include "preview/__ranges/viewable_range.h"
 #include "preview/__tuple/tuple_like.h"
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
@@ -64,7 +66,7 @@ struct returnable_element<T, N, false, true>
 // Not defined, if Base does not model forward_range
 template<typename Base, std::size_t N, bool = forward_range<Base>::value /* false */>
 struct elements_view_iterator_category {
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
   using iterator_category = iterator_ignore;
 #endif
 };
@@ -76,12 +78,11 @@ struct elements_view_iterator_category<Base, N, true> {
 
  public:
   using iterator_category =
-      std::conditional_t<
-          std::is_rvalue_reference<decltype(std::get<N>(*std::declval<iterator_t<Base>&>()))>::value, input_iterator_tag,
-      std::conditional_t<
-          derived_from<C, random_access_iterator_tag>::value, random_access_iterator_tag,
+      conditional_t<
+          std::is_rvalue_reference<decltype(std::get<N>(*std::declval<iterator_t<Base>&>()))>, input_iterator_tag,
+          derived_from<C, random_access_iterator_tag>, random_access_iterator_tag,
           C
-      >>;
+      >;
 };
 
 } // namespace detail
@@ -114,17 +115,15 @@ class elements_view : public view_interface<elements_view<V, N>> {
 
    public:
     using iterator_concept =
-        std::conditional_t<
-            random_access_range<Base>::value, random_access_iterator_tag,
-        std::conditional_t<
-            bidirectional_range<Base>::value, bidirectional_iterator_tag,
-        std::conditional_t<
-            forward_range<Base>::value, forward_iterator_tag,
+        conditional_t<
+            random_access_range<Base>, random_access_iterator_tag,
+            bidirectional_range<Base>, bidirectional_iterator_tag,
+            forward_range<Base>, forward_iterator_tag,
             input_iterator_tag
-        >>>;
+        >;
     using value_type = remove_cvref_t<std::tuple_element_t<N, range_value_t<Base>>>;
     using difference_type = range_difference_t<Base>;
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference = typename iterator_reference<range_reference_t<Base>>::type;
 #endif
