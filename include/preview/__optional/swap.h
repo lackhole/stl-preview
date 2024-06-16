@@ -13,16 +13,16 @@
 # include "preview/__type_traits/conjunction.h"
 # include "preview/__type_traits/is_swappable.h"
 
-namespace std {
+namespace preview {
 
-template<typename T,
-  ::std::enable_if_t<
-    ::std::is_move_constructible<T>::value && ::preview::is_swappable<T>::value,
-  int> = 0>
-void swap(::preview::optional<T>& lhs, ::preview::optional<T>& rhs) noexcept(noexcept(lhs.swap(rhs))) {
+template<typename T, std::enable_if_t<conjunction<
+    std::is_move_constructible<T>,
+    is_swappable<T>
+>::value, int> = 0>
+void swap(optional<T>& lhs, optional<T>& rhs) noexcept(noexcept(lhs.swap(rhs))) {
   lhs.swap(rhs);
 }
 
-} // namespace std
+} // namespace preview
 
 # endif // PREVIEW_OPTIONAL_SWAP_H_
