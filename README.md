@@ -5,7 +5,7 @@
 **Use the latest STL implementation in C++14**
 
 ```c++
-// All implementation is written under C++14 standard
+// All implementations are written under C++14 standard semantics
 #include "preview/ranges.h"
 
 auto map = preview::views::iota('A', 'E') | 
