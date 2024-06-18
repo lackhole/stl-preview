@@ -92,8 +92,8 @@ struct optional_base {
     }
   }
 
-  PREVIEW_CONSTEXPR_AFTER_CXX17 const value_type* operator->() const noexcept { std::addressof(storage_.value); }
-  PREVIEW_CONSTEXPR_AFTER_CXX17       value_type* operator->()       noexcept { std::addressof(storage_.value); }
+  PREVIEW_CONSTEXPR_AFTER_CXX17 const value_type* operator->() const noexcept { return std::addressof(storage_.value); }
+  PREVIEW_CONSTEXPR_AFTER_CXX17       value_type* operator->()       noexcept { return std::addressof(storage_.value); }
 
   constexpr const value_type&  operator*() const&  noexcept { return storage_.value;             }
   constexpr       value_type&  operator*()      &  noexcept { return storage_.value;             }
