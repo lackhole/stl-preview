@@ -33,6 +33,7 @@
 #include "preview/__ranges/sized_range.h"
 #include "preview/__ranges/subrange_kind.h"
 #include "preview/__ranges/view_interface.h"
+#include "preview/__tuple/specialize_tuple.h"
 #include "preview/__tuple/tuple_like.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
@@ -388,20 +389,21 @@ struct tuple_like_uncvref<ranges::subrange<I, S, K>> : std::true_type {};
 } // namespace preview
 
 template<typename I, typename S, preview::ranges::subrange_kind K>
-struct std::tuple_size<preview::ranges::subrange<I, S, K>> : std::integral_constant<std::size_t, 2> {};
+PREVIEW_SPECIALIZE_STD_TUPLE_SIZE(preview::ranges::subrange<I, S, K>)
+    : public std::integral_constant<std::size_t, 2> {};
+
+template<typename I, typename S, preview::ranges::subrange_kind K>
+PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(0, preview::ranges::subrange<I, S, K>) { using type = I; };
+template<typename I, typename S, preview::ranges::subrange_kind K>
+PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(0, const preview::ranges::subrange<I, S, K>) { using type = I; };
+template<typename I, typename S, preview::ranges::subrange_kind K>
+PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(1, preview::ranges::subrange<I, S, K>) { using type = S; };
+template<typename I, typename S, preview::ranges::subrange_kind K>
+PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(1, const preview::ranges::subrange<I, S, K>) { using type = S; };
 
 namespace std {
 
 using ::preview::ranges::get;
-
-template<typename I, typename S, preview::ranges::subrange_kind K>
-struct tuple_element<0, preview::ranges::subrange<I, S, K>> { using type = I; };
-template<typename I, typename S, preview::ranges::subrange_kind K>
-struct tuple_element<0, const preview::ranges::subrange<I, S, K>> { using type = I; };
-template<typename I, typename S, preview::ranges::subrange_kind K>
-struct tuple_element<1, preview::ranges::subrange<I, S, K>> { using type = S; };
-template<typename I, typename S, preview::ranges::subrange_kind K>
-struct tuple_element<1, const preview::ranges::subrange<I, S, K>> { using type = S; };
 
 } // namespace std
 

@@ -10,6 +10,7 @@
 # include <utility>
 #
 # include "preview/__core/inline_variable.h"
+# include "preview/__tuple/specialize_tuple.h"
 # include "preview/__type_traits/conjunction.h"
 # include "preview/__type_traits/is_swappable.h"
 
@@ -130,11 +131,12 @@ struct compressed_pair_getter<1> {
 
 } // namespace preview
 
-namespace std {
+template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_SIZE(preview::compressed_pair<T, U>)
+  : public std::integral_constant<std::size_t, 2> {};
+template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(0, preview::compressed_pair<T, U>) { using type = T; };
+template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(1, preview::compressed_pair<T, U>) { using type = U; };
 
-template<typename T, typename U> struct tuple_element<0, preview::compressed_pair<T, U>> { using type = T; };
-template<typename T, typename U> struct tuple_element<1, preview::compressed_pair<T, U>> { using type = U; };
-template<typename T, typename U> struct tuple_size<preview::compressed_pair<T, U>> : std::integral_constant<std::size_t, 2> {};
+namespace std {
 
 template<std::size_t I, typename T, typename U>
 constexpr tuple_element_t<I, preview::compressed_pair<T, U>>& get(preview::compressed_pair<T, U>& p) noexcept {

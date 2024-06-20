@@ -33,6 +33,13 @@ int main() { return 0; }")
     endif ()
 endmacro()
 
+macro(target_compile_option_if_possible target flag)
+    check_cxx_compiler_flag("${flag}" CHECK_CXX_FLAG_${flag})
+    if (CHECK_CXX_FLAG_${flag})
+        target_compile_options(${target} PRIVATE "${flag}")
+    endif()
+endmacro()
+
 preview_check_compiler_support_std(14 PREVIEW_COMPILER_SUPPORT_CXX14)
 if (NOT PREVIEW_COMPILER_SUPPORT_CXX14)
     message(FATAL_ERROR "Compiler must support C++14")
@@ -110,12 +117,25 @@ function(preview_add_multi_version_test name_prefix test_src)
             #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${name_prefix}_${std}\")
         else()
             if (EMSCRIPTEN)
-                target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1")
-            elseif (MSVC)
-                target_compile_options(${name_prefix}_${std} PRIVATE "/bigobj" PRIVATE "/WX")
+                target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
             endif()
-            gtest_discover_tests(${name_prefix}_${std})
+            gtest_discover_tests(${name_prefix}_${std} DISCOVERY_TIMEOUT 60)
         endif()
+
+        if (EMSCRIPTEN)
+            target_compile_options(${name_prefix}_${std}
+                PUBLIC "-fexceptions"
+            )
+        elseif (MSVC)
+            target_compile_options(${name_prefix}_${std}
+                PRIVATE "/bigobj"
+                PRIVATE "/WX")
+        elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            target_compile_options(${name_prefix}_${std}
+                PRIVATE "-Wall"
+                PRIVATE "-Werror"
+                PRIVATE "-Wno-unused-local-typedef")
+        endif ()
     endforeach ()
 endfunction()
 

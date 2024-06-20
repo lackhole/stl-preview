@@ -92,7 +92,7 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [clang]
-        compiler_version: [13, 14, 15]
+        compiler_version: [11, 12, 13, 14, 15]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
@@ -100,10 +100,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Clang
+      uses: egor-tensin/setup-clang@v1
+      with:
+        version: ${{ matrix.compiler_version }}
+
     - name: Configure CMake
       env:
-        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
-        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
+        CC: cc
+        CXX: c++
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}

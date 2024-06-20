@@ -38,7 +38,7 @@ struct optional_storage {
       , has_value(false) {}
 
   template<typename... Args>
-  constexpr optional_storage(in_place_t, Args&&... args)
+  constexpr explicit optional_storage(in_place_t, Args&&... args)
       : value(std::forward<Args>(args)...)
       , has_value(true) {}
 
@@ -58,14 +58,11 @@ struct optional_storage<T, false> {
       , has_value(false) {}
 
   template<typename... Args>
-  constexpr optional_storage(in_place_t, Args&&... args)
+  constexpr explicit optional_storage(in_place_t, Args&&... args)
       : value(std::forward<Args>(args)...)
       , has_value(true) {}
 
-  PREVIEW_CONSTEXPR_AFTER_CXX20 ~optional_storage() {
-    if (has_value)
-      preview::destroy_at(std::addressof(value));
-  }
+  PREVIEW_CONSTEXPR_AFTER_CXX20 ~optional_storage() noexcept {}
 
   union {
     char null;
@@ -135,7 +132,9 @@ struct optional_base {
   }
 
   // control-special
-  constexpr void construct_from(optional_base&& other) {
+  constexpr void construct_from(optional_base&& other)
+      noexcept(std::is_nothrow_move_constructible<T>::value)
+  {
     if (other.has_value())
       construct_with(std::move(*other));
   }
@@ -153,7 +152,10 @@ struct optional_base {
   }
 
   // control-special
-  constexpr void assign_from(optional_base&& other) {
+  constexpr void assign_from(optional_base&& other)
+      noexcept(std::is_nothrow_move_assignable<T>::value &&
+               std::is_nothrow_move_constructible<T>::value)
+  {
     if (!other.has_value()) {
       reset();
     } else {
@@ -382,7 +384,7 @@ class optional : private detail::optional_control_smf<T> {
   >::value, int> = 0>
   optional& operator=(U&& value) {
     if (has_value()) {
-      this->val = std::forward<U>(value);
+      **this = std::forward<U>(value);
     } else {
       this->construct_with(std::forward<U>(value));
     }
@@ -398,7 +400,7 @@ class optional : private detail::optional_control_smf<T> {
   optional& operator=(const optional<U>& other) {
     if (other.has_value()) {
       if (this->has_value())
-        this->val = *other;
+        **this = *other;
       else
         this->construct_with(*other);
     } else { // !other.has_value()
@@ -417,7 +419,7 @@ class optional : private detail::optional_control_smf<T> {
   optional& operator=(optional<U>&& other) {
     if (other.has_value()) {
       if (this->has_value())
-        this->val = std::move(*other);
+        **this = std::move(*other);
       else
         this->construct_with(std::move(*other));
     } else { // !other.has_value()
