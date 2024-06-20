@@ -132,7 +132,9 @@ struct optional_base {
   }
 
   // control-special
-  constexpr void construct_from(optional_base&& other) {
+  constexpr void construct_from(optional_base&& other)
+      noexcept(std::is_nothrow_move_constructible<T>::value)
+  {
     if (other.has_value())
       construct_with(std::move(*other));
   }
@@ -150,7 +152,10 @@ struct optional_base {
   }
 
   // control-special
-  constexpr void assign_from(optional_base&& other) {
+  constexpr void assign_from(optional_base&& other)
+      noexcept(std::is_nothrow_move_assignable<T>::value &&
+               std::is_nothrow_move_constructible<T>::value)
+  {
     if (!other.has_value()) {
       reset();
     } else {
