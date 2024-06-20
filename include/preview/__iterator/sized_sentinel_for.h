@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "preview/__concepts/implicit_expression_check.h"
+#include "preview/__concepts/requires_expression.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/sentinel_for.h"
@@ -37,7 +37,7 @@ struct explicit_sized_sentinel_subtract_check<
       > {};
 
 template<typename S, typename I>
-struct sized_sentinel_requires : implicit_expression_check<explicit_sized_sentinel_subtract_check, const S&, const I&> {};
+struct sized_sentinel_requires : requires_expression<explicit_sized_sentinel_subtract_check, const S&, const I&> {};
 
 template<
     typename S,

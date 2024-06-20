@@ -12,6 +12,7 @@
 #include "preview/__concepts/copyable.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/default_initializable.h"
+#include "preview/__concepts/requires_expression.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
 #include "preview/__concepts/totally_ordered.h"
@@ -94,9 +95,9 @@ struct iv_advanceable : std::false_type {};
 template<typename I>
 struct iv_advanceable<I, true>
     : conjunction<
-        implicit_expression_check<preview::detail::detail_random_access_iterator::explicit_op_assign_check, I&, const iota_diff_t<I>&>,
-        implicit_expression_check<iv_advanceable_explicit, const I&, const iota_diff_t<I>&>
-      > {};
+        requires_expression<preview::detail::detail_random_access_iterator::explicit_op_assign_check, I&, const iota_diff_t<I>&>,
+        requires_expression<iv_advanceable_explicit, const I&, const iota_diff_t<I>&>
+    > {};
 
 template<typename I, bool = incrementable<I>::value /* true */>
 struct iota_view_iterator_category {

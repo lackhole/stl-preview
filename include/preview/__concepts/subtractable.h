@@ -7,12 +7,13 @@
 
 #include <type_traits>
 
-#include "preview/__concepts/implicit_expression_check.h"
+#include "preview/__concepts/requires_expression.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_referenceable.h"
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
+namespace detail {
 
 template<typename T, typename U, typename = void>
 struct is_explicitly_subtractable : std::false_type {};
@@ -24,10 +25,12 @@ template<typename T, bool = is_referencable<T>::value>
 struct is_subtractable_impl : std::false_type {};
 
 template<typename T>
-struct is_subtractable_impl<T, true> : implicit_expression_check<is_explicitly_subtractable, const T&, const T&> {};
+struct is_subtractable_impl<T, true> : requires_expression<is_explicitly_subtractable, const T&, const T&> {};
+
+} // namespace detail
 
 template<typename T>
-struct subtractable : is_subtractable_impl<T> {};
+struct subtractable : detail::is_subtractable_impl<T> {};
 
 } // namespace preview
 

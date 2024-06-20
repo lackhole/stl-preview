@@ -63,7 +63,7 @@ template<
            >::value /* true */
 >
 struct size_range_check_2
-    : is_explicitly_subtractable<
+    : preview::detail::is_explicitly_subtractable<
           decltype(ranges::end(std::declval<T>())),
           decltype(ranges::begin(std::declval<T>()))> {
   using category = return_category<4, std::make_unsigned_t<decltype(ranges::end(std::declval<T>()) - ranges::begin(std::declval<T>()))>>;
