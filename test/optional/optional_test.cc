@@ -5,7 +5,7 @@
 #include "preview/optional.h"
 #include "../gtest.h"
 
-#if PREVIEW_CXX_VERSION >= 17
+#if PREVIEW_CXX_VERSION >= 17 && !PREVIEW_ANDROID
 #include <charconv>
 #endif
 #include <cstring>
@@ -137,7 +137,7 @@ TEST(VERSIONED(optional), value_or) {
 }
 
 TEST(VERSIONED(optional), and_then) {
-#if PREVIEW_CXX_VERSION >= 17
+#if PREVIEW_CXX_VERSION >= 17 && !PREVIEW_ANDROID
   using namespace std::string_literals;
 
   const std::vector<preview::optional<std::string>> v = {
