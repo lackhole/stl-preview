@@ -5,20 +5,27 @@
 #ifndef PREVIEW_TUPLE_SPECIALIZE_TUPLE_H_
 #define PREVIEW_TUPLE_SPECIALIZE_TUPLE_H_
 #
+#include "preview/__core/android_version.h"
+#
 #define PREVIEW_STD_TUPLE_SIZE_STRUCT struct
 #define PREVIEW_STD_TUPLE_ELEMENT_STRUCT struct
 #
-#if defined(__clang__)
-#    if __clang_major__ < 8
-#        error __clang_major__
-#        undef PREVIEW_STD_TUPLE_SIZE_STRUCT
-#        define PREVIEW_STD_TUPLE_SIZE_STRUCT class
-#    endif
-#        if __clang_major__ < 9
-#        undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
-#        define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
-#    endif
-#else
+#if PREVIEW_ANDROID
+#   if (17 <= PREVIEW_NDK_VERSION_MAJOR) && (PREVIEW_NDK_VERSION_MAJOR < 21)
+#       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
+#       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
+#       undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
+#       define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
+#   endif
+#elif defined(__clang__)
+#   if __clang_major__ < 8
+#       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
+#       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
+#   endif
+#       if __clang_major__ < 9
+#       undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
+#       define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
+#   endif
 #endif
 #
 #include <tuple>
