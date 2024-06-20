@@ -11,7 +11,7 @@
 #define PREVIEW_STD_TUPLE_ELEMENT_STRUCT struct
 #
 #if defined(__clang__)
-#   if (__clang_major__ < 8) || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR == 18)
+#   if (__clang_major__ < 8) || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR == 19)
 #       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
 #       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
 #   endif
