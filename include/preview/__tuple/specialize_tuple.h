@@ -5,24 +5,15 @@
 #ifndef PREVIEW_TUPLE_SPECIALIZE_TUPLE_H_
 #define PREVIEW_TUPLE_SPECIALIZE_TUPLE_H_
 #
-#include "preview/__core/android_version.h"
-#
 #define PREVIEW_STD_TUPLE_SIZE_STRUCT struct
 #define PREVIEW_STD_TUPLE_ELEMENT_STRUCT struct
 #
-#if PREVIEW_ANDROID
-#   if (17 <= PREVIEW_NDK_VERSION_MAJOR) && (PREVIEW_NDK_VERSION_MAJOR < 21)
-#       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
-#       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
-#       undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
-#       define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
-#   endif
-#elif defined(__clang__)
+#if defined(__clang__)
 #   if __clang_major__ < 8
 #       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
 #       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
 #   endif
-#       if __clang_major__ < 9
+#   if __clang_major__ < 9
 #       undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
 #       define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
 #   endif
@@ -34,6 +25,6 @@
     PREVIEW_STD_TUPLE_SIZE_STRUCT std::tuple_size<__VA_ARGS__>
 
 #define PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(...) \
-    PREVIEW_STD_TUPLE_SIZE_STRUCT std::tuple_element<__VA_ARGS__>
+    PREVIEW_STD_TUPLE_ELEMENT_STRUCT std::tuple_element<__VA_ARGS__>
 
 # endif // PREVIEW_TUPLE_SPECIALIZE_TUPLE_H_
