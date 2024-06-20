@@ -122,8 +122,11 @@ function(preview_add_multi_version_test name_prefix test_src)
             gtest_discover_tests(${name_prefix}_${std} DISCOVERY_TIMEOUT 60)
         endif()
 
-
-        if (MSVC)
+        if (EMSCRIPTEN)
+            target_compile_options(${name_prefix}_${std}
+                PRIVATE "-Wno-pthreads-mem-growth"
+                PRIVATE "-fwasm-exceptions")
+        elseif (MSVC)
             target_compile_options(${name_prefix}_${std}
                 PRIVATE "/bigobj"
                 PRIVATE "/WX")
