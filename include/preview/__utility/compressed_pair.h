@@ -132,7 +132,7 @@ struct compressed_pair_getter<1> {
 } // namespace preview
 
 template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_SIZE(preview::compressed_pair<T, U>)
-  : std::integral_constant<std::size_t, 2> {};
+  : public std::integral_constant<std::size_t, 2> {};
 template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(0, preview::compressed_pair<T, U>) { using type = T; };
 template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(1, preview::compressed_pair<T, U>) { using type = U; };
 

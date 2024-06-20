@@ -390,7 +390,7 @@ struct tuple_like_uncvref<ranges::subrange<I, S, K>> : std::true_type {};
 
 template<typename I, typename S, preview::ranges::subrange_kind K>
 PREVIEW_SPECIALIZE_STD_TUPLE_SIZE(preview::ranges::subrange<I, S, K>)
-    : std::integral_constant<std::size_t, 2> {};
+    : public std::integral_constant<std::size_t, 2> {};
 
 template<typename I, typename S, preview::ranges::subrange_kind K>
 PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(0, preview::ranges::subrange<I, S, K>) { using type = I; };
