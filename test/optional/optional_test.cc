@@ -5,7 +5,9 @@
 #include "preview/optional.h"
 #include "../gtest.h"
 
+#if PREVIEW_CXX_VERSION >= 17
 #include <charconv>
+#endif
 #include <cstring>
 #include <string>
 #include <unordered_set>
