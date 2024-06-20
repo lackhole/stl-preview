@@ -119,7 +119,7 @@ function(preview_add_multi_version_test name_prefix test_src)
             if (EMSCRIPTEN)
                 target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1")
             endif()
-            gtest_discover_tests(${name_prefix}_${std})
+            gtest_discover_tests(${name_prefix}_${std} DISCOVERY_TIMEOUT 60)
         endif()
 
 
