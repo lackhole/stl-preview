@@ -9,11 +9,10 @@
 #define PREVIEW_STD_TUPLE_ELEMENT_STRUCT struct
 #
 #if defined(__clang__)
-#   if __clang_major__ < 8
+#   if __clang_major__ < 9
 #       undef PREVIEW_STD_TUPLE_SIZE_STRUCT
 #       define PREVIEW_STD_TUPLE_SIZE_STRUCT class
-#   endif
-#   if __clang_major__ < 9
+
 #       undef PREVIEW_STD_TUPLE_ELEMENT_STRUCT
 #       define PREVIEW_STD_TUPLE_ELEMENT_STRUCT class
 #   endif
