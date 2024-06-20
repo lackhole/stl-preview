@@ -117,15 +117,15 @@ function(preview_add_multi_version_test name_prefix test_src)
             #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${name_prefix}_${std}\")
         else()
             if (EMSCRIPTEN)
-                target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1")
+                target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
             endif()
             gtest_discover_tests(${name_prefix}_${std} DISCOVERY_TIMEOUT 60)
         endif()
 
         if (EMSCRIPTEN)
             target_compile_options(${name_prefix}_${std}
-                PRIVATE "-Wno-pthreads-mem-growth"
-                PRIVATE "-fwasm-exceptions")
+                PUBLIC "-fexceptions"
+            )
         elseif (MSVC)
             target_compile_options(${name_prefix}_${std}
                 PRIVATE "/bigobj"
