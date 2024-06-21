@@ -273,10 +273,6 @@ TEST(VERSIONED(Ranges), ranges_dangling) {
   EXPECT_EQ(*valid_iter2, 'a');
 }
 
-TEST(VERSIONED(Ranges), ranges_dangling) {
-  
-}
-
 TEST(VERSIONED(Ranges), to) {
   auto map = preview::views::iota('A', 'E') |
       preview::views::enumerate |
