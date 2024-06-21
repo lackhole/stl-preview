@@ -78,7 +78,7 @@ struct rend_niebloid {
       preview::detail::not_incomplete_array<T>,
       disjunction<
         std::is_lvalue_reference<std::remove_cv_t<T>>,
-        enable_borrowed_range<std::remove_cv_t<T>>
+        enable_borrowed_range_t<std::remove_cv_t<T>>
       >,
       bool_constant<(rend_tag<T>::value > 0)>
   >::value, int> = 0>

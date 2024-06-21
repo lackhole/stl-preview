@@ -81,10 +81,10 @@ ref_view(R&) -> ref_view<R>;
 
 #endif
 
-template<typename T>
-struct enable_borrowed_range<ref_view<T>> : std::true_type {};
-
 } // namespace ranges
 } // namespace namespace preview
+
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::ref_view<T>) = true;
 
 #endif // PREVIEW_RANGES_REF_VIEW_H_

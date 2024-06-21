@@ -31,9 +31,6 @@ class empty_view : public ranges::view_interface<empty_view<T>> {
   static constexpr bool empty() noexcept { return true; }
 };
 
-template<typename T>
-struct enable_borrowed_range<empty_view<T>> : std::true_type {};
-
 namespace views {
 
 template<typename T>
@@ -43,5 +40,8 @@ PREVIEW_INLINE_VARIABLE constexpr empty_view<T> empty{};
 
 } // namespace ranges
 } // namespace preview
+
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::empty_view<T>) = true;
 
 #endif // PREVIEW_RANGES_VIEWS_EMPTY_VIEW_H_

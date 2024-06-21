@@ -112,7 +112,7 @@ TEST(VERSIONED(Ranges), ranges_rbegin) {
 
   auto si = preview::ranges::rbegin(preview::span<int, 3>{a}); // OK
   static_assert(preview::ranges::enable_borrowed_range<
-      std::remove_cv_t<decltype(preview::span<int, 3>{a})>>::value, "");
+      std::remove_cv_t<decltype(preview::span<int, 3>{a})>>, "");
   *si = 43; // OK
   EXPECT_EQ(*si, 43);
   EXPECT_EQ(a[2], 43);
@@ -149,7 +149,7 @@ TEST(VERSIONED(Ranges), ranges_crbegin) {
   static_assert(
       preview::ranges::enable_borrowed_range<
           std::remove_cv_t<decltype(preview::span<int, 3>{a})>
-      >::value,
+      >,
       "");
 }
 

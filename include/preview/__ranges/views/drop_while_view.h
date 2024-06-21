@@ -85,10 +85,11 @@ constexpr auto make_drop_while_view(R&& r, Pred&& pred) {
   return drop_while_view<views::all_t<R>, std::decay_t<Pred>>(std::forward<R>(r), std::forward<Pred>(pred));
 }
 
-template<typename T, typename Pred>
-struct enable_borrowed_range<drop_while_view<T, Pred>> : enable_borrowed_range<T> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename T, typename Pred>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::drop_while_view<T, Pred>)
+    = preview::ranges::enable_borrowed_range<T>;
 
 #endif // PREVIEW_RANGES_VIEWS_DROP_WHILE_VIEW_H_

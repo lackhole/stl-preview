@@ -282,10 +282,11 @@ take_view(R&&, ranges::range_difference_t<R>) -> take_view<views::all_t<R>>;
 
 #endif
 
-template<typename T>
-struct enable_borrowed_range<take_view<T>> : enable_borrowed_range<T> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::take_view<T>)
+    = preview::ranges::enable_borrowed_range<T>;
 
 #endif // PREVIEW_RANGES_VIEWS_TAKE_VIEW_H_

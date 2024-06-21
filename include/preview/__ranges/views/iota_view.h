@@ -442,11 +442,6 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   Bound bound_ = Bound();
 };
 
-
-// TODO: Implement constraints
-template<typename W, typename Bound>
-struct enable_borrowed_range<iota_view<W, Bound>> : std::true_type {};
-
 namespace views {
 namespace detail {
 
@@ -477,5 +472,9 @@ PREVIEW_INLINE_VARIABLE constexpr detail::iota_niebloid iota{};
 
 } // namespace ranges
 } // namespace preview
+
+// TODO: Implement constraints
+template<typename W, typename Bound>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::iota_view<W, Bound>) = true;
 
 #endif // PREVIEW_RANGES_VIEWS_IOTA_H_

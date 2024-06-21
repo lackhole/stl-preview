@@ -71,7 +71,7 @@ struct data_niebloid {
       preview::detail::not_incomplete_array<T>,
       disjunction<
           std::is_lvalue_reference<T&&>,
-          ranges::enable_borrowed_range<remove_cvref_t<T>>
+          enable_borrowed_range_t<remove_cvref_t<T>>
       >,
       has_typename_type<range_reference<T>>,
       disjunction<

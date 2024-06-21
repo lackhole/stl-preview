@@ -541,10 +541,6 @@ class zip_view : public view_interface<zip_view<Views...>> {
   std::tuple<Views...> views_{};
 };
 
-template<typename... Views>
-struct enable_borrowed_range<zip_view<Views...>>
-    : conjunction<enable_borrowed_range<Views>...> {};
-
 #if __cplusplus >= 201703L
 
 template<typename... Rs>
@@ -554,5 +550,9 @@ zip_view(Rs&&...) -> zip_view<views::all_t<Rs>...>;
 
 } // namespace ranges
 } // namespace preview
+
+template<typename... Views>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::zip_view<Views...>)
+    = preview::conjunction<preview::ranges::enable_borrowed_range_t<Views>...>::value;
 
 #endif // PREVIEW_RANGES_VIEWS_ZIP_VIEW_H_

@@ -80,10 +80,11 @@ as_const_view(R&&) -> as_const_view<views::all_t<R>>;
 
 #endif
 
-template<typename T>
-struct enable_borrowed_range<as_const_view<T>> : enable_borrowed_range<T> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::as_const_view<T>)
+    = preview::ranges::enable_borrowed_range<T>;
 
 #endif // PREVIEW_RANGES_VIEWS_AS_CONST_VIEW_H_
