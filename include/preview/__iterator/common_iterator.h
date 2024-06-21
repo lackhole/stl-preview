@@ -94,10 +94,10 @@ class common_iterator {
   {
     switch (x.var_.index()) {
       case 0:
-        var_.emplace<0>(detail::variant_raw_get(x.var_._base().storage(), in_place_index<0>));
+        var_.template emplace<0>(detail::variant_raw_get(x.var_._base().storage(), in_place_index<0>));
         break;
       case 1:
-        var_.emplace<1>(detail::variant_raw_get(x.var_._base().storage(), in_place_index<1>));
+        var_.template emplace<1>(detail::variant_raw_get(x.var_._base().storage(), in_place_index<1>));
         break;
       default:
         break;
@@ -125,10 +125,10 @@ class common_iterator {
 
     switch (x.var_.index()) {
       case 0:
-        var_.emplace<0>(detail::variant_raw_get(x._base().storage(), in_place_index<0>));
+        var_.template emplace<0>(detail::variant_raw_get(x._base().storage(), in_place_index<0>));
         break;
       case 1:
-        var_.emplace<1>(detail::variant_raw_get(x._base().storage(), in_place_index<1>));
+        var_.template emplace<1>(detail::variant_raw_get(x._base().storage(), in_place_index<1>));
         break;
       default:
         break;
