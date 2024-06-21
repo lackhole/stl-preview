@@ -8,7 +8,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/derived_from.h"
-#include "preview/__concepts/implicit_expression_check.h"
+#include "preview/__concepts/requires_expression.h"
 #include "preview/__concepts/totally_ordered.h"
 #include "preview/__iterator/detail/iter_concept.h"
 #include "preview/__iterator/bidirectional_iterator.h"
@@ -65,9 +65,9 @@ struct op_check : std::false_type {};
 template<typename I>
 struct op_check<I, true>
     : conjunction<
-        implicit_expression_check<explicit_op_assign_check, I&, const iter_difference_t<I>&>,
-        implicit_expression_check<explicit_op_const_check, const I&, const iter_difference_t<I>&>
-      > {};
+        requires_expression<explicit_op_assign_check, I&, const iter_difference_t<I>&>,
+        requires_expression<explicit_op_const_check, const I&, const iter_difference_t<I>&>
+    > {};
 
 } // detail_random_access_iterator
 

@@ -17,10 +17,10 @@ namespace preview {
 namespace detail {
 
 template<typename T, bool = subtractable<T>::value>
-struct substract_check : std::false_type {};
+struct subtract_check : std::false_type {};
 
 template<typename T>
-struct substract_check<T, true> : std::is_integral<decltype(std::declval<const T&>() - std::declval<const T&>())> {};
+struct subtract_check<T, true> : std::is_integral<decltype(std::declval<const T&>() - std::declval<const T&>())> {};
 
 
 template<typename T>
@@ -31,7 +31,7 @@ struct incrementable_traits_subtractable {
 template<typename T>
 struct incrementable_traits_no_difference_type
     : std::conditional_t<
-        substract_check<T>::value,
+        subtract_check<T>::value,
         incrementable_traits_subtractable<T>,
         no_traits
       > {};

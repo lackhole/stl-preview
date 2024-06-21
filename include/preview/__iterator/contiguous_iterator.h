@@ -9,6 +9,7 @@
 
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/same_as.h"
+#include "preview/__concepts/requires_expression.h"
 #include "preview/__iterator/detail/iter_concept.h"
 #include "preview/__iterator/iterator_traits/legacy_random_access_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
@@ -30,10 +31,13 @@ template<typename I>
 struct explicit_contiguous_requires<
         I,
         void_t<decltype( preview::to_address( std::declval<I>() ) )>
-    > : same_as<decltype( preview::to_address( std::declval<I>() ) ), std::add_pointer_t<iter_reference_t<remove_cvref_t<I>>>> {};
+    > : same_as<
+        decltype( preview::to_address( std::declval<I>() ) ),
+        std::add_pointer_t<iter_reference_t<remove_cvref_t<I>>>
+    > {};
 
 template<typename I>
-struct contiguous_requires : implicit_expression_check<explicit_contiguous_requires, const I&> {};
+struct contiguous_requires : requires_expression<explicit_contiguous_requires, const I&> {};
 
 template<
     typename I,
