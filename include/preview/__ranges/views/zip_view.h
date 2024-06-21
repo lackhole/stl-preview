@@ -21,6 +21,7 @@
 #include "preview/__iterator/sized_sentinel_for.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
+#include "preview/__ranges/enable_borrowed_range.h"
 #include "preview/__ranges/common_range.h"
 #include "preview/__ranges/forward_range.h"
 #include "preview/__ranges/input_range.h"
@@ -539,6 +540,10 @@ class zip_view : public view_interface<zip_view<Views...>> {
 
   std::tuple<Views...> views_{};
 };
+
+template<typename... Views>
+struct enable_borrowed_range<zip_view<Views...>>
+    : conjunction<enable_borrowed_range<Views>...> {};
 
 #if __cplusplus >= 201703L
 
