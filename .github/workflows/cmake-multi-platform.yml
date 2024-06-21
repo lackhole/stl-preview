@@ -52,7 +52,7 @@ jobs:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
         compiler: [gcc]
-        compiler_version: [9, 10, 11]
+        compiler_version: [9, 10, 11, 12, 13]
         include:
           - cc_compiler: gcc
           - cxx_compiler: g++
@@ -60,10 +60,15 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: ${{ matrix.compiler_version }}
+
     - name: Configure CMake
       env:
-        CC: ${{ matrix.cc_compiler }}-${{ matrix.compiler_version }}
-        CXX: ${{ matrix.cxx_compiler }}-${{ matrix.compiler_version }}
+        CC: gcc
+        CXX: g++
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}
