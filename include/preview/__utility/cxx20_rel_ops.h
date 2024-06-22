@@ -69,8 +69,8 @@ template<typename T, typename U>
 struct is_equality_comparable
 #if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
     : disjunction<
-        preview::detail::equality_comparable_precxx20<T, U>,
-        preview::detail::equality_comparable_precxx20<U, T>
+        detail::equality_comparable_precxx20<T, U>,
+        detail::equality_comparable_precxx20<U, T>
     > {};
 #else
     : detail::is_equality_comparable_impl::type<T, U> {};
