@@ -423,6 +423,11 @@ TEST(VERSIONED(Ranges), range_adaptor_closure) {
   auto slice_and_drop
       = slicer
           | views::drop_while([](char ch) { return ch != '3'; });
+  static_assert(ranges::is_range_adaptor_closure<Slice>::value, "");
+
+  auto filter = views::drop_while([](char ch) { return ch != '3'; });
+  static_assert(ranges::is_range_adaptor_closure<preview::remove_cvref_t<decltype(filter)>>::value, "");
+
   for (auto&& c : str | slice_and_drop) {
      std::cout << c;
   }
