@@ -219,7 +219,7 @@ TEST(VERSIONED(RangesConcepts), viewable_range) {
 
 TEST(VERSIONED(RangesConcepts), constant_range) {
   EXPECT_TRUE_TYPE(ranges::constant_range<const std::vector<int>>);
-  EXPECT_TRUE_TYPE(ranges::constant_range<std::string_view>);
+  EXPECT_TRUE_TYPE(ranges::constant_range<preview::string_view>);
   EXPECT_TRUE_TYPE(ranges::constant_range<preview::span<const int>>);
 
   EXPECT_FALSE_TYPE(ranges::constant_range<std::vector<int>>);
