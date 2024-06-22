@@ -19,4 +19,10 @@
 #define EXPECT_EQ_TYPE(type1, type2) \
     EXPECT_TRUE((std::is_same<type1, type2>::value))
 
+#define EXPECT_TRUE_TYPE(...) \
+    static_assert(__VA_ARGS__::value, "")
+
+#define EXPECT_FALSE_TYPE(...) \
+    static_assert(__VA_ARGS__::value == false, "")
+
 #endif //PREVIEW_TEST_GTEST_H_
