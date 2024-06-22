@@ -75,7 +75,7 @@ struct pair_like_convertible_from
     : std::false_type {};
 
 template<typename T, typename U, typename V>
-struct pair_like_convertible_from<T, U, V, false>
+struct pair_like_convertible_from<T, U, V, true>
     : conjunction<
         negation< range<T> >,
         negation< std::is_reference<T> >,
