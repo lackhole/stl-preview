@@ -82,6 +82,7 @@ struct is_equality_comparable
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
     is_equality_comparable<T, U>,
+    negation<preview::detail::less_than_comparable_precxx20<const T&, const U&>>,
     preview::detail::less_than_comparable_precxx20<const U&, const T&>
   >::value, int> = 0>
 constexpr bool operator<(const T& a, const U& b) noexcept(noexcept(!( (b < a) || (a == b)))) {
