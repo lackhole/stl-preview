@@ -17,6 +17,7 @@
 // automatically generates comparison operators based on user-defined `operator==` and `operator<` in C++20 way
 
 namespace preview {
+namespace rel_ops {
 namespace detail {
 
 template<typename T, typename U, typename = void>
@@ -36,14 +37,12 @@ struct less_than_comparable_precxx20<
 
 } // namespace detail
 
-namespace rel_ops {
-
 #if __cplusplus < 202002L
 
 // synthesized from `U == T`
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
-    preview::detail::equality_comparable_precxx20<const U&, const T&>
+    detail::equality_comparable_precxx20<const U&, const T&>
 >::value, int> = 0>
 constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
   return b == a;
@@ -82,8 +81,8 @@ struct is_equality_comparable
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
     is_equality_comparable<T, U>,
-    negation<preview::detail::less_than_comparable_precxx20<const T&, const U&>>,
-    preview::detail::less_than_comparable_precxx20<const U&, const T&>
+    negation< detail::less_than_comparable_precxx20<const T&, const U&> >,
+    detail::less_than_comparable_precxx20<const U&, const T&>
   >::value, int> = 0>
 constexpr bool operator<(const T& a, const U& b) noexcept(noexcept(!( (b < a) || (a == b)))) {
   // (a < b) -> !(a >= b) -> !( a > b || a == b) -> !( b < a || a == b)
