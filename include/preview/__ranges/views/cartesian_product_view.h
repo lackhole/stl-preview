@@ -486,6 +486,13 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
 
   constexpr cartesian_product_view() = default;
 
+  // TODO: Add constraints to the class to block illegal deduction
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      input_range<First>,
+      forward_range<Vs>...,
+      view<First>,
+      view<Vs>...
+  >::value, int> = 0>
   constexpr cartesian_product_view(First first, Vs... bases)
       : bases_(std::move(first), std::move(bases)...) {}
 

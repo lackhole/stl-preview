@@ -170,7 +170,9 @@ class subrange
 
   template<typename R, std::enable_if_t<conjunction<
       different_from<subrange, R>,
-      detail::subrange_ctor_range<I, S, R>,
+      borrowed_range<R>,
+      detail::convertible_to_non_slicing<iterator_t<R>, I>,
+      convertible_to<sentinel_t<R>, S>,
       disjunction<
           negation<store_size>,
           sized_range<R>
@@ -180,7 +182,9 @@ class subrange
       : subrange(r, static_cast<detail::make_unsigned_like_t<iter_difference_t<I>>>(ranges::size(r))) {}
 
   template<typename R, std::enable_if_t<conjunction<
-      detail::subrange_ctor_range<I, S, R>,
+      borrowed_range<R>,
+      detail::convertible_to_non_slicing<iterator_t<R>, I>,
+      convertible_to<sentinel_t<R>, S>,
       bool_constant< K == subrange_kind::sized >
   >::value, int> = 0>
   constexpr subrange(R&& r, detail::make_unsigned_like_t<iter_difference_t<I>> n)
@@ -297,16 +301,29 @@ make_subrange(R&& r, detail::make_unsigned_like_t<range_difference_t<R>> n) {
 }
 
 
-#if __cplusplus >= 201703L
+#if PREVIEW_CXX_VERSION >= 17
+// These two are ambiguous without constraints
+// vvvvvvvvvvvvvvvvvvvv
+template<typename R>
+subrange(R&&, detail::make_unsigned_like_t<range_difference_t<R>>) ->
+    subrange<
+            std::enable_if_t<borrowed_range<R>::value,
+        ranges::iterator_t<R>>,
+        ranges::sentinel_t<R>,
+        ranges::subrange_kind::sized
+    >;
 
-// template<typename R>
-// subrange(R&&, detail::make_unsigned_like_t<range_difference_t<R>>) ->
-//     subrange<ranges::iterator_t<R>, ranges::sentinel_t<R>, ranges::subrange_kind::sized>;
-//
-// template<typename I, typename S> subrange(I, S) -> subrange<I, S>;
-//
-// ^^^^^^^^^^ These two are ambiguous without constraints
-
+template<typename I, typename S>
+subrange(I, S)
+    -> subrange<
+            std::enable_if_t<conjunction<
+                input_or_output_iterator<I>,
+                sentinel_for<S, I>
+            >::value,
+        I>,
+        S
+    >;
+// ^^^^^^^^^^^^^^^^^^^^
 
 template<typename I, typename S>
 subrange(I, S, detail::make_unsigned_like_t<iter_difference_t<I>>) ->

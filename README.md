@@ -673,7 +673,7 @@ Description
   | `ranges::range_const_reference_t`                                 | ![][c20ok]           |            |
   | `ranges::range_rvalue_reference_t`                                | ![][c20ok]           |            |
   | `ranges::range_common_reference_t`                                | ![][c20ok]           |            |
-  | `ranges::view_interface`                                          | ![][c20ok]           |            |
+  | `ranges::view_interface`                                          | ![][c20ok]           | ![][c23ok] |
   | `ranges::subrange`                                                | ![][c20ok]           |            |
   | `ranges::dangling`                                                | ![][c20ok]           |            |
   | `ranges::borrowed_iterator_t`                                     | ![][c20ok]           |            |

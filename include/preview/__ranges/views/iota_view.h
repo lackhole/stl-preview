@@ -442,6 +442,21 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   Bound bound_ = Bound();
 };
 
+#if PREVIEW_CXX_VERSION >= 17
+
+template<typename W, typename Bound>
+iota_view(W, Bound)
+    -> iota_view<
+        std::enable_if_t<
+        disjunction<
+            negation<is_integer_like<W>>,
+            negation<is_integer_like<Bound>>,
+            bool_constant<is_signed_integer_like<W>::value == is_signed_integer_like<Bound>::value>
+        >::value, W>,
+        Bound>;
+
+#endif
+
 namespace views {
 namespace detail {
 

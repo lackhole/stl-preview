@@ -38,6 +38,13 @@ struct basic_range {
   unsigned char data_;
 };
 
+struct ubiq_range {
+  ubiq_range() = default;
+
+  template<typename T, std::enable_if_t<range<remove_cvref_t<T>>::value, int> = 0>
+  operator T() const noexcept;
+};
+
 template<typename C, typename D>
 class range_adaptor_closure_object
     : protected compressed_pair<C, D>
@@ -75,7 +82,10 @@ template<typename T>
 struct is_range_adaptor_closure
     : conjunction<
           derived_from_single_crtp<T, range_adaptor_closure>,
-          is_invocable<T, detail::basic_range>,
+          disjunction<
+              is_invocable<T, detail::basic_range>,
+              is_invocable<T, detail::ubiq_range>
+          >,
           negation< range<T> >
       > {};
 
