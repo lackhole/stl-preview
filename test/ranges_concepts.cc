@@ -134,6 +134,8 @@ TEST(VERSIONED(RangesConcepts), forward_range) {
   EXPECT_TRUE_TYPE(ranges::forward_range<decltype(str2)>);
   EXPECT_TRUE_TYPE(ranges::forward_range<std::forward_list<char>>);
   EXPECT_TRUE_TYPE(ranges::forward_range<preview::span<char>>);
+  EXPECT_TRUE_TYPE(ranges::forward_range<std::unordered_map<int, int>>);
+  EXPECT_TRUE_TYPE(ranges::forward_range<std::unordered_set<int>>);
 
   EXPECT_FALSE_TYPE(ranges::forward_range<decltype(str)>);
   EXPECT_FALSE_TYPE(ranges::forward_range<std::stack<char>>);
@@ -142,18 +144,18 @@ TEST(VERSIONED(RangesConcepts), forward_range) {
 }
 
 TEST(VERSIONED(RangesConcepts), bidirectional_range) {
-  EXPECT_TRUE_TYPE(preview::ranges::bidirectional_range<std::set<int>>);
-  EXPECT_TRUE_TYPE(preview::ranges::bidirectional_range<std::list<int>>);
+  EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::set<int>>);
+  EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::list<int>>);
 
-  // MSVC's hash container models bidirectional range (implementation is based on std::list)
+  // MSVC's hash container models bidirectional range (iterator is from std::list)
 #if defined(_MSC_VER) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
-  EXPECT_TRUE_TYPE(preview::ranges::bidirectional_range<std::unordered_map<int, int>>);
-  EXPECT_TRUE_TYPE(preview::ranges::bidirectional_range<std::unordered_set<int>>);
+  EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::unordered_map<int, int>>);
+  EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::unordered_set<int>>);
 #else
-  EXPECT_FALSE_TYPE(preview::ranges::bidirectional_range<std::unordered_map<int, int>>);
-  EXPECT_FALSE_TYPE(preview::ranges::bidirectional_range<std::unordered_set<int>>);
+  EXPECT_FALSE_TYPE(ranges::bidirectional_range<std::unordered_map<int, int>>);
+  EXPECT_FALSE_TYPE(ranges::bidirectional_range<std::unordered_set<int>>);
 #endif
-  EXPECT_FALSE_TYPE(preview::ranges::bidirectional_range<std::forward_list<int>>);
+  EXPECT_FALSE_TYPE(ranges::bidirectional_range<std::forward_list<int>>);
 }
 
 TEST(VERSIONED(RangesConcepts), random_access_range) {
@@ -207,9 +209,15 @@ auto test_viewable_range(T &&) -> ranges::viewable_range<T&&>;
 TEST(VERSIONED(RangesConcepts), viewable_range) {
   auto il = {1, 2, 3};
   int arr []{1, 2, 3};
+#if PREVIEW_CXX_VERSION < 17
   std::vector<int> vec{1, 2, 3};
   ranges::ref_view<int[3]> r{arr};
   ranges::owning_view<std::string> o{std::string("Hello")};
+#else
+  std::vector vec{1, 2, 3};
+  ranges::ref_view r{arr};
+  ranges::owning_view o{std::string("Hello")};
+#endif
 
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( il )));
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( arr )));
@@ -218,7 +226,7 @@ TEST(VERSIONED(RangesConcepts), viewable_range) {
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( r )));
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( std::move(r) )));
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( std::move(o) )));
-  EXPECT_TRUE_TYPE(decltype(test_viewable_range( preview::ranges::ref_view<ranges::owning_view<std::string>>(o) )));
+  EXPECT_TRUE_TYPE(decltype(test_viewable_range( ranges::ref_view<ranges::owning_view<std::string>>(o) )));
 
   EXPECT_FALSE_TYPE(decltype(test_viewable_range( std::move(il) )));
   EXPECT_FALSE_TYPE(decltype(test_viewable_range( std::move(arr) )));
