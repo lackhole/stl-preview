@@ -358,37 +358,38 @@ Description
 
 * `<concepts>`
 
-  |                         | Introduced | Revision |
-  |-------------------------|------------|----------|
-  | `same_as`               | ![][c20ok] |          |
-  | `derived_from`          | ![][c20ok] |          |
-  | `convertible_to`        | ![][c20ok] |          |
-  | `common_reference_with` | ![][c20ok] |          |
-  | `common_with`           | ![][c20ok] |          |
-  | `integral`              | ![][c20ok] |          |
-  | `signed_integral`       | ![][c20ok] |          |
-  | `unsigned_integral`     | ![][c20ok] |          |
-  | `floating_point`        | ![][c20ok] |          |
-  | `assignable_from`       | ![][c20ok] |          |
-  | `swappable`             | ![][c20ok] |          |
-  | `destructible`          | ![][c20ok] |          |
-  | `constructible_from`    | ![][c20ok] |          |
-  | `default_initializable` | ![][c20ok] |          |
-  | `move_constructible`    | ![][c20ok] |          |
-  | `copy_constructible`    | ![][c20ok] |          |
-  | `equality_comparable`   | ![][c20ok] |          |
-  | `totally_ordered`       | ![][c20ok] |          |
-  | `movable`               | ![][c20ok] |          |
-  | `copyable`              | ![][c20ok] |          |
-  | `semiregular`           | ![][c20ok] |          |
-  | `regular`               | ![][c20ok] |          |
-  | `invocable`             | ![][c20ok] |          |
-  | `regular_invocable`     | ![][c20ok] |          |
-  | `predicate`             | ![][c20ok] |          |
-  | `relation`              | ![][c20ok] |          |
-  | `equivalence_relation`  | ![][c20ok] |          |
-  | `strict_weak_order`     | ![][c20ok] |          |
-  | `ranges::swap`          | ![][c20ok] |          |
+  |                            | Introduced | Revision   |
+  |----------------------------|------------|------------|
+  | `same_as`                  | ![][c20ok] |            |
+  | `derived_from`             | ![][c20ok] |            |
+  | `convertible_to`           | ![][c20ok] |            |
+  | `common_reference_with`    | ![][c20ok] |            |
+  | `common_with`              | ![][c20ok] |            |
+  | `integral`                 | ![][c20ok] |            |
+  | `signed_integral`          | ![][c20ok] |            |
+  | `unsigned_integral`        | ![][c20ok] |            |
+  | `floating_point`           | ![][c20ok] |            |
+  | `assignable_from`          | ![][c20ok] |            |
+  | `swappable`                | ![][c20ok] |            |
+  | `destructible`             | ![][c20ok] |            |
+  | `constructible_from`       | ![][c20ok] |            |
+  | `default_initializable`    | ![][c20ok] |            |
+  | `move_constructible`       | ![][c20ok] |            |
+  | `copy_constructible`       | ![][c20ok] |            |
+  | `equality_comparable`      | ![][c20ok] |            |
+  | `equality_comparable_with` | ![][c20ok] | ![][c23ok] |
+  | `totally_ordered`          | ![][c20ok] |            |
+  | `movable`                  | ![][c20ok] |            |
+  | `copyable`                 | ![][c20ok] |            |
+  | `semiregular`              | ![][c20ok] |            |
+  | `regular`                  | ![][c20ok] |            |
+  | `invocable`                | ![][c20ok] |            |
+  | `regular_invocable`        | ![][c20ok] |            |
+  | `predicate`                | ![][c20ok] |            |
+  | `relation`                 | ![][c20ok] |            |
+  | `equivalence_relation`     | ![][c20ok] |            |
+  | `strict_weak_order`        | ![][c20ok] |            |
+  | `ranges::swap`             | ![][c20ok] |            |
 
 * `<coroutine>` N/A
 
