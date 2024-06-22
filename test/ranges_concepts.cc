@@ -95,9 +95,9 @@ TEST(VERSIONED(RangesConcepts), sized_range) {
   EXPECT_TRUE_TYPE(ranges::sized_range<std::deque<int>>);
   EXPECT_TRUE_TYPE(ranges::sized_range<std::list<int>>);
   EXPECT_TRUE_TYPE(ranges::sized_range<std::map<int, int>>);
-  EXPECT_TRUE_TYPE(ranges::sized_range<std::set<int, int>>);
+  EXPECT_TRUE_TYPE(ranges::sized_range<std::set<int>>);
   EXPECT_TRUE_TYPE(ranges::sized_range<std::unordered_map<int, int>>);
-  EXPECT_TRUE_TYPE(ranges::sized_range<std::unordered_set<int, int>>);
+  EXPECT_TRUE_TYPE(ranges::sized_range<std::unordered_set<int>>);
   EXPECT_TRUE_TYPE(ranges::sized_range<std::vector<int>>);
 
   EXPECT_FALSE_TYPE(ranges::sized_range<int[]>);
