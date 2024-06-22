@@ -67,14 +67,7 @@ struct is_equality_comparable_impl {
 
 template<typename T, typename U>
 struct is_equality_comparable
-#if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
-    : disjunction<
-        detail::equality_comparable_precxx20<T, U>,
-        detail::equality_comparable_precxx20<U, T>
-    > {};
-#else
     : detail::is_equality_comparable_impl::type<T, U> {};
-#endif
 
 
 // return `!( b < a || a == b)`. synthesized from `U < T` and `T == U`
