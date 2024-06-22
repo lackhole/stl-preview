@@ -136,7 +136,9 @@ function(preview_add_multi_version_test name_prefix test_src)
             target_compile_options(${name_prefix}_${std}
                 PRIVATE "-Wall"
                 PRIVATE "-Werror"
-                PRIVATE "-Wno-unused-local-typedef")
+                PRIVATE "-Wno-unused-local-typedef"
+                PRIVATE "-Wno-unused-variable"
+            )
         endif ()
     endforeach ()
 endfunction()
