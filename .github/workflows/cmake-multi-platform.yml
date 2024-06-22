@@ -37,7 +37,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
   ubuntu-gcc:
     runs-on: ${{ matrix.os }}
