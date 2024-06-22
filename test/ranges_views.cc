@@ -153,9 +153,8 @@ TEST(VERSIONED(RangesViews), cartesian_product_view) {
 
   {
 #if PREVIEW_CXX_VERSION >= 17
-    constexpr auto a = std::array{"Curiously"_sv, "Recurring"_sv, "Template"_sv, "Pattern"_sv};
-    constexpr auto v = ranges::cartesian_product_view(a[0], a[1], a[2], a[3]);
-
+    static constexpr auto a = std::array{"Curiously"_sv, "Recurring"_sv, "Template"_sv, "Pattern"_sv};
+    static constexpr auto v = ranges::cartesian_product_view(a[0], a[1], a[2], a[3]);
 #else
     constexpr auto a = std::array<preview::string_view, 4>{"Curiously"_sv, "Recurring"_sv, "Template"_sv, "Pattern"_sv};
     constexpr auto v = ranges::cartesian_product_view<
