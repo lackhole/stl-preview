@@ -17,7 +17,6 @@
 // automatically generates comparison operators based on user-defined `operator==` and `operator<` in C++20 way
 
 namespace preview {
-namespace rel_ops {
 namespace detail {
 
 template<typename T, typename U, typename = void>
@@ -31,18 +30,20 @@ template<typename T, typename U, typename = void>
 struct less_than_comparable_precxx20 : std::false_type {};
 template<typename T, typename U>
 struct less_than_comparable_precxx20<
-        T, U,
-        void_t<decltype( std::declval<T>() < std::declval<U>() )>
-    > : std::is_convertible<decltype( std::declval<T>() < std::declval<U>() ), bool> {};
+    T, U,
+    void_t<decltype( std::declval<T>() < std::declval<U>() )>
+> : std::is_convertible<decltype( std::declval<T>() < std::declval<U>() ), bool> {};
 
 } // namespace detail
+
+namespace rel_ops {
 
 #if __cplusplus < 202002L
 
 // synthesized from `U == T`
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
-    detail::equality_comparable_precxx20<const U&, const T&>
+    preview::detail::equality_comparable_precxx20<const U&, const T&>
 >::value, int> = 0>
 constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
   return b == a;
@@ -66,14 +67,22 @@ struct is_equality_comparable_impl {
 } // namespace detail
 
 template<typename T, typename U>
-struct is_equality_comparable : detail::is_equality_comparable_impl::type<T, U> {};
+struct is_equality_comparable
+#if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__)
+    : disjunction<
+        preview::detail::equality_comparable_precxx20<T, U>,
+        preview::detail::equality_comparable_precxx20<U, T>
+    > {};
+#else
+    : detail::is_equality_comparable_impl::type<T, U> {};
+#endif
 
 
 // return `!( b < a || a == b)`. synthesized from `U < T` and `T == U`
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
     is_equality_comparable<T, U>,
-    detail::less_than_comparable_precxx20<const U&, const T&>
+    preview::detail::less_than_comparable_precxx20<const U&, const T&>
   >::value, int> = 0>
 constexpr bool operator<(const T& a, const U& b) noexcept(noexcept(!( (b < a) || (a == b)))) {
   // (a < b) -> !(a >= b) -> !( a > b || a == b) -> !( b < a || a == b)
