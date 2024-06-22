@@ -660,7 +660,7 @@ Description
   | `ranges::contiguous_range`                                        | ![][c20ok]           |            |
   | `ranges::common_range`                                            | ![][c20ok]           |            |
   | `ranges::viewable_range`                                          | ![][c20ok]           |            |
-  | `ranges::constant_range`                                          | ![][c20ok]           |            |
+  | `ranges::constant_range`                                          | ![][c23ok]           |            |
   | `ranges::to`                                                      | ![][c23ok] (Partial) |            |
   | `ranges::iterator_t`                                              | ![][c20ok]           |            |
   | `ranges::const_iterator_t`                                        | ![][c23ok]           |            |
@@ -670,11 +670,11 @@ Description
   | `ranges::range_size_t`                                            | ![][c20ok]           |            |
   | `ranges::range_value_t`                                           | ![][c20ok]           |            |
   | `ranges::range_refernce_t`                                        | ![][c20ok]           |            |
-  | `ranges::range_const_reference_t`                                 | ![][c20ok]           |            |
+  | `ranges::range_const_reference_t`                                 | ![][c23ok]           |            |
   | `ranges::range_rvalue_reference_t`                                | ![][c20ok]           |            |
   | `ranges::range_common_reference_t`                                | ![][c20ok]           |            |
   | `ranges::view_interface`                                          | ![][c20ok]           | ![][c23ok] |
-  | `ranges::subrange`                                                | ![][c20ok]           |            |
+  | `ranges::subrange`                                                | ![][c20ok]           | ![][c23ok] |
   | `ranges::dangling`                                                | ![][c20ok]           |            |
   | `ranges::borrowed_iterator_t`                                     | ![][c20ok]           |            |
   | `ranges::borrowed_subrange_t`                                     | ![][c20ok]           |            |
