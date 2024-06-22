@@ -9,6 +9,8 @@
 
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/end.h"
+#include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/is_invocable.h"
 #include "preview/__type_traits/is_referenceable.h"
 #include "preview/__type_traits/void_t.h"
 
@@ -16,14 +18,15 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-template<typename T, bool = is_referencable<T>::value, typename = void, typename = void>
+template<typename T, bool = is_referencable<T>::value /* false */>
 struct is_range : std::false_type {};
 
 template<typename T>
-struct is_range<T, true,
-                void_t<decltype(ranges::begin(std::declval<T&>()))>,
-                void_t<decltype(ranges::end(std::declval<T&>()))>
-                > : std::true_type {};
+struct is_range<T, true>
+    : conjunction<
+        is_invocable<decltype(ranges::begin), T&>,
+        is_invocable<decltype(ranges::end), T&>
+    > {};
 
 } // namespace detail
 
