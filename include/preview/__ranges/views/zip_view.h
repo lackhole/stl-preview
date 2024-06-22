@@ -21,6 +21,7 @@
 #include "preview/__iterator/sized_sentinel_for.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
+#include "preview/__ranges/enable_borrowed_range.h"
 #include "preview/__ranges/common_range.h"
 #include "preview/__ranges/forward_range.h"
 #include "preview/__ranges/input_range.h"
@@ -549,5 +550,9 @@ zip_view(Rs&&...) -> zip_view<views::all_t<Rs>...>;
 
 } // namespace ranges
 } // namespace preview
+
+template<typename... Views>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::zip_view<Views...>)
+    = preview::conjunction<preview::ranges::enable_borrowed_range_t<Views>...>::value;
 
 #endif // PREVIEW_RANGES_VIEWS_ZIP_VIEW_H_

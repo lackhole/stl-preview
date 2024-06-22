@@ -23,7 +23,7 @@ namespace detail {
 struct cdata_niebloid {
   template<typename T, std::enable_if_t<disjunction<
       std::is_lvalue_reference<T>,
-      enable_borrowed_range<std::remove_cv_t<T>>
+      enable_borrowed_range_t<std::remove_cv_t<T>>
   >::value, int> = 0>
   constexpr std::remove_reference_t<range_const_reference_t<T>>* operator()(T&& t) const {
     return preview::ranges::as_const_pointer(ranges::data(possibly_const_range(t)));

@@ -72,7 +72,7 @@ struct end_niebloid {
       : std::conditional_t<
           disjunction<
             std::is_lvalue_reference<T>,
-            enable_borrowed_range<remove_cvref_t<T>>
+            enable_borrowed_range_t<remove_cvref_t<T>>
           >::value,
           typename end_category_impl<T>::category,
           return_category<0>

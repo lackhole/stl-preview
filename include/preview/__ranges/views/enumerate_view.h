@@ -374,10 +374,11 @@ enumerate_view(R&&) -> enumerate_view<views::all_t<R>>;
 
 #endif
 
-template<typename View>
-struct enable_borrowed_range<enumerate_view<View>> : enable_borrowed_range<View> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename View>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::enumerate_view<View>)
+    = preview::ranges::enable_borrowed_range<View>;
 
 #endif // PREVIEW_RANGES_VIEWS_ENUMERATE_VIEW_H_

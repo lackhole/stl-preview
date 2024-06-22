@@ -717,16 +717,16 @@ Description
   | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]           |            |
   | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]           |            |
   | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok]           |            |
-  | `ranges::begin`                                                   | ![][c20ok]           |            |
-  | `ranges::end`                                                     | ![][c20ok]           |            |
-  | `ranges::cbegin`                                                  | ![][c20ok]           |            |
-  | `ranges::cend`                                                    | ![][c20ok]           |            |
-  | `ranges::crbegin`                                                 | ![][c20ok]           |            |
-  | `ranges::crend`                                                   | ![][c20ok]           |            |
-  | `ranges::size`                                                    | ![][c20ok]           |            |
-  | `ranges::ssize`                                                   | ![][c20ok]           |            |
-  | `ranges::empty`                                                   | ![][c20ok]           |            |
-  | `ranges::data`                                                    | ![][c20ok]           |            |
+  | `ranges::begin`                                                   | ![][c20ok]           | ![][c23ok] |
+  | `ranges::end`                                                     | ![][c20ok]           | ![][c23ok] |
+  | `ranges::cbegin`                                                  | ![][c20ok]           | ![][c23ok] |
+  | `ranges::cend`                                                    | ![][c20ok]           | ![][c23ok] |
+  | `ranges::crbegin`                                                 | ![][c20ok]           | ![][c23ok] |
+  | `ranges::crend`                                                   | ![][c20ok]           | ![][c23ok] |
+  | `ranges::size`                                                    | ![][c20ok]           | ![][c23ok] |
+  | `ranges::ssize`                                                   | ![][c20ok]           | ![][c23ok] |
+  | `ranges::empty`                                                   | ![][c20ok]           | ![][c23ok] |
+  | `ranges::data`                                                    | ![][c20ok]           | ![][c23ok] |
   | `ranges::cdata`                                                   | ![][c20ok]           | ![][c23ok] |
   | `ranges::subrange_kind`                                           | ![][c20ok]           |            |
   | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]           |            |

@@ -21,7 +21,7 @@ namespace detail {
 struct cend_niebloid {
   template<typename T, std::enable_if_t<disjunction<
       std::is_lvalue_reference<T>,
-      enable_borrowed_range<std::remove_cv_t<T>>
+      enable_borrowed_range_t<std::remove_cv_t<T>>
   >::value, int> = 0>
   constexpr auto operator()(T&& t) const {
     return preview::const_sentinel<decltype(ranges::end(possibly_const_range(t)))>(ranges::end(possibly_const_range(t)));

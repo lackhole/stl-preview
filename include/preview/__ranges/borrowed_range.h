@@ -22,7 +22,7 @@ struct borrowed_range
         range<R>,
         disjunction<
           std::is_lvalue_reference<R>,
-          enable_borrowed_range<remove_cvref_t<R>>
+          enable_borrowed_range_t<remove_cvref_t<R>>
         >
       > {};
 

@@ -416,10 +416,11 @@ class elements_view : public view_interface<elements_view<V, N>> {
   V base_;
 };
 
-template<typename V, std::size_t N>
-struct enable_borrowed_range<elements_view<V, N>> : enable_borrowed_range<V> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename V, std::size_t N>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::elements_view<V, N>)
+    = preview::ranges::enable_borrowed_range<V>;
 
 #endif // PREVIEW_RANGES_VIEWS_ELEMENTS_VIEW_H_

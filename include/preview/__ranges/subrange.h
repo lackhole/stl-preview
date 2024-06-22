@@ -374,9 +374,6 @@ constexpr auto get(subrange<I, S, K>&& r) {
   return detail::get_subrange<N>::get(std::move(r));
 }
 
-template<typename I, typename S, subrange_kind K>
-struct enable_borrowed_range<subrange<I, S, K>> : std::true_type {};
-
 } // namespace ranges
 
 namespace internal {
@@ -406,5 +403,8 @@ namespace std {
 using ::preview::ranges::get;
 
 } // namespace std
+
+template<typename I, typename S, preview::ranges::subrange_kind K>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::subrange<I, S, K>) = true;
 
 #endif // PREVIEW_RANGES_SUBRANGE_H_

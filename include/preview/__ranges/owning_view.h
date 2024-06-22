@@ -2,8 +2,8 @@
 // Created by yonggyulee on 2024/01/02.
 //
 
-#ifndef PREVIEW_RANGES_OWINING_VIEW_H_
-#define PREVIEW_RANGES_OWINING_VIEW_H_
+#ifndef PREVIEW_RANGES_OWNING_VIEW_H_
+#define PREVIEW_RANGES_OWNING_VIEW_H_
 
 #include <utility>
 
@@ -112,10 +112,11 @@ owning_view(R&&) -> owning_view<R>;
 
 #endif
 
-template<typename T>
-struct enable_borrowed_range<owning_view<T>> : enable_borrowed_range<T> {};
-
 } // namespace ranges
 } // namespace namespace preview
 
-#endif // PREVIEW_RANGES_OWINING_VIEW_H_
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::owning_view<T>)
+    = preview::ranges::enable_borrowed_range<T>;
+
+#endif // PREVIEW_RANGES_OWNING_VIEW_H_

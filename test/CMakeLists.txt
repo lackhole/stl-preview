@@ -130,6 +130,8 @@ function(preview_add_multi_version_test name_prefix test_src)
             target_compile_options(${name_prefix}_${std}
                 PRIVATE "/bigobj"
                 PRIVATE "/WX")
+            target_compile_definitions(${name_prefix}_${std}
+                PRIVATE _CRT_SECURE_NO_WARNINGS)
         elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
             target_compile_options(${name_prefix}_${std}
                 PRIVATE "-Wall"

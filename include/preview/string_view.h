@@ -627,10 +627,6 @@ constexpr wstring_view operator ""_sv(const wchar_t* str, std::size_t len) noexc
 } // namespace string_view_literals
 } // namespace literals
 
-template<typename CharT, typename Traits>
-struct ranges::enable_borrowed_range<basic_string_view<CharT, Traits>>
-    : std::true_type {};
-
 template<typename CharT, typename Traits >
 struct ranges::enable_view<basic_string_view<CharT, Traits>> : std::true_type {};
 
@@ -686,5 +682,8 @@ struct hash<preview::u32string_view> {
 };
 
 } // namespace std
+
+template<typename CharT, typename Traits>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::basic_string_view<CharT, Traits>) = true;
 
 #endif // PREVIEW_STRING_VIEW_H_

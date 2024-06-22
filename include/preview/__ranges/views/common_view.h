@@ -108,10 +108,11 @@ constexpr common_view<views::all_t<R>> make_common_view(R&& r) {
   return common_view<views::all_t<R>>(std::forward<R>(r));
 }
 
-template<typename V>
-struct enable_borrowed_range<common_view<V>> : enable_borrowed_range<V> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename V>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::common_view<V>)
+    = preview::ranges::enable_borrowed_range<V>;
 
 #endif // PREVIEW_RANGES_VIEWS_COMMON_VIEW_H_

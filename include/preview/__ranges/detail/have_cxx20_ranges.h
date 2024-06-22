@@ -1,0 +1,16 @@
+# /**
+#  * Created by YongGyu Lee on 2024. 6. 22
+#  */
+#
+#ifndef PREVIEW_RANGES_DETAIL_HAVE_CXX20_RANGES_H_
+#define PREVIEW_RANGES_DETAIL_HAVE_CXX20_RANGES_H_
+#
+#include "preview/core.h"
+#
+#if PREVIEW_CXX_VERSION >= 20 && (PREVIEW_ANDROID == 0 || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
+#   define PREVIEW_HAVE_CXX20_RANGES 1
+#else
+#   define PREVIEW_HAVE_CXX20_RANGES 0
+#endif
+#
+#endif // PREVIEW_RANGES_DETAIL_HAVE_CXX20_RANGES_H_

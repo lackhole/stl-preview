@@ -322,9 +322,6 @@ class span : private detail::span_storage_t<T, Extent> {
 };
 
 template<typename T, std::size_t Extent>
-struct ranges::enable_borrowed_range<span<T, Extent>> : std::true_type {};
-
-template<typename T, std::size_t Extent>
 struct ranges::enable_view<span<T, Extent>> : std::true_type {};
 
 #if __cplusplus >= 201703L
@@ -347,5 +344,8 @@ span(R&&) -> span<std::remove_reference_t<ranges::range_reference_t<R>>>;
 #endif
 
 } // namespace preview
+
+template<typename T, std::size_t Extent>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::span<T, Extent>) = true;
 
 #endif // PREVIEW_SPAN_SPAN_H_

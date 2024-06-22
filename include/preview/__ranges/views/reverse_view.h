@@ -114,10 +114,11 @@ constexpr reverse_view<views::all_t<R>> make_reverse_view(R&& r) {
   return reverse_view<views::all_t<R>>(std::forward<R>(r));
 }
 
-template<typename T>
-struct enable_borrowed_range<reverse_view<T>> : enable_borrowed_range<T> {};
-
 } // namespace ranges
 } // namespace preview
+
+template<typename T>
+PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::reverse_view<T>)
+    = preview::ranges::enable_borrowed_range<T>;
 
 #endif // PREVIEW_RANGES_VIEWS_REVERSE_VIEW_H_
