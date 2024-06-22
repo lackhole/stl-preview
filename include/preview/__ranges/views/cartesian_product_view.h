@@ -100,69 +100,6 @@ constexpr auto cartesian_common_arg_end(R& r) {
   return preview::ranges::detail::cartesian_common_arg_end_impl(r, common_range<R>{});
 }
 
-template<typename R, typename F, typename Tuple, std::size_t... I>
-constexpr R cartesian_tuple_transform_impl(F func, Tuple&& t, std::index_sequence<I...>)
-    noexcept(
-        conjunction<bool_constant<
-            noexcept(func(std::get<I>( std::forward<Tuple>(t) )))
-        >...>::value
-    )
-{
-  return R(func(std::get<I>( std::forward<Tuple>(t) ))...);
-}
-
-template<typename R, typename F, typename Tuple>
-constexpr R cartesian_tuple_transform(F func, Tuple&& t)
-    noexcept(noexcept(
-        cartesian_tuple_transform_impl<R>(
-            func,
-            std::forward<Tuple>(t),
-            std::make_index_sequence<std::tuple_size<remove_cvref_t<Tuple>>::value>{})
-    ))
-{
-  return cartesian_tuple_transform_impl<R>(
-      func,
-      std::forward<Tuple>(t),
-      std::make_index_sequence<std::tuple_size<remove_cvref_t<Tuple>>::value>{});
-}
-
-template<typename F, typename Tuple, std::size_t... I>
-constexpr auto cartesian_tuple_transform_impl(F func, Tuple&& t, std::index_sequence<I...>) {
-  return std::make_tuple(
-      func(
-          std::get<I>( std::forward<Tuple>(t) )
-      )...
-  );
-}
-
-template<typename F, typename Tuple>
-constexpr auto cartesian_tuple_transform(F func, Tuple&& t) {
-  return cartesian_tuple_transform_impl(
-      func,
-      std::forward<Tuple>(t),
-      std::make_index_sequence<std::tuple_size<remove_cvref_t<Tuple>>::value>{});
-}
-
-template<typename Tuple, typename Indices>
-struct cartesian_product_is_empty_impl;
-
-template<typename Tuple, std::size_t... I>
-struct cartesian_product_is_empty_impl<Tuple, std::index_sequence<0, I...>>
-    : disjunction<
-
-      > {};
-
-template<typename Tuple, std::size_t N = std::tuple_size<Tuple>::value>
-struct cartesian_product_is_empty : cartesian_product_is_empty_impl<Tuple, std::make_index_sequence<N>> {};
-
-template<typename Tuple> struct cartesian_product_is_empty<Tuple, 1> : std::false_type {};
-template<typename Tuple> struct cartesian_product_is_empty<Tuple, 0>; // unreachable
-
-template<typename F, typename Tuple, std::size_t... I>
-constexpr auto cartesian_tuple_transform_end(F func, const Tuple& t, std::index_sequence<0, I...>) {
-  return std::make_tuple(func(std::get<I>(t))...);
-}
-
 } // namespace detail
 
 template<typename First, typename... Vs>
@@ -218,33 +155,13 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
         : parent_(i.parent_), current_(std::move(i.current_)) {}
 
     constexpr auto operator*() const {
-      return detail::cartesian_tuple_transform(
-          [](auto& i) -> decltype(auto) { return *i; }, current_);
+      return preview::tuple_transform(current_, [](auto& i) -> decltype(auto) { return *i; });
     }
 
     template<typename First2 = First, std::enable_if_t<
         detail::cartesian_product_is_random_access<Const, First2, Vs...>::value, int> = 0>
     constexpr reference operator[](difference_type n) const {
       return *((*this) + n);
-    }
-
-    template<std::size_t N = sizeof...(Vs)>
-    constexpr void next() {
-      auto& it = std::get<N>(current_);
-      ++it;
-      next(it, std::integral_constant<std::size_t, N>{});
-    }
-
-    template<std::size_t N = sizeof...(Vs)>
-    constexpr void prev() {
-      auto& it = std::get<N>(current_);
-      prev(it, std::integral_constant<std::size_t, N>{});
-      --it;
-    }
-
-    template<typename Tuple>
-    constexpr difference_type distance_from(const Tuple& t) const {
-      return scaled_sum(t);
     }
 
     constexpr iterator& operator++() {
@@ -394,12 +311,19 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
         indirectly_swappable< iterator_t<maybe_const<Const, Vs>> >...
     >::value, int> = 0>
     friend constexpr void iter_swap(const iterator& x, const iterator& y)
-        noexcept(noexcept(x.iter_swap_impl(y)))
+        noexcept(noexcept(x.iter_swap_impl(y, std::index_sequence_for<First, Vs...>{})))
     {
-      x.iter_swap_impl(y);
+      x.iter_swap_impl(y, std::index_sequence_for<First, Vs...>{});
     }
 
    private:
+    template<std::size_t N = sizeof...(Vs)>
+    constexpr void next() {
+      auto& it = std::get<N>(current_);
+      ++it;
+      next(it, std::integral_constant<std::size_t, N>{});
+    }
+
     template<typename It>
     constexpr void next(It&, std::integral_constant<std::size_t, 0>) {}
     template<typename It, std::size_t N>
@@ -410,6 +334,13 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
       }
     }
 
+    template<std::size_t N = sizeof...(Vs)>
+    constexpr void prev() {
+      auto& it = std::get<N>(current_);
+      prev(it, std::integral_constant<std::size_t, N>{});
+      --it;
+    }
+
     template<typename It>
     constexpr void prev(It&, std::integral_constant<std::size_t, 0>) {}
     template<typename It, std::size_t N>
@@ -418,6 +349,11 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
         it = detail::cartesian_common_arg_end(std::get<N>(parent_->bases_));
         prev<N - 1>();
       }
+    }
+
+    template<typename Tuple>
+    constexpr difference_type distance_from(const Tuple& t) const {
+      return scaled_sum(t);
     }
 
     template<typename Tuple>
@@ -445,7 +381,7 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
     }
 
     constexpr difference_type distance_from_default() const {
-      return distance_from_default_impl(std::index_sequence_for<Vs...>{});
+      return distance_from_default_impl(std::index_sequence_for<First, Vs...>{});
     }
 
     constexpr bool compare_with_default_impl(std::integral_constant<std::size_t, 0>) const {
@@ -456,11 +392,11 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
     constexpr bool compare_with_default_impl(std::integral_constant<std::size_t, I>) const {
       return std::get<I>(current_) == ranges::end(std::get<I>(parent_->bases_))
           ? true
-          : compare_with_default(std::integral_constant<std::size_t, I - 1>{});
+          : compare_with_default_impl(std::integral_constant<std::size_t, I - 1>{});
     }
 
     constexpr bool compare_with_default() const {
-      return compare_with_default_impl(std::index_sequence_for<Vs...>{});
+      return compare_with_default_impl(std::index_sequence_for<First, Vs...>{});
     }
 
     template<std::size_t... I>
@@ -502,7 +438,7 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
   >::value, int> = 0>
   constexpr iterator<false> begin() {
     return iterator<false>(
-        *this, detail::cartesian_tuple_transform<iterator_current<true>>(ranges::begin, bases_));
+        *this, preview::tuple_transform(bases_, ranges::begin));
   }
 
   template<typename First2 = First, std::enable_if_t<conjunction<
@@ -510,8 +446,7 @@ class cartesian_product_view : public view_interface<cartesian_product_view<Firs
       range<const Vs>...
   >::value, int> = 0>
   constexpr iterator<true> begin() const {
-    return iterator<true>(
-        *this, detail::cartesian_tuple_transform<iterator_current<true>>(ranges::begin, bases_));
+    return iterator<true>(*this, preview::tuple_transform(bases_, ranges::begin));
   }
 
   template<typename First2 = First, std::enable_if_t<conjunction<
