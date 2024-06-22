@@ -427,9 +427,7 @@ TEST(VERSIONED(Ranges), range_adaptor_closure) {
      std::cout << c;
   }
 
-  auto sv = (str | slice_and_drop).operator preview::string_view();
-  preview::string_view(str | slice_and_drop);
-  // EXPECT_TRUE((preview::string_view(str | slice_and_drop) == "345"));
+  EXPECT_TRUE((preview::string_view(str | slice_and_drop) == "345"));
 }
 
 
