@@ -94,6 +94,8 @@ struct range_adaptor_closure {
   static_assert(std::is_object<Derived>::value, "Constraints not satisfied");
   static_assert(same_as<Derived, std::remove_cv_t<Derived>>::value, "Constraints not satisfied");
 
+  using _$preview_derived = Derived;
+
   template<typename Range, typename This, std::enable_if_t<conjunction<
       same_as<Derived, remove_cvref_t<This>>,
       range<remove_cvref_t<Range>>
