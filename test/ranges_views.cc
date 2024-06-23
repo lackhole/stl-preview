@@ -289,3 +289,38 @@ TEST(VERSIONED(RangesViews), ref_view) {
       "cos"_sv
   ));
 }
+
+
+TEST(VERSIONED(RangesViews), owning_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+#if PREVIEW_CXX_VERSION > 17
+  ranges::owning_view ov{"cosmos"s}; // the deduced type of R is std::string;
+#else
+  ranges::owning_view<std::string> ov{"cosmos"s};
+#endif
+
+  EXPECT_FALSE(ov.empty());
+  EXPECT_EQ(ov.size(), 6);
+  EXPECT_EQ(ov.size(), ov.base().size());
+  EXPECT_EQ(ov.front(), 'c');
+  EXPECT_EQ(ov.front(), *ov.begin());
+  EXPECT_EQ(ov.back(), 's');
+  EXPECT_EQ(ov.back(), *(ov.end() - 1));
+  EXPECT_EQ(ov.data(), ov.base());
+
+  // typically equal to sizeof(R)
+  EXPECT_EQ(sizeof ov, sizeof(std::string));
+  for (const char ch : ov) { (void)ch; }
+
+  ranges::owning_view<std::string> ov2;
+  EXPECT_TRUE(ov2.empty());
+
+//  ov2 = ov; // compile-time error: copy assignment operator is deleted
+  EXPECT_FALSE_TYPE(std::is_copy_assignable<decltype(ov2)>);
+
+  ov2 = std::move(ov); // OK
+  EXPECT_EQ(ov2.size(), 6);
+  EXPECT_EQ(ov.size(), 0);
+}
