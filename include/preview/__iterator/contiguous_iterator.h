@@ -10,6 +10,7 @@
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/requires_expression.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/detail/iter_concept.h"
 #include "preview/__iterator/iterator_traits/legacy_random_access_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
@@ -48,11 +49,11 @@ struct contiguous_iterator_impl : std::false_type {};
 template<typename I>
 struct contiguous_iterator_impl<I, true>
     : conjunction<
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
         disjunction<
 #endif
             derived_from<ITER_CONCEPT<I>, contiguous_iterator_tag>,
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
             conjunction<
               derived_from<ITER_CONCEPT<I>, random_access_iterator_tag>,
               LegacyRandomAccessIterator<I>
