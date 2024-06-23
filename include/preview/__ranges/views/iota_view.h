@@ -462,8 +462,8 @@ namespace detail {
 
 struct iota_niebloid {
   template<typename W>
-  constexpr iota_view<std::remove_reference_t<W>> operator()(W&& value) const {
-    return ranges::iota_view<std::remove_reference_t<W>>(std::forward<W>(value));
+  constexpr auto operator()(W&& value) const {
+    return iota_view<std::decay_t<W>>{std::forward<W>(value)};
   }
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
@@ -473,9 +473,8 @@ struct iota_niebloid {
       bool_constant<is_signed_integer_like<std::remove_reference_t<W>>::value == is_signed_integer_like<std::remove_reference_t<Bound>>::value>
     >
   >::value, int> = 0>
-  constexpr ranges::iota_view<std::remove_reference_t<W>, std::remove_reference_t<Bound>>
-  operator()(W&& value, Bound&& bound) const {
-    return ranges::iota_view<std::remove_reference_t<W>, std::remove_reference_t<Bound>>(std::forward<W>(value), std::forward<Bound>(bound));
+  constexpr auto operator()(W&& value, Bound&& bound) const {
+    return ranges::iota_view<std::decay_t<W>, std::decay_t<Bound>>{std::forward<W>(value), std::forward<Bound>(bound)};
   }
 };
 
