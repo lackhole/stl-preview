@@ -324,3 +324,18 @@ TEST(VERSIONED(RangesViews), owning_view) {
   EXPECT_EQ(ov2.size(), 6);
   EXPECT_EQ(ov.size(), 0);
 }
+
+
+TEST(VERSIONED(RangesViews), filter_view) {
+  auto even = [](int i) { return 0 == i % 2; };
+  auto square = [](int i) { return i * i; };
+
+  for (int i : views::iota(0, 6)
+      | views::filter(even)
+      | views::transform(square)) { (void)i; }
+
+  EXPECT_TRUE(ranges::equal(
+      views::iota(0, 6) | views::filter(even) | views::transform(square),
+      {0, 4, 16}
+  ));
+}
