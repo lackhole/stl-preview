@@ -105,21 +105,6 @@ class owning_view : public view_interface<owning_view<R>> {
   R r_;
 };
 
-#if 17 <= PREVIEW_CXX_VERSION && PREVIEW_CXX_VERSION < 20
-
-template<typename R>
-owning_view(R&&)
-    -> owning_view<
-            std::enable_if_t<conjunction<
-                range <std::remove_reference_t<R>>,
-                movable <std::remove_reference_t<R>>,
-                negation<is_initializer_list<R>>
-            >::value,
-        std::remove_reference_t<R>>
-    >;
-
-#endif
-
 } // namespace ranges
 } // namespace namespace preview
 
