@@ -24,6 +24,7 @@
 
 #include "preview/algorithm.h"
 #include "preview/concepts.h"
+#include "preview/functional.h"
 #include "preview/span.h"
 #include "preview/string_view.h"
 
@@ -413,4 +414,112 @@ TEST(VERSIONED(RangesViews), transform_view) {
   ranges::for_each(out | views::transform(rot13), show);
   EXPECT_TRUE(ranges::equal(out | views::transform(rot13), "cppreference.com\n"s));
 #endif
+}
+
+template<typename F, typename BoundArgs>
+struct my_bind_front {
+  template<typename... T>
+  my_bind_front(F f, T&&... args)
+      : f_(std::move(f))
+      , front_(std::forward_as_tuple(std::forward<T>(args)...)) {}
+
+  template<typename... Args>
+  decltype(auto) operator()(Args&&... args) {
+    return call(preview::tuple_index_sequence<BoundArgs>{}, std::forward<Args>(args)...);
+  }
+
+  template<std::size_t... I, typename... Args>
+  decltype(auto) call(std::index_sequence<I...>, Args&&... args) {
+    return f_(std::get<I>(front_)..., std::forward<Args>(args)...);
+  }
+
+  F f_;
+  BoundArgs front_;
+};
+
+TEST(VERSIONED(RangesViews), take_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  { // begin 1
+    static constexpr auto v = {"Ax"_sv, "By"_sv, "c"_sv, "d"_sv};
+#if PREVIEW_CXX_VERSION >= 17
+    auto view = ranges::take_view(v, 8);
+#else
+    auto view = views::take(v, 8);
+#endif
+    auto iter = view.begin();
+    EXPECT_EQ(*iter, "Ax"_sv);
+
+    EXPECT_TRUE_TYPE(ranges::sized_range<decltype(v)>);
+    EXPECT_TRUE_TYPE(ranges::random_access_range<decltype(v)>);
+    EXPECT_TRUE_TYPE(std::is_same<decltype(iter), decltype(ranges::begin(v))>);
+  }
+  { // begin 2
+    {
+      std::forward_list<preview::string_view> v = {"Ax"_sv, "Ey"_sv, "p"_sv, "q"_sv};
+#if PREVIEW_CXX_VERSION >= 17
+      auto view = ranges::take_view(v, 8);
+#else
+      auto view = views::take(v, 8);
+#endif
+      auto iter = view.begin();
+      EXPECT_EQ(*iter, "Ax"_sv);
+
+      EXPECT_FALSE_TYPE(ranges::sized_range<decltype(v)>);
+      EXPECT_FALSE_TYPE(ranges::random_access_range<decltype(v)>);
+      EXPECT_TRUE_TYPE(std::is_same<
+          decltype(iter),
+          preview::counted_iterator<std::forward_list<preview::string_view>::iterator>
+      >);
+    }
+  }
+
+  { // end
+    const auto list1 = {3, 1, 4, 1, 5};
+    const auto seq1 = list1 | views::take(4);
+
+    EXPECT_TRUE_TYPE(ranges::sized_range<decltype(seq1)>);
+    EXPECT_TRUE_TYPE(ranges::random_access_range<decltype(seq1)>);
+    EXPECT_TRUE_TYPE(std::is_same<decltype(seq1.end()), decltype(list1.end())>);
+
+    for (auto it = seq1.begin(); it != seq1.end(); ++it) { (void)*it; }
+    EXPECT_TRUE(ranges::equal(seq1, {3, 1, 4, 1}));
+
+    std::list<int> list2 = {2, 7, 1, 8, 2};
+    const auto seq2 = list2 | views::take(4);
+    EXPECT_TRUE_TYPE (ranges::sized_range<decltype(seq2)>);
+    EXPECT_FALSE_TYPE(ranges::random_access_range<decltype(seq2)>);
+    EXPECT_TRUE_TYPE (std::is_same<decltype(seq2.end()), preview::default_sentinel_t>);
+
+    for (auto it = seq2.begin(); it != preview::default_sentinel; ++it) { (void)*it; }
+    EXPECT_TRUE(ranges::equal(seq2, {2, 7, 1, 8}));
+  }
+
+  { // size
+    constexpr int arr[]{1, 2, 3};
+    EXPECT_TRUE(ranges::equal(
+        views::iota(0, 6) | views::transform(preview::bind_front(views::take, arr)),
+        {0, 1, 2, 3, 3, 3},
+        {},
+        [](auto&& tv) { return tv.size(); }
+    ));
+  }
+
+  constexpr char pi[]{'3', '.', '1', '4', '1', '5', '9', '2'};
+
+  std::string out;
+  auto print = [&](char x){ out.push_back(x); };
+
+  ranges::for_each(pi | views::take(6), print);
+  EXPECT_EQ(out, "3.1415"s);
+
+  // safely takes 8 chars only, i.e. min(pi.size(), 42)
+  out.clear();
+#if PREVIEW_CXX_VERSION >= 17
+  ranges::for_each(ranges::take_view{pi, 42}, print);
+#else
+  ranges::for_each(views::take(pi, 42), print);
+#endif
+  EXPECT_EQ(out, "3.141592");
 }
