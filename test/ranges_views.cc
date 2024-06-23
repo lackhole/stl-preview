@@ -263,3 +263,29 @@ TEST(VERSIONED(RangesViews), all_view) {
       ranges::subrange<int*, int*, ranges::subrange_kind(1)>
   >{}, "");
 }
+
+
+TEST(VERSIONED(RangesViews), ref_view) {
+  using namespace preview::literals;
+
+  const std::string s{"cosmos"};
+
+#if PREVIEW_CXX_VERSION >= 17
+  const ranges::take_view tv{s, 3};
+  const ranges::ref_view rv{tv};
+#else
+  const ranges::take_view<views::all_t<decltype(s)&>> tv{s, 3};
+  const ranges::ref_view<std::remove_reference_t<decltype(tv)>> rv{tv};
+#endif
+
+  EXPECT_FALSE(rv.empty());
+  EXPECT_EQ(rv.size(), 3);
+  EXPECT_EQ(*rv.begin(), 'c');
+  EXPECT_EQ(*(rv.end() - 1), 's');
+  EXPECT_EQ(std::strncmp(rv.data(), s.data(), 10), 0);
+  EXPECT_EQ(rv.base().size(), 3);
+  EXPECT_TRUE(ranges::equal(
+      rv,
+      "cos"_sv
+  ));
+}
