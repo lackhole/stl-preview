@@ -405,10 +405,12 @@ TEST(VERSIONED(RangesViews), transform_view) {
   ranges::for_each(in | views::transform(rot13), show);
   EXPECT_TRUE(ranges::equal(in | views::transform(rot13), "pccersrerapr.pbz\n"s));
 
+#if !PREVIEW_ANDROID || defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26
   std::string out;
   ranges::copy(views::transform(in, rot13), std::back_inserter(out));
   EXPECT_EQ(out, "pccersrerapr.pbz\n"s);
   ranges::for_each(out, show);
   ranges::for_each(out | views::transform(rot13), show);
   EXPECT_TRUE(ranges::equal(out | views::transform(rot13), "cppreference.com\n"s));
+#endif
 }
