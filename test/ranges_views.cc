@@ -358,16 +358,44 @@ char rot13(const char x) {
 TEST(VERSIONED(RangesViews), transform_view) {
   using namespace std::literals;
   { // ctor
-    std::cout << std::setprecision(15) << std::fixed;
     auto atan1term = ranges::views::transform(
         [](int n) { return ((n % 2) ? -1 : 1) * 1.0 / (2 * n + 1); }
     );
+
+    std::vector<double> out;
     for (const int iterations : {1, 2, 3, 4, 5, 10, 100, 1000, 1'000'000})
     {
       auto seq = views::iota(0, iterations) | atan1term;
       const double accum = std::accumulate(seq.begin(), seq.end(), 0.0);
-      std::cout << "π ~ " << 4 * accum << " (iterations: " << iterations << ")\n";
+      out.push_back(4 * accum);
     }
+    EXPECT_DOUBLE_EQ(out[0], 4.000000000000000);
+    EXPECT_DOUBLE_EQ(out[1], 2.666666666666667);
+    EXPECT_DOUBLE_EQ(out[2], 3.466666666666667);
+    EXPECT_DOUBLE_EQ(out[3], 2.895238095238096);
+    EXPECT_DOUBLE_EQ(out[4], 3.339682539682540);
+    EXPECT_DOUBLE_EQ(out[5], 3.041839618929403);
+    EXPECT_DOUBLE_EQ(out[6], 3.131592903558554);
+    EXPECT_DOUBLE_EQ(out[7], 3.140592653839794);
+    EXPECT_DOUBLE_EQ(out[8], 3.141591653589774);
+  }
+
+  {
+    std::string s{"The length of this string is 42 characters"};
+#if PREVIEW_CXX_VERSION >= 17
+    auto tv = ranges::transform_view{s, [](char c) -> char {
+      return std::toupper(c);
+    }};
+#else
+    auto tv = views::transform(s, [](char c) -> char {
+      return std::toupper(c);
+    });
+#endif
+    std::vector<char> out;
+    for (auto x : tv) { out.push_back(x); }
+
+    EXPECT_TRUE(ranges::equal(out, "THE LENGTH OF THIS STRING IS 42 CHARACTERS"s));
+    EXPECT_EQ(tv.size(), 42);
   }
 
   auto show = [](const unsigned char) {};
