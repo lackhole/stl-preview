@@ -691,7 +691,7 @@ Description
   | `ranges::ref_view`                                                | ![][c20ok]           |            |
   | `ranges::owning_view`                                             | ![][c20ok]           |            |
   | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]           |            |
-  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           |            |
+  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           | ![][c23ok] |
   | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]           |            |
   | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]           |            |
   | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           |            |
