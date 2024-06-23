@@ -13,6 +13,7 @@
 #include <set>
 #include <istream>
 #include <iostream>
+#include <numeric>
 #include <sstream>
 #include <stack>
 #include <tuple>
@@ -338,4 +339,48 @@ TEST(VERSIONED(RangesViews), filter_view) {
       views::iota(0, 6) | views::filter(even) | views::transform(square),
       {0, 4, 16}
   ));
+}
+
+char rot13a(const char x, const char a) {
+  return a + (x - a + 13) % 26;
+}
+
+char rot13(const char x) {
+  if ('Z' >= x && x >= 'A')
+    return rot13a(x, 'A');
+
+  if ('z' >= x && x >= 'a')
+    return rot13a(x, 'a');
+
+  return x;
+}
+
+TEST(VERSIONED(RangesViews), transform_view) {
+  using namespace std::literals;
+  { // ctor
+    std::cout << std::setprecision(15) << std::fixed;
+    auto atan1term = ranges::views::transform(
+        [](int n) { return ((n % 2) ? -1 : 1) * 1.0 / (2 * n + 1); }
+    );
+    for (const int iterations : {1, 2, 3, 4, 5, 10, 100, 1000, 1'000'000})
+    {
+      auto seq = views::iota(0, iterations) | atan1term;
+      const double accum = std::accumulate(seq.begin(), seq.end(), 0.0);
+      std::cout << "π ~ " << 4 * accum << " (iterations: " << iterations << ")\n";
+    }
+  }
+
+  auto show = [](const unsigned char) {};
+
+  std::string in{"cppreference.com\n"};
+  ranges::for_each(in, show);
+  ranges::for_each(in | views::transform(rot13), show);
+  EXPECT_TRUE(ranges::equal(in | views::transform(rot13), "pccersrerapr.pbz\n"s));
+
+  std::string out;
+  ranges::copy(views::transform(in, rot13), std::back_inserter(out));
+  EXPECT_EQ(out, "pccersrerapr.pbz\n"s);
+  ranges::for_each(out, show);
+  ranges::for_each(out | views::transform(rot13), show);
+  EXPECT_TRUE(ranges::equal(out | views::transform(rot13), "cppreference.com\n"s));
 }
