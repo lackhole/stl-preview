@@ -365,17 +365,13 @@ void mutate(V& v)
 template<class K, class V>
 void mutate_map_values(std::multimap<K, V>& m, K k)
 {
-#if PREVIEW_CXX_VERSION >= 20
+#if PREVIEW_CXX_VERSION >= 17
   auto [first, last] = m.equal_range(k);
   for (auto& [_, v] : ranges::subrange(first, last))
     mutate(v);
-#elif PREVIEW_CXX_VERSION >= 17
-  auto [first, last] = m.equal_range(k);
-  for (auto& [_, v] : ranges::make_subrange(first, last))
-    mutate(v);
 #else
-  auto p =  m.equal_range(k);
-  for (auto& p : ranges::make_subrange(p.first, p.second))
+  auto r =  m.equal_range(k);
+  for (auto& p : ranges::make_subrange(r.first, r.second))
     mutate(p.second);
 #endif
 }
