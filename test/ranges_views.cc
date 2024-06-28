@@ -548,12 +548,16 @@ TEST(VERSIONED(RangesViews), take_while_view) {
 #if PREVIEW_CXX_VERSION >= 17
   for (char x : ranges::take_while_view(note, [](char c){ return c != '.'; })) { (void)x; }
 #endif
-  EXPECT_TRUE(ranges::equal(
+
 #if PREVIEW_CXX_VERSION >= 17
+  EXPECT_TRUE(ranges::equal(
       ranges::take_while_view(note, [](char c){ return c != '.'; }),
-#else
-      views::take_while(note, [](char c){ return c != '.'; }),
-#endif
       "Today is yesterday's tomorrow!"_sv
   ));
+#else
+  EXPECT_TRUE(ranges::equal(
+      views::take_while(note, [](char c){ return c != '.'; }),
+      "Today is yesterday's tomorrow!"_sv
+  ));
+#endif
 }
