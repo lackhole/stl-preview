@@ -597,16 +597,13 @@ TEST(VERSIONED(RangesViews), drop_view) {
 
     for (auto it = site.begin(); it != site.end(); ++it)
       std::cout << *it; //                ^^^
-
-    EXPECT_TRUE(ranges::equal(
-#if PREVIEW_CXX_VERSION >= 17
-        ranges::subrange{site.begin(), site.end()},
-#else
-        ranges::make_subrange(site.begin(), site.end()),
-#endif
-        "cppreference.com"
-    ));
     std::cout << '\n';
+
+#if PREVIEW_CXX_VERSION >= 17
+    EXPECT_TRUE(ranges::equal(ranges::subrange{site.begin(), site.end()}, "cppreference.com"));
+#else
+    EXPECT_TRUE(ranges::equal(ranges::make_subrange(site.begin(), site.end()), "cppreference.com"));
+#endif
   }
 
   { // size
