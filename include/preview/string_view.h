@@ -17,6 +17,7 @@
 #include <ostream>
 
 #include "preview/core.h"
+#include "preview/__type_traits/has_conversion_operator.h"
 
 #if PREVIEW_CXX_VERSION >= 17
 #include <string_view>
@@ -42,16 +43,6 @@
 #include "preview/__type_traits/remove_cvref.h"
 
 namespace preview {
-namespace detail {
-
-template<typename D, typename SV, typename = void>
-struct has_operator_string_view
-  : std::false_type {};
-template<typename D, typename SV>
-struct has_operator_string_view<D, SV, void_t<decltype( std::declval<D&>().operator SV() )>>
-    : std::is_same<SV, decltype( std::declval<D&>().operator SV() )> {};
-
-} // namespace detail
 
 template<
     typename CharT,
@@ -98,9 +89,9 @@ class basic_string_view {
       ranges::contiguous_range<R>,
       ranges::sized_range<R>,
       negation<convertible_to<R, const CharT*>>,
-      negation<detail::has_operator_string_view<remove_cvref_t<R>, basic_string_view>>
+      negation<has_conversion_operator<remove_cvref_t<R>, basic_string_view>>
 #if PREVIEW_CXX_VERSION >= 17
-      , negation<detail::has_operator_string_view<remove_cvref_t<R>, std::basic_string_view<CharT, Traits>>>
+      , negation<has_conversion_operator<remove_cvref_t<R>, std::basic_string_view<CharT, Traits>>>
 #endif
   >::value, int> = 0>
   constexpr explicit basic_string_view(R&& r)
