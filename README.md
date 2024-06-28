@@ -694,7 +694,7 @@ Description
   | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           | ![][c23ok] |
   | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]           |            |
   | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]           |            |
-  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           |            |
+  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           | ![][c23ok] |
   | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]           |            |
   | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]           |            |
   | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20ok]           |            |

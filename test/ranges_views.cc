@@ -561,3 +561,93 @@ TEST(VERSIONED(RangesViews), take_while_view) {
   ));
 #endif
 }
+
+TEST(VERSIONED(RangesViews), drop_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  { // ctor
+    constexpr std::array<char, 12> hi{'H', 'e', 'l', 'l', 'o', ',', ' ', 'C', '+', '+', '2', '0'};
+
+    ranges::for_each(hi, [](const char c){ std::cout << c; });
+    EXPECT_TRUE(ranges::equal(hi, "Hello, C++20"_sv));
+
+    PREVIEW_CONSTEXPR_AFTER_CXX20 auto n = std::distance(hi.cbegin(), ranges::find(hi, 'C'));
+
+#if PREVIEW_CXX_VERSION >= 17
+    auto cxx = ranges::drop_view{hi, n};
+#else
+    auto cxx = views::drop(hi, n);
+#endif
+
+    ranges::for_each(cxx, [](const char c){ std::cout << c; });
+    EXPECT_EQ(*cxx.begin(), 'C');
+    EXPECT_TRUE(ranges::equal(cxx, "C++20"_sv));
+  }
+
+  { // end
+    constexpr char url[]{"https://cppreference.com"};
+
+    const auto p = std::distance(ranges::begin(url), ranges::find(url, '/'));
+#if PREVIEW_CXX_VERSION >= 17
+    auto site = ranges::drop_view{url, p + 2}; // drop the prefix "https://"
+#else
+    auto site = url | views::drop(p + 2);
+#endif
+
+    for (auto it = site.begin(); it != site.end(); ++it)
+      std::cout << *it; //                ^^^
+
+    EXPECT_TRUE(ranges::equal(
+#if PREVIEW_CXX_VERSION >= 17
+        ranges::subrange{site.begin(), site.end()},
+#else
+        ranges::make_subrange(site.begin(), site.end()),
+#endif
+        "cppreference.com"
+    ));
+    std::cout << '\n';
+  }
+
+  { // size
+    constexpr std::array<int, 3> a{42, 43, 44};
+#if PREVIEW_CXX_VERSION >= 17
+    static_assert(ranges::drop_view{views::all(a), 0}.size() == 3);
+    static_assert(ranges::drop_view{views::all(a), 1}.size() == 2);
+    static_assert(ranges::drop_view{views::all(a), 2}.size() == 1);
+    static_assert(ranges::drop_view{views::all(a), 3}.size() == 0);
+    static_assert(ranges::drop_view{views::all(a), 4}.size() == 0);
+#else
+    EXPECT_EQ(views::drop(views::all(a), 0).size(), 3);
+    EXPECT_EQ(views::drop(views::all(a), 1).size(), 2);
+    EXPECT_EQ(views::drop(views::all(a), 2).size(), 1);
+    EXPECT_EQ(views::drop(views::all(a), 3).size(), 0);
+    EXPECT_EQ(views::drop(views::all(a), 4).size(), 0);
+#endif
+  }
+
+  auto ints = views::iota(0) | views::take(10);
+#if PREVIEW_CXX_VERSION >= 17
+  for (auto i : ints | views::drop(5)) { (void)i; }
+#endif
+  EXPECT_TRUE(ranges::equal(
+      ints | views::drop(5),
+      {5, 6, 7, 8, 9}
+  ));
+
+  const auto nums = {1, 2, 3, 4, 5, 6, 7};
+  std::vector<int> empty_nums;
+
+#if PREVIEW_CXX_VERSION >= 17
+  EXPECT_TRUE(ranges::equal(ranges::drop_view{nums, 2}, {3, 4, 5, 6, 7}));
+#else
+  EXPECT_TRUE(ranges::equal(views::drop(nums, 2), {3, 4, 5, 6, 7}));
+#endif
+  EXPECT_TRUE(ranges::equal(nums | views::drop(3), {4, 5, 6, 7}));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(4), {5, 6, 7}));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(5), {6, 7}));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(6), {7}));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(7), empty_nums));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(890), empty_nums));
+  EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(100500), empty_nums));
+}
