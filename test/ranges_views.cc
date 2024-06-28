@@ -651,3 +651,40 @@ TEST(VERSIONED(RangesViews), drop_view) {
   EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(890), empty_nums));
   EXPECT_TRUE(ranges::equal(views::iota(1, 8) | views::drop(100500), empty_nums));
 }
+
+bool is_space(char q) noexcept {
+  static auto ws = {' ', '\t', '\n', '\v', '\r', '\f'};
+  return ranges::any_of(ws, [q](auto p) { return p == q; });
+};
+
+std::string trim_left(preview::string_view const in) noexcept {
+  auto view = in | views::drop_while(is_space);
+  return {view.begin(), view.end()};
+}
+
+std::string trim(preview::string_view const in) {
+  auto view = in
+      | views::drop_while(is_space) | views::reverse
+      | views::drop_while(is_space) | views::reverse;
+  return {view.begin(), view.end()};
+}
+
+TEST(VERSIONED(RangesViews), drop_while_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  EXPECT_EQ(trim_left(" \n C++23"), "C++23"_sv);
+  preview::string_view src = " \f\n\t\r\vHello, C++20!\f\n\t\r\v ";
+
+  const auto s = trim(src);
+  EXPECT_EQ(s, "Hello, C++20!"s);
+
+  static constexpr auto v = {0, 1, 2, 3, 4, 5};
+  for (int n : v | views::drop_while([](int i) { return i < 3; }))
+    std::cout << n << ' ';
+  std::cout << '\n';
+  EXPECT_TRUE(ranges::equal(
+      v | views::drop_while([](int i) { return i < 3; }),
+      {3, 4, 5}
+  ));
+}

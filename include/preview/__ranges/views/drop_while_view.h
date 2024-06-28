@@ -25,9 +25,38 @@
 
 namespace preview {
 namespace ranges {
+namespace detail {
+
+template<typename DropWhileView, typename V, bool Cached = forward_range<V>::value/* true */>
+struct drop_while_view_cached_begin : public view_interface<DropWhileView> {
+  template<typename Base, typename Pred>
+  constexpr auto begin(Base& base, Pred& pred) {
+    if (!cached_begin_.has_value()) {
+      cached_begin_.emplace(ranges::find_if_not(base, std::cref(*pred)));
+    }
+    return *cached_begin_;
+  }
+
+ private:
+  non_propagating_cache<iterator_t<V>> cached_begin_;
+};
+
+template<typename DropWhileView, typename V>
+struct drop_while_view_cached_begin<DropWhileView, V, false> : public view_interface<DropWhileView> {
+  template<typename Base, typename Pred>
+  constexpr auto begin(Base& base, Pred& pred) {
+    return ranges::find_if_not(base, std::cref(*pred));
+  }
+};
+
+} // namespace detail
 
 template<typename V, typename Pred>
-class drop_while_view : public view_interface<drop_while_view<V, Pred>> {
+class drop_while_view
+    : public detail::drop_while_view_cached_begin<drop_while_view<V, Pred>, V>
+{
+  using begin_base = detail::drop_while_view_cached_begin<drop_while_view<V, Pred>, V>;
+
  public:
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(input_range<V>::value, "Constraints not satisfied");
@@ -39,7 +68,9 @@ class drop_while_view : public view_interface<drop_while_view<V, Pred>> {
   constexpr explicit drop_while_view(V base, Pred pred)
       : base_(std::move(base)), pred_(std::move(pred)) {}
 
-  template<typename V2 = V, std::enable_if_t<copy_constructible<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<V>
+  >::value, int> = 0>
   constexpr V base() const& {
     return base_;
   }
@@ -53,10 +84,7 @@ class drop_while_view : public view_interface<drop_while_view<V, Pred>> {
   }
 
   constexpr auto begin() {
-    if (!cached_begin_) {
-      cached_begin_.emplace(ranges::find_if_not(base_, std::cref(*pred_)));
-    }
-    return *cached_begin_;
+    return begin_base::begin(base_, pred_);
   }
 
   constexpr auto end() {
@@ -66,8 +94,6 @@ class drop_while_view : public view_interface<drop_while_view<V, Pred>> {
  private:
   V base_{};
   movable_box<Pred> pred_{};
-  using begin_type = decltype(ranges::find_if_not(base_, std::cref(*pred_)));
-  non_propagating_cache<begin_type> cached_begin_;
 };
 
 #if __cplusplus >= 201703L
