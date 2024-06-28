@@ -673,6 +673,41 @@ TEST(VERSIONED(RangesViews), drop_while_view) {
   using namespace std::literals;
   using namespace preview::literals;
 
+  { // ctor
+    constexpr std::array<int, 8> data{0, -1, -2, 3, 1, 4, 1, 5};
+
+#if PREVIEW_CXX_VERSION >= 17
+    auto view = ranges::drop_while_view{data, [](int x) { return x <= 0; }};
+#else
+    auto view = views::drop_while(data, [](int x) { return x <= 0; });
+#endif
+
+    for (int x : view)
+      std::cout << x << ' ';
+    std::cout << '\n';
+    EXPECT_TRUE(ranges::equal(view, {3, 1, 4, 1, 5}));
+    EXPECT_TRUE(ranges::equal(data, views::concat(views::repeat(true, 3), views::repeat(false, 5)), {}, view.pred()));
+    EXPECT_EQ(*view.begin(), 3);
+
+    for (auto it = view.begin(); it != view.end(); ++it)
+      std::cout << *it << ' ';
+    std::cout << '\n';
+  }
+
+  { // base
+    std::array<int, 5> data{1, 2, 3, 4, 5};
+    auto func = [](int x) { return x < 3; };
+#if PREVIEW_CXX_VERSION >= 17
+    auto view = ranges::drop_while_view{data, func};
+#else
+    auto view = views::drop_while(data, func);
+#endif
+    EXPECT_TRUE(ranges::equal(view, {3, 4, 5}));
+
+    auto base = view.base(); // `base` refers to the `data`
+    (void)base;
+  }
+
   EXPECT_EQ(trim_left(" \n C++23"), "C++23"_sv);
   preview::string_view src = " \f\n\t\r\vHello, C++20!\f\n\t\r\v ";
 
