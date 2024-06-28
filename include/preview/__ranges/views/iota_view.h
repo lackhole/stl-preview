@@ -36,6 +36,7 @@
 #include "preview/__type_traits/type_identity.h"
 #include "preview/__type_traits/void_t.h"
 #include "preview/__utility/cxx20_rel_ops.h"
+#include "preview/__utility/to_unsigned_like.h"
 
 namespace preview {
 namespace ranges {
@@ -410,19 +411,13 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   }
 
  private:
-  template<typename T>
-  static constexpr auto to_unsigned_like(T x) {
-    using R = std::make_unsigned_t<T>;
-    return static_cast<R>(x);
-  }
-
   constexpr auto size_impl(std::true_type) const {
     return (value_ < 0)
         ? ((bound_ < 0)
-            ? to_unsigned_like(-value_) - to_unsigned_like(-bound_)
-            : to_unsigned_like(bound_) + to_unsigned_like(-value_)
+            ? preview::to_unsigned_like(-value_) - preview::to_unsigned_like(-bound_)
+            : preview::to_unsigned_like(bound_) + preview::to_unsigned_like(-value_)
           )
-        : to_unsigned_like(bound_) - to_unsigned_like(value_);
+        : preview::to_unsigned_like(bound_) - preview::to_unsigned_like(value_);
   }
   constexpr auto size_impl(std::false_type) const {
     return static_cast<std::size_t>(bound_ - value_);
