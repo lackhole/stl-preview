@@ -528,8 +528,10 @@ TEST(VERSIONED(RangesViews), take_while_view) {
   using namespace std::literals;
   using namespace preview::literals;
 
+#if PREVIEW_CXX_VERSION >= 17
   for (int year : views::iota(2020)
       | views::take_while([](int y){ return y < 2026; })) { (void)year; }
+#endif
 
   auto r1 = views::iota(10) | views::take_while([](int x) { return true; });
   auto r2 = views::iota(10, 20) | views::take_while([](int x) { return true; });
@@ -543,9 +545,15 @@ TEST(VERSIONED(RangesViews), take_while_view) {
   ));
 
   const char note[]{"Today is yesterday's tomorrow!..."};
+#if PREVIEW_CXX_VERSION >= 17
   for (char x : ranges::take_while_view(note, [](char c){ return c != '.'; })) { (void)x; }
+#endif
   EXPECT_TRUE(ranges::equal(
+#if PREVIEW_CXX_VERSION >= 17
       ranges::take_while_view(note, [](char c){ return c != '.'; }),
+#else
+      views::take_while(note, [](char c){ return c != '.'; }),
+#endif
       "Today is yesterday's tomorrow!"_sv
   ));
 }
