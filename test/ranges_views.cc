@@ -523,3 +523,29 @@ TEST(VERSIONED(RangesViews), take_view) {
 #endif
   EXPECT_EQ(out, "3.141592");
 }
+
+TEST(VERSIONED(RangesViews), take_while_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  for (int year : views::iota(2020)
+      | views::take_while([](int y){ return y < 2026; })) { (void)year; }
+
+  auto r1 = views::iota(10) | views::take_while([](int x) { return true; });
+  auto r2 = views::iota(10, 20) | views::take_while([](int x) { return true; });
+
+  auto it1 = r1.end();
+  auto it2 = r2.end();
+
+  EXPECT_TRUE(ranges::equal(
+      views::iota(2020) | views::take_while([](int y){ return y < 2026; }),
+      {2020, 2021, 2022, 2023, 2024, 2025}
+  ));
+
+  const char note[]{"Today is yesterday's tomorrow!..."};
+  for (char x : ranges::take_while_view(note, [](char c){ return c != '.'; })) { (void)x; }
+  EXPECT_TRUE(ranges::equal(
+      ranges::take_while_view(note, [](char c){ return c != '.'; }),
+      "Today is yesterday's tomorrow!"_sv
+  ));
+}
