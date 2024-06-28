@@ -572,7 +572,10 @@ TEST(VERSIONED(RangesViews), drop_view) {
     ranges::for_each(hi, [](const char c){ std::cout << c; });
     EXPECT_TRUE(ranges::equal(hi, "Hello, C++20"_sv));
 
-    PREVIEW_CONSTEXPR_AFTER_CXX20 auto n = std::distance(hi.cbegin(), ranges::find(hi, 'C'));
+#if PREVIEW_CXX_VERSION >= 20 && (!defined(PREVIEW_NDK_VERSION_MAJOR) || PREVIEW_NDK_VERSION_MAJOR >= 26)
+    constexpr
+#endif
+    auto n = std::distance(hi.cbegin(), ranges::find(hi, 'C'));
 
 #if PREVIEW_CXX_VERSION >= 17
     auto cxx = ranges::drop_view{hi, n};
