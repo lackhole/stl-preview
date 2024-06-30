@@ -23,7 +23,7 @@ namespace detail {
 struct filter_niebloid {
   template<typename R, typename Pred, std::enable_if_t<viewable_range<R>::value, int> = 0>
   constexpr auto operator()(R&& r, Pred&& pred) const {
-    return filter_view<all_t<R>, remove_cvref_t<Pred>>(std::forward<R>(r), std::forward<Pred>(pred));
+    return filter_view<all_t<R>, std::decay_t<Pred>>{std::forward<R>(r), std::forward<Pred>(pred)};
   }
 
   template<typename Pred>

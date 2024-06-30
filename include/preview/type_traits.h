@@ -14,6 +14,7 @@
 #include "preview/__type_traits/copy_cvref.h"
 #include "preview/__type_traits/copy_template.h"
 #include "preview/__type_traits/disjunction.h"
+#include "preview/__type_traits/has_conversion_operator.h"
 #include "preview/__type_traits/has_operator_arrow.h"
 #include "preview/__type_traits/has_typename_difference_type.h"
 #include "preview/__type_traits/has_typename_element_type.h"

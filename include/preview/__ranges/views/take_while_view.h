@@ -35,7 +35,7 @@ namespace preview {
 namespace ranges {
 
 template<typename V, typename Pred>
-class take_while_view {
+class take_while_view : public view_interface<take_while_view<V, Pred>> {
  public:
   static_assert(ranges::view<V>::value, "Constraints not satisfied");
   static_assert(ranges::input_range<V>::value, "Constraints not satisfied");
@@ -78,6 +78,38 @@ class take_while_view {
     }
 
     friend constexpr bool operator!=(const sentinel& y, const iterator_t<Base>& x) {
+      return !(x == y);
+    }
+
+    template<bool OtherConst, std::enable_if_t<conjunction<
+        bool_constant<(Const != OtherConst)>,
+        sentinel_for<sentinel_t<Base>, iterator_t<maybe_const<OtherConst, V>>>
+    >::value, int> = 0>
+    friend constexpr bool operator==(const iterator_t<maybe_const<OtherConst, V>>& x, const sentinel& y) {
+      return x == y.end_ || !preview::invoke(*y.pred_, *x);
+    }
+
+    template<bool OtherConst, std::enable_if_t<conjunction<
+        bool_constant<(Const != OtherConst)>,
+        sentinel_for<sentinel_t<Base>, iterator_t<maybe_const<OtherConst, V>>>
+    >::value, int> = 0>
+    friend constexpr bool operator==(const sentinel& y, const iterator_t<maybe_const<OtherConst, V>>& x) {
+      return x == y;
+    }
+
+    template<bool OtherConst, std::enable_if_t<conjunction<
+        bool_constant<(Const != OtherConst)>,
+        sentinel_for<sentinel_t<Base>, iterator_t<maybe_const<OtherConst, V>>>
+    >::value, int> = 0>
+    friend constexpr bool operator!=(const iterator_t<maybe_const<OtherConst, V>>& x, const sentinel& y) {
+      return !(x == y);
+    }
+
+    template<bool OtherConst, std::enable_if_t<conjunction<
+        bool_constant<(Const != OtherConst)>,
+        sentinel_for<sentinel_t<Base>, iterator_t<maybe_const<OtherConst, V>>>
+    >::value, int> = 0>
+    friend constexpr bool operator!=(const sentinel& y, const iterator_t<maybe_const<OtherConst, V>>& x) {
       return !(x == y);
     }
 
@@ -125,7 +157,7 @@ class take_while_view {
       negation<simple_view<V>>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 auto end() {
-    return sentinel<false>{ranges::end(base_), pred_.operator->()};
+    return sentinel<false>{ranges::end(base_), std::addressof(*pred_)};
   }
 
   template<typename Dummy = void, std::enable_if_t<preview::conjunction<std::is_void<Dummy>,
@@ -133,7 +165,7 @@ class take_while_view {
       indirect_unary_predicate<const Pred, iterator_t<const V>>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 auto end() const {
-    return sentinel<true>{ranges::end(base_), pred_.operator->()};
+    return sentinel<true>{ranges::end(base_), std::addressof(*pred_)};
   }
 
  private:

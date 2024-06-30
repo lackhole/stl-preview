@@ -29,8 +29,7 @@ struct repeat_niebloid {
       std::is_object< remove_cvref_t<W> >
   >::value, int> = 0>
   constexpr auto operator()(W&& value) const {
-    using RV = repeat_view<remove_cvref_t<W>>;
-    return RV(std::forward<W>(value));
+    return repeat_view<std::decay_t<W>>{std::forward<W>(value)};
   }
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
@@ -42,8 +41,7 @@ struct repeat_niebloid {
       >
   >::value, int> = 0>
   constexpr auto operator()(W&& value, Bound&& bound) const {
-    using RV = repeat_view<remove_cvref_t<W>, remove_cvref_t<Bound>>;
-    return RV(std::forward<W>(value), std::forward<Bound>(bound));
+    return repeat_view<std::decay_t<W>, std::decay_t<Bound>>{std::forward<W>(value), std::forward<Bound>(bound)};
   }
 };
 

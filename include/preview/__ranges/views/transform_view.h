@@ -59,13 +59,13 @@ template<typename V, typename F>
 class transform_view : public view_interface<transform_view<V, F>> {
  public:
   static_assert(input_range<V>::value, "Constraints not satisfied");
-  static_assert(copy_constructible<F>::value, "Constraints not satisfied");
+  static_assert(move_constructible<F>::value, "Constraints not satisfied");
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(std::is_object<F>::value, "Constraints not satisfied");
   static_assert(regular_invocable<F&, range_reference_t<V>>::value, "Constraints not satisfied");
+  static_assert(is_referencable<invoke_result_t<F&, range_reference_t<V>>>::value, "Constraints not satisfied");
 
  private:
-
   template<typename Base, bool v = forward_range<Base>::value /* false */>
   struct transform_view_iterator_category {
 #if !PREVIEW_STD_HAVE_CXX20_ITERATOR
@@ -95,6 +95,7 @@ class transform_view : public view_interface<transform_view<V, F>> {
 
     template<bool B> friend class sentinel;
     friend class transform_view;
+    friend class iterator<false>;
    public:
     using iterator_concept =
       conditional_t<
@@ -107,20 +108,22 @@ class transform_view : public view_interface<transform_view<V, F>> {
     using difference_type = range_difference_t<Base>;
 #if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
-    using reference = invoke_result_t<decltype(std::declval<F&>()), decltype(*std::declval<iterator_t<Base>&>())>;
+    using reference = invoke_result_t<decltype(std::declval<const F&>()), decltype(*std::declval<iterator_t<Base>&>())>;
 #endif
 
     iterator() = default;
 
     constexpr iterator(Parent& parent, iterator_t<Base> current)
-        : current_(std::move(current)), parent_(preview::addressof(parent)) {}
+        : current_(std::move(current))
+        , parent_(preview::addressof(parent)) {}
 
     template<bool AntiConst, std::enable_if_t<conjunction<
         bool_constant<((Const != AntiConst) && Const)>,
         convertible_to<iterator_t<V>, iterator_t<Base>>
     >::value, int> = 0>
     constexpr iterator(iterator<AntiConst> i)
-        : current_(std::move(i.current_)), parent_(i.praent_) {}
+        : current_(std::move(i.current_))
+        , parent_(i.praent_) {}
 
     constexpr const iterator_t<Base>& base() const & noexcept { return current_; }
     constexpr iterator_t<Base> base() && { return std::move(current_); }
@@ -129,7 +132,9 @@ class transform_view : public view_interface<transform_view<V, F>> {
       return preview::invoke(*parent_->func_, *current_);
     }
 
-    template<typename B = Base, std::enable_if_t<random_access_range<B>::value, int> = 0>
+    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+        random_access_range<Base>
+    >::value, int> = 0>
     constexpr decltype(auto) operator[](difference_type n) const {
       return preview::invoke(*parent_->func_, current_[n]);
     }
@@ -303,7 +308,9 @@ class transform_view : public view_interface<transform_view<V, F>> {
 
   transform_view() = default;
 
-  constexpr explicit transform_view(V base, F func) : base_(std::move(base)), func_(func) {}
+  constexpr explicit transform_view(V base, F func)
+      : base_(std::move(base))
+      , func_(std::move(func)) {}
 
   template<typename V2 = V, std::enable_if_t<copy_constructible<V2>::value, int> = 0>
   constexpr V base() const& {
@@ -326,12 +333,16 @@ class transform_view : public view_interface<transform_view<V, F>> {
     return iterator<true>{*this, ranges::begin(base_)};
   }
 
-  template<typename V2 = V, std::enable_if_t<common_range<V2>::value == false, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< common_range<V> >
+  >::value, int> = 0>
   constexpr sentinel<false> end() {
     return sentinel<false>{ranges::end(base_)};
   }
 
-  template<typename V2 = V, std::enable_if_t<common_range<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      common_range<V>
+  >::value, int> = 0>
   constexpr iterator<false> end() {
     return iterator<false>{*this, ranges::end(base_)};
   }
@@ -353,18 +364,22 @@ class transform_view : public view_interface<transform_view<V, F>> {
     return iterator<true>{*this, ranges::end(base_)};
   }
 
-  template<typename V2 = V, std::enable_if_t<sized_range<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      sized_range<V>
+  >::value, int> = 0>
   constexpr auto size() {
     return ranges::size(base_);
   }
 
-  template<typename V2 = const V, std::enable_if_t<sized_range<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      sized_range<const V>
+  >::value, int> = 0>
   constexpr auto size() const {
     return ranges::size(base_);
   }
 
  private:
-  V base_;
+  V base_{};
   movable_box<F> func_;
 };
 

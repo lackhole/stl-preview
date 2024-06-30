@@ -11,6 +11,7 @@
 #
 # include "preview/__core/inline_variable.h"
 # include "preview/__tuple/specialize_tuple.h"
+# include "preview/__type_traits/common_type.h"
 # include "preview/__type_traits/conjunction.h"
 # include "preview/__type_traits/is_swappable.h"
 
@@ -53,7 +54,7 @@ struct compressed_pair_empty_t {};
 PREVIEW_INLINE_VARIABLE constexpr compressed_pair_empty_t compressed_pair_empty;
 
 
-// An size-optimized pair using empty base optimization
+// A size-optimized pair using empty base optimization
 template<typename T, typename U>
 class compressed_pair : public detail::compressed_slot<T, 0>, public detail::compressed_slot<U, 1> {
  private:
@@ -90,9 +91,30 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
   constexpr const U& second() const & noexcept { return second_base::template get<1>(); }
   constexpr const U&& second() const && noexcept { return std::move(second_base::template get<1>()); }
 
-  constexpr std::enable_if_t<conjunction<is_swappable<T>, is_swappable<U>>::value>
-  swap(compressed_pair& other)
-      noexcept(conjunction<is_nothrow_swappable<T>, is_nothrow_swappable<U>>::value)
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      is_swappable<T>,
+      is_swappable<U>
+  >::value, int> = 0>
+  constexpr void swap(compressed_pair& other)
+      noexcept(conjunction<
+          is_nothrow_swappable<T>,
+          is_nothrow_swappable<U>
+      >::value)
+  {
+    using std::swap;
+    swap(first(), other.first());
+    swap(second(), other.second());
+  }
+
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      is_swappable<const T>,
+      is_swappable<const U>
+  >::value, int> = 0>
+  constexpr void swap(const compressed_pair& other) const
+      noexcept(conjunction<
+          is_nothrow_swappable<const T>,
+          is_nothrow_swappable<const U>
+      >::value)
   {
     using std::swap;
     swap(first(), other.first());
@@ -100,11 +122,22 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
   }
 };
 
+template<typename T, typename U, std::enable_if_t<conjunction<
+    is_swappable<T>,
+    is_swappable<U>
+>::value, int> = 0>
+constexpr void swap(compressed_pair<T, U>& lhs, compressed_pair<T, U>& rhs)
+    noexcept(noexcept(lhs.swap(rhs)))
+{
+  lhs.swap(rhs);
+}
 
-template<typename T, typename U>
-constexpr std::enable_if_t<conjunction<is_swappable<T>, is_swappable<U>>::value>
-swap(compressed_pair<T, U>& lhs, compressed_pair<T, U>& rhs)
-    noexcept(conjunction<is_nothrow_swappable<T>, is_nothrow_swappable<U>>::value)
+template<typename T, typename U, std::enable_if_t<conjunction<
+    is_swappable<const T>,
+    is_swappable<const U>
+>::value, int> = 0>
+constexpr void swap(const compressed_pair<T, U>& lhs, const compressed_pair<T, U>& rhs)
+    noexcept(noexcept(lhs.swap(rhs)))
 {
   lhs.swap(rhs);
 }

@@ -16,7 +16,10 @@
 #include <string>
 #include <ostream>
 
-#if __cplusplus >= 201703L
+#include "preview/core.h"
+#include "preview/__type_traits/has_conversion_operator.h"
+
+#if PREVIEW_CXX_VERSION >= 17
 #include <string_view>
 #endif
 
@@ -40,56 +43,6 @@
 #include "preview/__type_traits/remove_cvref.h"
 
 namespace preview {
-
-namespace detail {
-
-template<
-    typename It,
-    typename End,
-    typename CharT,
-    typename SizeType,
-    bool = conjunction<
-               contiguous_iterator<It>,
-               sized_sentinel_for<End, It>,
-               has_typename_type<iter_value<It>>,
-               negation<std::is_convertible<It, SizeType>>
-           >::value /* true */
->
-struct string_view_iter_ctor : std::is_same<iter_value_t<It>, CharT> {};
-
-template<typename It, typename End, typename CharT, typename SizeType>
-struct string_view_iter_ctor<It, End, CharT, SizeType, false> : std::false_type {};
-
-template<typename D, typename SV, typename = void>
-struct has_operator_string_view
-#if __cplusplus < 202002L
-  : std::is_same<D, std::string> {};
-#else
-  : std::false_type {};
-#endif
-template<typename D, typename SV>
-struct has_operator_string_view<D, SV, void_t<decltype( std::declval<D&>().operator SV() )>> : std::true_type {};
-
-template<
-    typename R,
-    typename SV,
-    bool = conjunction<
-               negation< std::is_same<remove_cvref_t<R>, SV> >,
-               ranges::contiguous_range<R>,
-               ranges::sized_range<R>,
-               has_typename_type<ranges::range_value<R>>
-           >::value /* true */
->
-struct string_view_range_ctor
-    : conjunction<
-          std::is_same<ranges::range_value_t<R>, typename SV::value_type>,
-          negation< std::is_convertible<R, typename SV::const_pointer> >,
-          negation< has_operator_string_view<remove_cvref_t<R>, SV> >
-      >{};
-template<typename R, typename SV>
-struct string_view_range_ctor<R, SV, false> : std::false_type {};
-
-} // namespace detail
 
 template<
     typename CharT,
@@ -122,12 +75,25 @@ class basic_string_view {
   constexpr basic_string_view( const CharT* s )
       : data_(s), size_(traits_type::length(s)) {}
 
-  template<typename It, typename End, std::enable_if_t<
-      detail::string_view_iter_ctor<It, End, CharT, size_type>::value, int> =0>
+  template<typename It, typename End, std::enable_if_t<conjunction<
+      contiguous_iterator<It>,
+      sized_sentinel_for<End, It>,
+      same_as<iter_value_t<It>, CharT>,
+      negation<convertible_to<End, std::size_t>>
+  >::value, int> =0>
   constexpr basic_string_view(It first, End last)
       : data_(preview::to_address(first)), size_(last - first) {}
 
-  template<typename  R, std::enable_if_t<detail::string_view_range_ctor<R, basic_string_view>::value, int> = 0>
+  template<typename  R, std::enable_if_t<conjunction<
+      negation<same_as<remove_cvref_t<R>, basic_string_view>>,
+      ranges::contiguous_range<R>,
+      ranges::sized_range<R>,
+      negation<convertible_to<R, const CharT*>>,
+      negation<has_conversion_operator<remove_cvref_t<R>, basic_string_view>>
+#if PREVIEW_CXX_VERSION >= 17
+      , negation<has_conversion_operator<remove_cvref_t<R>, std::basic_string_view<CharT, Traits>>>
+#endif
+  >::value, int> = 0>
   constexpr explicit basic_string_view(R&& r)
       : data_(ranges::data(r)), size_(ranges::size(r)) {}
 

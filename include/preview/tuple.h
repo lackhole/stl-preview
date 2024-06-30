@@ -9,6 +9,7 @@
 # include "preview/__tuple/make_from_tuple.h"
 # include "preview/__tuple/tuple_fold.h"
 # include "preview/__tuple/tuple_for_each.h"
+# include "preview/__tuple/tuple_integer_sequence.h"
 # include "preview/__tuple/tuple_like.h"
 # include "preview/__tuple/tuple_transform.h"
 

@@ -11,11 +11,11 @@
 
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__iterator/next.h"
-#include "preview/optional.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/enable_borrowed_range.h"
 #include "preview/__ranges/iterator_t.h"
+#include "preview/__ranges/non_propagating_cache.h"
 #include "preview/__ranges/random_access_range.h"
 #include "preview/__ranges/range.h"
 #include "preview/__ranges/range_difference_t.h"
@@ -30,38 +30,40 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-template<typename V, bool = conjunction<simple_view<V>, sized_range<V>, random_access_range<V> >::value /* true */>
-class drop_view_cached_begin {
- public:
-  // Random access range. No cache required
-  constexpr auto begin(const V& base, range_difference_t<V> count) const {
-    return ranges::next(ranges::begin(base), count, ranges::end(base));
-  }
-};
-
-template<typename V>
-class drop_view_cached_begin<V, false> {
+template<typename DropView, typename V,
+    bool Cached = negation<conjunction<
+        simple_view<V>,
+        sized_range<const V>,
+        random_access_range<const V>
+    >>::value /* true */>
+class drop_view_cached_begin : public view_interface<DropView> {
  public:
   // Not a random access range. Cache required
-  constexpr auto begin(const V& base, range_difference_t<V> count) {
+  constexpr auto begin(V& base, range_difference_t<V> count) {
     if (!begin_.has_value()) {
-      begin_ = ranges::next(ranges::begin(base), count, ranges::end(base));
+      begin_.emplace(ranges::next(ranges::begin(base), count, ranges::end(base)));
     }
-    return begin_;
+    return *begin_;
   }
 
  private:
-  optional<iterator_t<V>> begin_;
+  non_propagating_cache<iterator_t<V>> begin_;
+};
+
+template<typename DropView, typename V>
+class drop_view_cached_begin<DropView, V, false> : public view_interface<DropView> {
+ public:
+  // Random access range. No cache required
+  constexpr auto begin(V& base, range_difference_t<V> count) {
+    return ranges::next(ranges::begin(base), count, ranges::end(base));
+  }
 };
 
 } // namespace detail
 
 template<typename V>
-class drop_view
-    : public ranges::view_interface<drop_view<V>>
-    , public detail::drop_view_cached_begin<V>
-{
-  using begin_base = detail::drop_view_cached_begin<V>;
+class drop_view : public detail::drop_view_cached_begin<drop_view<V>, V> {
+  using begin_base = detail::drop_view_cached_begin<drop_view<V>, V>;
 
  public:
   static_assert(view<V>::value, "Constraints not satisfied");
@@ -72,7 +74,9 @@ class drop_view
       : base_(std::move(base)), count_(count) {}
 
 
-  template<typename V2 = V, std::enable_if_t<copy_constructible<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<V>
+  >::value, int> = 0>
   constexpr V base() const& noexcept(std::is_nothrow_copy_constructible<V>::value) {
     return base_;
   }
@@ -81,41 +85,51 @@ class drop_view
     return std::move(base_);
   }
 
-  template<typename V2 = V, std::enable_if_t<conjunction<
-      simple_view<V2>,
-      sized_range<const V2>,
-      random_access_range<const V2>
-  >::value == false, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation<conjunction<
+          simple_view<V>,
+          random_access_range<const V>,
+          sized_range<const V>
+      >>
+  >::value, int> = 0>
   constexpr auto begin() {
     return begin_base::begin(base_, count_);
   }
 
-  template<typename V2 = V, std::enable_if_t<conjunction<
-      sized_range<const V2>,
-      random_access_range<const V2>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      sized_range<const V>,
+      random_access_range<const V>
   >::value, int> = 0>
   constexpr auto begin() const {
-    return begin_base::begin(base_, count_);
+    return ranges::next(ranges::begin(base_), count_, ranges::end(base_));
   }
 
-  template<typename V2 = V, std::enable_if_t<simple_view<V2>::value == false, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation<simple_view<V>>
+  >::value, int> = 0>
   constexpr auto end() {
     return ranges::end(base_);
   }
 
-  template<typename V2 = V, std::enable_if_t<sized_range<const V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<const V>
+  >::value, int> = 0>
   constexpr auto end() const {
     return ranges::end(base_);
   }
 
-  template<typename V2 = V, std::enable_if_t<sized_range<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      sized_range<V>
+  >::value, int> = 0>
   constexpr auto size() {
     const auto s = ranges::size(base_);
     const auto c = static_cast<decltype(s)>(count_);
     return s < c ? 0 : s - c;
   }
 
-  template<typename V2 = V, std::enable_if_t<sized_range<const V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      sized_range<const V>
+  >::value, int> = 0>
   constexpr auto size() const {
     const auto s = ranges::size(base_);
     const auto c = static_cast<decltype(s)>(count_);

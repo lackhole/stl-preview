@@ -12,6 +12,7 @@
 
 #include "preview/__functional/invoke.h"
 #include "preview/__utility/in_place.h"
+#include "preview/__tuple/tuple_integer_sequence.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/copy_cvref.h"
 #include "preview/__type_traits/is_invocable.h"
@@ -19,9 +20,6 @@
 
 namespace preview {
 namespace detail {
-
-template<typename Tuple>
-using tuple_index_sequence = std::make_index_sequence<std::tuple_size<remove_cvref_t<Tuple>>::value>;
 
 template<typename Tuple, typename F, typename Seq>
 struct tuple_for_each_invocable_impl;
@@ -72,7 +70,7 @@ template<typename Tuple, typename F>
 constexpr std::enable_if_t<detail::tuple_for_each_invocable<Tuple, F>::value>
 tuple_for_each(Tuple&& t, F&& f) {
   return preview::detail::tuple_for_each_impl(
-      detail::tuple_index_sequence<Tuple>{},
+      tuple_index_sequence<Tuple>{},
       std::forward<Tuple>(t),
       std::forward<F>(f)
   );
@@ -83,7 +81,7 @@ template<typename Tuple, typename F>
 constexpr std::enable_if_t<detail::tuple_for_each_in_place_index_invocable<Tuple, F>::value>
 tuple_for_each_index(Tuple&& t, F&& f) {
   return preview::detail::tuple_for_each_index_impl(
-      detail::tuple_index_sequence<Tuple>{},
+      tuple_index_sequence<Tuple>{},
       std::forward<Tuple>(t),
       std::forward<F>(f)
   );
