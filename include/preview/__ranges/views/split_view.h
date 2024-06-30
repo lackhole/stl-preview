@@ -49,6 +49,8 @@ class split_view : public view_interface<split_view<V, Pattern>> {
         > {};
 
  public:
+  static_assert(forward_range<V>::value, "Constraints not satisfied");
+  static_assert(forward_range<Pattern>::value, "Constraints not satisfied");
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(view<Pattern>::value, "Constraints not satisfied");
   static_assert(indirectly_comparable<iterator_t<V>, iterator_t<Pattern>, equal_to>::value, "Constraints not satisfied");
@@ -73,14 +75,17 @@ class split_view : public view_interface<split_view<V, Pattern>> {
 
     iterator() = default;
 
-    PREVIEW_CONSTEXPR_AFTER_CXX17 iterator(split_view& parent, iterator_t<V> current, subrange<iterator_t<V>> next)
-        : parent_(preview::addressof(parent)), cur_(std::move(current)), next_(std::move(next)), trailing_empty_(false) {}
+    PREVIEW_CONSTEXPR_AFTER_CXX17
+    iterator(split_view& parent, iterator_t<V> current, subrange<iterator_t<V>> next)
+        : parent_(preview::addressof(parent))
+        , cur_(std::move(current))
+        , next_(std::move(next))
+        , trailing_empty_(false) {}
 
-    constexpr const iterator_t<V> base() const {
+    constexpr iterator_t<V> base() const {
       return cur_;
     }
 
-    // TODO: inspect
     constexpr value_type operator*() const {
       return {cur_, next_.begin()};
     }
@@ -110,7 +115,7 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     }
 
     friend constexpr bool operator==(const iterator& x, const iterator& y) {
-      return x.cur_ == y.cur_ and x.trailing_empty_ == y.trailing_empty_;
+      return x.cur_ == y.cur_ && x.trailing_empty_ == y.trailing_empty_;
     }
 
     friend constexpr bool operator!=(const iterator& x, const iterator& y) {
@@ -160,9 +165,11 @@ class split_view : public view_interface<split_view<V, Pattern>> {
   template<typename R, std::enable_if_t<check_range<R>::value, int> = 0>
   constexpr explicit split_view(R&& r, range_value_t<R> e)
       : base_(views::all(std::forward<R>(r)))
-      , pattern_(single_view<remove_cvref_t<decltype(std::move(e))>>{std::move(e)}) {}
+      , pattern_(views::single(std::move(e))) {}
 
-  template<typename V2 = V, std::enable_if_t<copy_constructible<V2>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<V>
+  >::value, int> = 0>
   constexpr V base() const& {
     return base_;
   }
@@ -178,25 +185,24 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     return {*this, first, *cached_begin_};
   }
 
-  template<typename V2 = V, std::enable_if_t<common_range<V2>::value, int> = 0>
-  constexpr iterator end() {
-    return iterator{*this, ranges::end(base_), {}};
+  constexpr auto end() {
+    return end(common_range<V>{});
   }
 
-  template<typename V2 = V, std::enable_if_t<common_range<V2>::value == false, int> = 0>
-  constexpr sentinel end() {
+ private:
+  constexpr iterator end(std::true_type /* common_range<V> */) {
+    return iterator{*this, ranges::end(base_), {}};
+  }
+  constexpr sentinel end(std::false_type /* common_range<V> */) {
     return sentinel{*this};
   }
 
   constexpr subrange<iterator_t<V>> find_next(iterator_t<V> it) {
-    using I = iterator_t<V>;
-
-    auto last = ranges::end(base_);
-    auto b_e = ranges::search(subrange<I>(it, last), pattern_);
+    auto b_e = ranges::search(preview::ranges::make_subrange(it, ranges::end(base_)), pattern_);
     auto b = b_e.begin();
     auto e = b_e.end();
 
-    if (b != last && ranges::empty(pattern_)) {
+    if (b != ranges::end(base_) && ranges::empty(pattern_)) {
       ++b;
       ++e;
     }
@@ -204,7 +210,6 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     return {std::move(b), std::move(e)};
   }
 
- private:
   V base_{};
   Pattern pattern_{};
   non_propagating_cache<subrange<iterator_t<V>>> cached_begin_{};
