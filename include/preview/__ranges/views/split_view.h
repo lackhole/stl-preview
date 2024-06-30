@@ -237,7 +237,10 @@ constexpr auto make_split_view_impl(R&& r, P&& pattern, std::false_type /* range
 template<typename R, typename P>
 constexpr auto make_split_view(R&& r, P&& pattern) {
   return detail::make_split_view_impl(
-      std::forward<R>(r), std::forward<P>(pattern), detail::same_with_range_value<R, P>{});
+      std::forward<R>(r),
+      std::forward<P>(pattern),
+      detail::same_with_range_value<R, P>{}
+  );
 }
 
 #if __cplusplus >= 201703L
@@ -245,13 +248,18 @@ constexpr auto make_split_view(R&& r, P&& pattern) {
 template<typename R, typename P>
 split_view(R&&, P&&)
     -> split_view<
-          views::all_t<R>,
-          std::conditional_t<
-              detail::same_with_range_value<R, P>::value,
-              single_view<range_value_t<R>>,
-              views::all_t<P>
-          >
+            std::enable_if_t<negation<std::is_same<range_value_t<R>, remove_cvref_t<P>>>::value,
+          views::all_t<R>>,
+          views::all_t<P>
         >;
+
+template<typename R>
+split_view(R&&, range_value_t<R>)
+    -> split_view<
+            std::enable_if_t<input_range<R>::value,
+        views::all_t<R>>,
+        single_view<range_value_t<R>>
+    >;
 
 #endif
 
