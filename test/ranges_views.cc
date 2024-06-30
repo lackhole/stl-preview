@@ -723,3 +723,40 @@ TEST(VERSIONED(RangesViews), drop_while_view) {
       {3, 4, 5}
   ));
 }
+
+TEST(VERSIONED(RangesViews), join_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  const auto bits = {"https:"sv, "//"sv, "cppreference"sv, "."sv, "com"sv};
+  for (char const c : bits | views::join)
+    std::cout << c;
+  std::cout << '\n';
+  EXPECT_TRUE(ranges::equal(bits | views::join, "https://cppreference.com"_sv));
+
+  const std::vector<std::vector<int>> v{{1, 2}, {3, 4, 5}, {6}, {7, 8, 9}};
+#if PREVIEW_CXX_VERSION >= 17
+  auto jv = ranges::join_view(v);
+#else
+  auto jv = views::join(v);
+#endif
+  for (int const e : jv)
+    std::cout << e << ' ';
+  std::cout << '\n';
+  EXPECT_TRUE(ranges::equal(jv, views::iota(1, 10)));
+
+  std::vector<std::string> ss{"hello", " ", "world", "!"};
+  for (char ch : ss | views::join)
+    std::cout << ch;
+  EXPECT_TRUE(ranges::equal(
+      ss | views::join,
+      "hello world!"s
+  ));
+}
+
+struct Person { int age; std::string name; };
+TEST(VERSIONED(RangesViews), join_view_P2328R1) {
+  std::vector<Person> v;
+  (void)(v | views::transform([](auto& p) -> std::string& { return p.name; })
+           | views::join); // OK
+}
