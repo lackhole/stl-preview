@@ -875,10 +875,11 @@ TEST(VERSIONED(RangesViews), split_view) {
     std::cout << '\n';
     EXPECT_TRUE(ranges::equal(
         letters,
-        "Keep..moving..forward.."_sv,
-        {},
-        [](auto subrange) { return preview::string_view{subrange}; },
-        [](char c) { return preview::string_view{&c, 1}; }
+        sentence,
+        [](preview::string_view sv, char c) {
+          return sv.size() == 1 && sv[0] == c;
+        },
+        [](auto subrange) { return preview::string_view{subrange}; }
     ));
   }
 
