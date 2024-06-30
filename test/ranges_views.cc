@@ -728,7 +728,7 @@ TEST(VERSIONED(RangesViews), join_view) {
   using namespace std::literals;
   using namespace preview::literals;
 
-  const auto bits = {"https:"sv, "//"sv, "cppreference"sv, "."sv, "com"sv};
+  const auto bits = {"https:"_sv, "//"_sv, "cppreference"_sv, "."_sv, "com"_sv};
   for (char const c : bits | views::join)
     std::cout << c;
   std::cout << '\n';
