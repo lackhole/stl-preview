@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <cstring>
 #include <deque>
 #include <forward_list>
@@ -760,3 +761,185 @@ TEST(VERSIONED(RangesViews), join_view_P2328R1) {
   (void)(v | views::transform([](auto& p) -> std::string& { return p.name; })
            | views::join); // OK
 }
+
+TEST(VERSIONED(RangesViews), split_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  { // ctor
+    {
+      auto view = views::iota(1, 20) | views::transform([](int x) { return x % 5; });
+      auto splitts = views::split(view, 0); // (2)
+      for (const auto& split : splitts) {
+        std::cout << "{ ";
+        std::copy(split.begin(), split.end(), std::ostream_iterator<int>(std::cout, " "));
+        std::cout << "} ";
+      }
+      EXPECT_TRUE(ranges::equal(
+          splitts,
+          views::repeat(views::iota(1, 5), 4),
+          ranges::equal
+      ));
+    }
+    std::cout << '\n';
+
+    {
+      const std::vector<int> nums{1, -1, -1, 2, 3, -1, -1, 4, 5, 6};
+      const std::array<int, 2> delim{-1, -1};
+      auto splitter = views::split(nums, delim); // (3)
+      for (const auto& split : splitter)
+      {
+        std::cout << "{ ";
+        std::copy(split.begin(), split.end(), std::ostream_iterator<int>(std::cout, " "));
+        std::cout << "} ";
+      }
+      auto it = splitter.begin();
+      EXPECT_TRUE(ranges::equal(*it++, {1}));
+      EXPECT_TRUE(ranges::equal(*it++, {2, 3}));
+      EXPECT_TRUE(ranges::equal(*it++, {4, 5, 6}));
+    }
+    std::cout << '\n';
+
+    {
+      PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view JupiterMoons
+      {
+          "Callisto, Europa, Ganymede, Io, and 91 more"
+      };
+      PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view delim{", "};
+#if PREVIEW_CXX_VERSION >= 17
+      ranges::split_view moons_extractor{JupiterMoons, delim}; // (3)
+#else
+      auto moons_extractor = views::split(JupiterMoons, delim);
+#endif
+      auto is_moon = views::filter([](auto str) {
+        return std::isupper(str[0]);
+      });
+      std::cout << "Some moons of Jupiter: ";
+      for (const auto moon : moons_extractor | is_moon)
+        std::cout << preview::string_view(moon) << ' ';
+      EXPECT_TRUE(ranges::equal(
+          moons_extractor | is_moon,
+          { "Callisto"_sv, "Europa"_sv, "Ganymede"_sv, "Io"_sv},
+          ranges::equal
+      ));
+    }
+    std::cout << '\n';
+  }
+
+  { // base
+    PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view keywords{"this throw true try typedef typeid"};
+#if PREVIEW_CXX_VERSION >= 17
+    ranges::split_view split_view{keywords, ' '};
+#else
+    auto split_view = views::split(keywords, ' ');
+#endif
+    std::cout << "base() = " << split_view.base() << "\n"
+                 "substrings: ";
+    for (auto split : split_view)
+      std::cout << preview::string_view{split} << ' ';
+    std::cout << '\n';
+    EXPECT_TRUE(ranges::equal(
+        split_view,
+        {"this"_sv, "throw"_sv, "true"_sv, "try"_sv, "typedef"_sv, "typeid"_sv},
+        ranges::equal
+    ));
+  }
+
+  { // begin
+    PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view sentence{"Keep..moving..forward.."};
+    PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view delim{".."};
+#if PREVIEW_CXX_VERSION >= 17
+    ranges::split_view words{sentence, delim};
+#else
+    auto words = views::split(sentence, delim);
+#endif
+
+    EXPECT_TRUE(ranges::equal(*words.begin(), "Keep"_sv));
+    for (auto word : words)
+      std::cout << preview::string_view{word} << ' ';
+    EXPECT_TRUE(ranges::equal(
+        words,
+        {"Keep"_sv, "moving"_sv, "forward"_sv, ""_sv},
+        ranges::equal
+    ));
+
+#if PREVIEW_CXX_VERSION >= 17
+    ranges::split_view letters{sentence, preview::string_view{""}};
+#else
+    auto letters = views::split(sentence, preview::string_view{""});
+#endif
+
+    EXPECT_TRUE(ranges::equal(*letters.begin(), "K"_sv));
+    for (auto letter : letters)
+      std::cout << preview::string_view{letter} << ' ';
+    std::cout << '\n';
+    EXPECT_TRUE(ranges::equal(
+        letters,
+        "Keep..moving..forward.."_sv,
+        {},
+        [](auto subrange) { return preview::string_view{subrange}; },
+        [](char c) { return preview::string_view{&c, 1}; }
+    ));
+  }
+
+  { // end
+    PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view keywords{"bitand bitor bool break"};
+#if PREVIEW_CXX_VERSION >= 17
+    ranges::split_view kw{keywords, ' '};
+#else
+    auto kw = views::split(keywords, ' ');
+#endif
+    const auto count = ranges::distance(kw.begin(), kw.end());
+    EXPECT_EQ(count, 4);
+  }
+
+  constexpr auto words{"Hello^_^C++^_^20^_^!"_sv};
+  constexpr auto delim{"^_^"_sv};
+
+  for (const auto word : views::split(words, delim))
+    // with string_view's C++23 range constructor:
+    std::cout << preview::string_view(word) << ' ';
+  std::cout << '\n';
+
+  EXPECT_TRUE(ranges::equal(
+      views::split(words, delim),
+      {"Hello"_sv, "C++"_sv, "20"_sv, "!"_sv},
+      ranges::equal
+  ));
+
+  std::string s = "1.2.3.4";
+
+  auto ints =
+      s | views::split('.')
+        | views::transform([](auto v){
+          return std::stoi(std::string(v.begin(), v.end()));
+        });
+  EXPECT_TRUE(ranges::equal(ints, {1, 2, 3, 4}));
+}
+
+TEST(VERSIONED(RangesViews), split_view_P2210R2) {
+  std::string s = "1.2.3.4";
+  auto ints =
+      s | views::split('.')
+        | views::transform([](auto v){
+          return std::stoi(std::string(v.begin(), v.end()));
+        });
+  EXPECT_TRUE(ranges::equal(ints, views::iota(1) | views::take(4)));
+}
+
+#if PREVIEW_CXX_VERSION >= 17
+TEST(VERSIONED(RangesViews), split_view_DeductionGuides) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  ranges::split_view w1{"a::b::c"_sv, "::"_sv};
+  static_assert(std::is_same_v<
+      decltype(w1),
+      ranges::split_view<preview::string_view, preview::string_view>>);
+
+  ranges::split_view w2{"x,y,z"_sv, ','};
+  static_assert(std::is_same_v<
+      decltype(w2),
+      ranges::split_view<preview::string_view, ranges::single_view<char>>>);
+}
+#endif
