@@ -15,6 +15,7 @@
 #include "preview/__ranges/ref_view.h"
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/viewable_range.h"
+#include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/detail/return_category.h"
 #include "preview/__type_traits/conjunction.h"
 
@@ -28,17 +29,17 @@ using preview::detail::return_category;
 class all_adaptor_closure : public range_adaptor_closure<all_adaptor_closure> {
   template<typename T>
   using return_category_type =
-      std::conditional_t<
-          view<std::decay_t<T>>::value, return_category<1, std::decay_t<T>>,
-      std::conditional_t<
-          conjunction<
+      conditional_t<
+          view<std::decay_t<T>>, return_category<1, std::decay_t<T>>,
+          conjunction< // ref_view{T}
+              std::is_lvalue_reference<T>,
+              std::is_convertible<T, std::add_lvalue_reference_t<std::remove_reference_t<T>>>,
               range<std::remove_reference_t<T>>,
-              std::is_object<std::remove_reference_t<T>>,
-              std::is_lvalue_reference<T>
-          >::value,
-              return_category<2, ref_view<std::remove_reference_t<T>>>,
-              return_category<3, owning_view<std::remove_reference_t<T>>>
-      >>;
+              std::is_object<std::remove_reference_t<T>>
+          >,
+          return_category<2, ref_view<std::remove_reference_t<T>>>,
+          return_category<3, owning_view<std::remove_reference_t<T>>>
+      >;
 
   template<typename R, typename T>
   constexpr T operator()(R&& r, return_category<1, T>) const {
@@ -56,8 +57,6 @@ class all_adaptor_closure : public range_adaptor_closure<all_adaptor_closure> {
   }
 
  public:
-  all_adaptor_closure() = default;
-
   template<typename R>
   constexpr typename return_category_type<R&&>::return_type
   operator()(R&& r) const {

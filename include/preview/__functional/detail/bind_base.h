@@ -32,7 +32,6 @@ class bind_object_base {
   constexpr typename bind_invoke_result<Derived&, U&&...>::type
   operator()(U&&... args) & noexcept(bind_nothrow_invocable<Derived&, U&&...>::value) {
     return call(*this, std::forward<U>(args)...);
-    return Derived::call(derived(), index_sequence{}, std::forward<U>(args)...);
   }
 
   template<typename... U>

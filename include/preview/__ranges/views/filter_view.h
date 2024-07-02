@@ -69,9 +69,9 @@ class filter_view_cache<V, true> {
 template<typename V>
 class filter_view_cache<V, false> {
  public:
-  template<typename I, typename This, typename Base, typename Pred>
-  constexpr I begin(This& thiz, Base& base, Pred& pred) {
-    return I{thiz, ranges::find_if(base, std::ref(*pred))};
+  template<typename I, typename Self, typename Base, typename Pred>
+  constexpr I begin(Self& self, Base& base, Pred& pred) {
+    return I{self, ranges::find_if(base, std::ref(*pred))};
   }
 };
 
@@ -130,20 +130,28 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     using value_type = range_value_t<V>;
     using difference_type = range_difference_t<V>;
 #if !PREVIEW_STD_HAVE_CXX20_ITERATOR
-    using pointer = void;
+    using pointer = std::conditional_t<
+        conjunction<
+            detail::has_arrow<iterator_t<V>>,
+            copyable<iterator_t<V>>
+        >::value,
+        iterator_t<V>,
+        void
+    >;
     using reference = range_reference_t<V>;
 #endif
 
     iterator() = default;
 
     constexpr iterator(filter_view& parent, iterator_t<V> current)
-        : current_(std::move(current)), parent_(preview::addressof(parent)) {}
+        : current_(std::move(current))
+        , parent_(preview::addressof(parent)) {}
 
     constexpr const iterator_t<V>& base() const& noexcept {
       return current_;
     }
 
-    constexpr iterator_t<V> base() && noexcept {
+    constexpr iterator_t<V> base() && {
       return std::move(current_);
     }
 
@@ -161,7 +169,10 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
 
     constexpr iterator& operator++() {
       current_ = ranges::find_if(
-          std::move(++current_), ranges::end(parent_->base_), std::ref(*parent_->pred_));
+          std::move(++current_),
+          ranges::end(parent_->base_),
+          std::ref(*parent_->pred_)
+      );
       return *this;
     }
 
@@ -186,7 +197,7 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     }
 
     template<typename V2 = V, std::enable_if_t<bidirectional_range<V2>::value, int> = 0>
-    constexpr iterator& operator--(int) {
+    constexpr iterator operator--(int) {
       auto tmp = *this;
       --*this;
       return tmp;
@@ -216,8 +227,8 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     }
 
    private:
-    iterator_t<V> current_;
-    filter_view* parent_;
+    iterator_t<V> current_{};
+    filter_view* parent_{};
   };
 
   class sentinel {
@@ -248,7 +259,7 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     }
 
    private:
-    sentinel_t<V> end_;
+    sentinel_t<V> end_{};
   };
 
   friend class iterator;
@@ -263,7 +274,7 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     return base_;
   }
 
-  constexpr V base() const && {
+  constexpr V base() && {
     return std::move(base_);
   }
 

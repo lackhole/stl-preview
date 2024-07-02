@@ -105,13 +105,6 @@ class owning_view : public view_interface<owning_view<R>> {
   R r_;
 };
 
-#if __cplusplus >= 201703L
-
-template<typename R>
-owning_view(R&&) -> owning_view<R>;
-
-#endif
-
 } // namespace ranges
 } // namespace namespace preview
 

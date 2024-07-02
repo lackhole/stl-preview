@@ -358,37 +358,38 @@ Description
 
 * `<concepts>`
 
-  |                         | Introduced | Revision |
-  |-------------------------|------------|----------|
-  | `same_as`               | ![][c20ok] |          |
-  | `derived_from`          | ![][c20ok] |          |
-  | `convertible_to`        | ![][c20ok] |          |
-  | `common_reference_with` | ![][c20ok] |          |
-  | `common_with`           | ![][c20ok] |          |
-  | `integral`              | ![][c20ok] |          |
-  | `signed_integral`       | ![][c20ok] |          |
-  | `unsigned_integral`     | ![][c20ok] |          |
-  | `floating_point`        | ![][c20ok] |          |
-  | `assignable_from`       | ![][c20ok] |          |
-  | `swappable`             | ![][c20ok] |          |
-  | `destructible`          | ![][c20ok] |          |
-  | `constructible_from`    | ![][c20ok] |          |
-  | `default_initializable` | ![][c20ok] |          |
-  | `move_constructible`    | ![][c20ok] |          |
-  | `copy_constructible`    | ![][c20ok] |          |
-  | `equality_comparable`   | ![][c20ok] |          |
-  | `totally_ordered`       | ![][c20ok] |          |
-  | `movable`               | ![][c20ok] |          |
-  | `copyable`              | ![][c20ok] |          |
-  | `semiregular`           | ![][c20ok] |          |
-  | `regular`               | ![][c20ok] |          |
-  | `invocable`             | ![][c20ok] |          |
-  | `regular_invocable`     | ![][c20ok] |          |
-  | `predicate`             | ![][c20ok] |          |
-  | `relation`              | ![][c20ok] |          |
-  | `equivalence_relation`  | ![][c20ok] |          |
-  | `strict_weak_order`     | ![][c20ok] |          |
-  | `ranges::swap`          | ![][c20ok] |          |
+  |                            | Introduced | Revision   |
+  |----------------------------|------------|------------|
+  | `same_as`                  | ![][c20ok] |            |
+  | `derived_from`             | ![][c20ok] |            |
+  | `convertible_to`           | ![][c20ok] |            |
+  | `common_reference_with`    | ![][c20ok] |            |
+  | `common_with`              | ![][c20ok] |            |
+  | `integral`                 | ![][c20ok] |            |
+  | `signed_integral`          | ![][c20ok] |            |
+  | `unsigned_integral`        | ![][c20ok] |            |
+  | `floating_point`           | ![][c20ok] |            |
+  | `assignable_from`          | ![][c20ok] |            |
+  | `swappable`                | ![][c20ok] |            |
+  | `destructible`             | ![][c20ok] |            |
+  | `constructible_from`       | ![][c20ok] |            |
+  | `default_initializable`    | ![][c20ok] |            |
+  | `move_constructible`       | ![][c20ok] |            |
+  | `copy_constructible`       | ![][c20ok] |            |
+  | `equality_comparable`      | ![][c20ok] |            |
+  | `equality_comparable_with` | ![][c20ok] | ![][c23ok] |
+  | `totally_ordered`          | ![][c20ok] |            |
+  | `movable`                  | ![][c20ok] |            |
+  | `copyable`                 | ![][c20ok] |            |
+  | `semiregular`              | ![][c20ok] |            |
+  | `regular`                  | ![][c20ok] |            |
+  | `invocable`                | ![][c20ok] |            |
+  | `regular_invocable`        | ![][c20ok] |            |
+  | `predicate`                | ![][c20ok] |            |
+  | `relation`                 | ![][c20ok] |            |
+  | `equivalence_relation`     | ![][c20ok] |            |
+  | `strict_weak_order`        | ![][c20ok] |            |
+  | `ranges::swap`             | ![][c20ok] |            |
 
 * `<coroutine>` N/A
 
@@ -660,7 +661,7 @@ Description
   | `ranges::contiguous_range`                                        | ![][c20ok]           |            |
   | `ranges::common_range`                                            | ![][c20ok]           |            |
   | `ranges::viewable_range`                                          | ![][c20ok]           |            |
-  | `ranges::constant_range`                                          | ![][c20ok]           |            |
+  | `ranges::constant_range`                                          | ![][c23ok]           |            |
   | `ranges::to`                                                      | ![][c23ok] (Partial) |            |
   | `ranges::iterator_t`                                              | ![][c20ok]           |            |
   | `ranges::const_iterator_t`                                        | ![][c23ok]           |            |
@@ -670,11 +671,11 @@ Description
   | `ranges::range_size_t`                                            | ![][c20ok]           |            |
   | `ranges::range_value_t`                                           | ![][c20ok]           |            |
   | `ranges::range_refernce_t`                                        | ![][c20ok]           |            |
-  | `ranges::range_const_reference_t`                                 | ![][c20ok]           |            |
+  | `ranges::range_const_reference_t`                                 | ![][c23ok]           |            |
   | `ranges::range_rvalue_reference_t`                                | ![][c20ok]           |            |
   | `ranges::range_common_reference_t`                                | ![][c20ok]           |            |
-  | `ranges::view_interface`                                          | ![][c20ok]           |            |
-  | `ranges::subrange`                                                | ![][c20ok]           |            |
+  | `ranges::view_interface`                                          | ![][c20ok]           | ![][c23ok] |
+  | `ranges::subrange`                                                | ![][c20ok]           | ![][c23ok] |
   | `ranges::dangling`                                                | ![][c20ok]           |            |
   | `ranges::borrowed_iterator_t`                                     | ![][c20ok]           |            |
   | `ranges::borrowed_subrange_t`                                     | ![][c20ok]           |            |
@@ -690,13 +691,13 @@ Description
   | `ranges::ref_view`                                                | ![][c20ok]           |            |
   | `ranges::owning_view`                                             | ![][c20ok]           |            |
   | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]           |            |
-  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           |            |
+  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           | ![][c23ok] |
   | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]           |            |
   | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]           |            |
-  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           |            |
+  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           | ![][c23ok] |
   | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]           |            |
   | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]           |            |
-  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20ok]           |            |
+  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20no]           |            |
   | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]           |            |
   | `views::counted`                                                  | ![][c20ok]           |            |
   | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]           |            |

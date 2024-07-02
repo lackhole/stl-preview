@@ -11,46 +11,75 @@
 
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
 
 namespace preview {
 namespace detail {
 
-template<typename Seq, typename F>
+template<typename Seq, typename F, typename... Args>
 struct sequence_for_each_invocable : std::false_type {};
 
-template<typename T, T... v, typename F>
-struct sequence_for_each_invocable<std::integer_sequence<T, v...>, F>
+template<typename T, T... v, typename F, typename... Args>
+struct sequence_for_each_invocable<std::integer_sequence<T, v...>, F, Args...>
     : conjunction<
-          is_invocable<F, std::integral_constant<T, v>>...
+          is_invocable<F, std::integral_constant<T, v>, Args...>...
       > {};
 
 } // namespace detail
 
 
-// performs f(std::integral_constant<T, i>{}) for i in v...
-template<typename T, T... v, typename F, std::enable_if_t<(sizeof...(v) > 1), int> = 0>
+// performs f(std::integral_constant<T, i>{}, args...) for i in v...
+template<typename T, T... v, typename F, typename... Args, std::enable_if_t<(sizeof...(v) > 1), int> = 0>
 constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::integer_sequence<T, v...>, F>::value>
-sequence_for_each(std::integer_sequence<T, v...>, F&& f) {
+sequence_for_each(std::integer_sequence<T, v...>, F&& f, Args&&... args)
+    noexcept(conjunction<
+        bool_constant<noexcept(preview::invoke(f, std::integral_constant<T, v>{}))>...
+    >::value)
+{
   int dummy[] = {
-      (preview::invoke(f, std::integral_constant<T, v>{}), 0)...
+      (preview::invoke(f, std::integral_constant<T, v>{}, std::forward<Args>(args)...), 0)...
   };
   (void)dummy;
 }
 
-// performs f(std::integral_constant<T, i>{}) for i in [0, N)
-template<typename T, T N, typename F>
+// performs f(std::integral_constant<T, i>{}, args...) for i in [0, N)
+template<typename T, T N, typename F, typename... Args>
 constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::make_integer_sequence<T, N>, F>::value>
-sequence_for_each(F&& f) {
-  return preview::sequence_for_each(std::make_integer_sequence<T, N>{}, std::forward<F>(f));
+sequence_for_each(F&& f, Args&&... args)
+    noexcept(noexcept(
+        preview::sequence_for_each(
+            std::make_integer_sequence<T, N>{},
+            std::forward<F>(f),
+            std::forward<Args>(args)...
+        )
+    ))
+{
+  return preview::sequence_for_each(
+      std::make_integer_sequence<T, N>{},
+      std::forward<F>(f),
+      std::forward<Args>(args)...
+  );
 }
 
-// performs f(std::integral_constant<std::size_t, i>{}) for i in [0, N)
-template<std::size_t N, typename F>
+// performs f(std::integral_constant<std::size_t, i>{}, args...) for i in [0, N)
+template<std::size_t N, typename F, typename... Args>
 constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::make_index_sequence<N>, F>::value>
-sequence_for_each(F&& f) {
-  return preview::sequence_for_each(std::make_index_sequence<N>{}, std::forward<F>(f));
+sequence_for_each(F&& f, Args&&... args)
+    noexcept(noexcept(
+        preview::sequence_for_each(
+            std::make_index_sequence<N>{},
+            std::forward<F>(f),
+            std::forward<Args>(args)...
+        )
+    ))
+{
+  return preview::sequence_for_each(
+      std::make_index_sequence<N>{},
+      std::forward<F>(f),
+      std::forward<Args>(args)...
+  );
 }
 
 } // namespace preview

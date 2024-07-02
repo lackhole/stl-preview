@@ -36,6 +36,7 @@
 #include "preview/__type_traits/type_identity.h"
 #include "preview/__type_traits/void_t.h"
 #include "preview/__utility/cxx20_rel_ops.h"
+#include "preview/__utility/to_unsigned_like.h"
 
 namespace preview {
 namespace ranges {
@@ -410,19 +411,13 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   }
 
  private:
-  template<typename T>
-  static constexpr auto to_unsigned_like(T x) {
-    using R = std::make_unsigned_t<T>;
-    return static_cast<R>(x);
-  }
-
   constexpr auto size_impl(std::true_type) const {
     return (value_ < 0)
         ? ((bound_ < 0)
-            ? to_unsigned_like(-value_) - to_unsigned_like(-bound_)
-            : to_unsigned_like(bound_) + to_unsigned_like(-value_)
+            ? preview::to_unsigned_like(-value_) - preview::to_unsigned_like(-bound_)
+            : preview::to_unsigned_like(bound_) + preview::to_unsigned_like(-value_)
           )
-        : to_unsigned_like(bound_) - to_unsigned_like(value_);
+        : preview::to_unsigned_like(bound_) - preview::to_unsigned_like(value_);
   }
   constexpr auto size_impl(std::false_type) const {
     return static_cast<std::size_t>(bound_ - value_);
@@ -442,13 +437,28 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   Bound bound_ = Bound();
 };
 
+#if PREVIEW_CXX_VERSION >= 17
+
+template<typename W, typename Bound>
+iota_view(W, Bound)
+    -> iota_view<
+        std::enable_if_t<
+        disjunction<
+            negation<is_integer_like<W>>,
+            negation<is_integer_like<Bound>>,
+            bool_constant<is_signed_integer_like<W>::value == is_signed_integer_like<Bound>::value>
+        >::value, W>,
+        Bound>;
+
+#endif
+
 namespace views {
 namespace detail {
 
 struct iota_niebloid {
   template<typename W>
-  constexpr iota_view<std::remove_reference_t<W>> operator()(W&& value) const {
-    return ranges::iota_view<std::remove_reference_t<W>>(std::forward<W>(value));
+  constexpr auto operator()(W&& value) const {
+    return iota_view<std::decay_t<W>>{std::forward<W>(value)};
   }
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
@@ -458,9 +468,8 @@ struct iota_niebloid {
       bool_constant<is_signed_integer_like<std::remove_reference_t<W>>::value == is_signed_integer_like<std::remove_reference_t<Bound>>::value>
     >
   >::value, int> = 0>
-  constexpr ranges::iota_view<std::remove_reference_t<W>, std::remove_reference_t<Bound>>
-  operator()(W&& value, Bound&& bound) const {
-    return ranges::iota_view<std::remove_reference_t<W>, std::remove_reference_t<Bound>>(std::forward<W>(value), std::forward<Bound>(bound));
+  constexpr auto operator()(W&& value, Bound&& bound) const {
+    return ranges::iota_view<std::decay_t<W>, std::decay_t<Bound>>{std::forward<W>(value), std::forward<Bound>(bound)};
   }
 };
 
