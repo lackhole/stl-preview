@@ -697,7 +697,7 @@ Description
   | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           | ![][c23ok] |
   | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]           |            |
   | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]           |            |
-  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20no]           |            |
+  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20no]           | ![][c20ok] |
   | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]           |            |
   | `views::counted`                                                  | ![][c20ok]           |            |
   | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]           |            |
