@@ -32,7 +32,7 @@ class bind_partial_back : bind_partial<bind_partial_back<FD, BoundArgs...>, FD, 
   template<typename F, typename BoundArgsTuple, std::size_t...I, typename... CallArgs>
   static constexpr decltype(auto) call(F&& f, BoundArgsTuple&& tup, std::index_sequence<I...>, CallArgs&&... call_args)
       noexcept(noexcept(
-           preview::invoke(std::forward<F>(f), std::get<I>(std::forward<BoundArgsTuple>(tup))..., std::forward<CallArgs>(call_args)...)
+           preview::invoke(std::forward<F>(f), std::forward<CallArgs>(call_args)..., std::get<I>(std::forward<BoundArgsTuple>(tup))...)
       ))
   {
     return preview::invoke(std::forward<F>(f), std::forward<CallArgs>(call_args)..., std::get<I>(std::forward<BoundArgsTuple>(tup))...);

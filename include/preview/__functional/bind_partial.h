@@ -6,12 +6,16 @@
 #define PREVIEW_FUNCTIONAL_BIND_PARTIAL_H_
 
 #include <tuple>
+#include <type_traits>
 #include <utility>
 
 #include "preview/__concepts/different_from.h"
 #include "preview/__utility/compressed_pair.h"
+#include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/conjunction.h"
 
 namespace preview {
+namespace detail {
 
 // Derived must implement the followings:
 //   bind_invocable
@@ -86,7 +90,10 @@ class bind_partial_const_fn {
       : Derived::template bind_nothrow_invocable<DerivedSelf, CallArgs...> {};
 
  public:
-  template<typename... Args, std::enable_if_t<different_from_variadic<Args..., bind_partial_const_fn>::value, int> = 0>
+  template<typename... Args, std::enable_if_t<conjunction<
+      different_from_variadic<Args..., bind_partial_const_fn>,
+      bool_constant<(sizeof...(Args) == sizeof...(BoundArgs))>
+  >::value, int> = 0>
   constexpr explicit bind_partial_const_fn(Args&&... args)
       : bound_args_(std::forward<Args>(args)...) {}
 
@@ -122,6 +129,7 @@ class bind_partial_const_fn {
   std::tuple<BoundArgs...> bound_args_;
 };
 
+} // namespace detail
 } // namespace preview
 
 #endif // PREVIEW_FUNCTIONAL_BIND_PARTIAL_H_
