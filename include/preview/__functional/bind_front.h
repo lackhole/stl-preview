@@ -13,14 +13,14 @@ namespace preview {
 namespace detail {
 
 template<typename FD, typename... BoundArgs>
-class bind_front_object {
+class bind_partial_front {
   using indices = std::index_sequence_for<BoundArgs...>;
 
  public:
   template<typename F, typename... Args, std::enable_if_t<
-      negation<std::is_same<bind_front_object, remove_cvref_t<F>>>
+      negation<std::is_same<bind_partial_front, remove_cvref_t<F>>>
   ::value, int> = 0>
-  constexpr explicit bind_front_object(F&& f, Args&&... args)
+  constexpr explicit bind_partial_front(F&& f, Args&&... args)
       : pair_(compressed_pair_variadic_construct_divider<1>{},
               std::forward<F>(f),
               std::forward<Args>(args)...) {}
@@ -75,7 +75,7 @@ template<typename F, typename... Args, std::enable_if_t<conjunction<
     std::is_move_constructible<std::decay_t<Args>>...
 >::value, int> = 0>
 constexpr auto bind_front(F&& f, Args&&... args) {
-  return detail::bind_front_object<std::decay_t<F>, std::decay_t<Args>...>{
+  return detail::bind_partial_front<std::decay_t<F>, std::decay_t<Args>...>{
     std::forward<F>(f),
     std::forward<Args>(args)...
   };
