@@ -49,7 +49,7 @@ template<typename F, typename... Args, std::enable_if_t<conjunction<
     std::is_move_constructible<std::decay_t<Args>>...
 >::value, int> = 0>
 constexpr auto bind_front(F&& f, Args&&... args) {
-  return detail::bind_front_object<std::decay_t<F>, Args&&...>{
+  return detail::bind_front_object<std::decay_t<F>, std::decay_t<Args>...>{
     detail::bind_object_ctor_tag{},
     std::forward<F>(f),
     std::forward<Args>(args)...
