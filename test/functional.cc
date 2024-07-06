@@ -1,3 +1,4 @@
+#include "preview/core.h"
 #include "preview/functional.h"
 #include "gtest.h"
 
@@ -32,4 +33,21 @@ TEST(VERSIONED(Functional), bind_partial) {
   auto madd = [](int a, int b, int c) { return a * b + c; };
   auto mul_plus_seven = preview::bind_back(madd, 7);
   EXPECT_EQ(mul_plus_seven(4, 10), 47); //: madd(4, 10, 7) == 47
+
+#if PREVIEW_CXX_VERSION >= 17
+  auto fifty_minus_cpp26 = preview::bind_front<minus>(50);
+  EXPECT_EQ(fifty_minus_cpp26(3), 47);
+
+  auto member_minus_cpp26 = preview::bind_front<&S::minus>(S{50});
+  EXPECT_EQ(member_minus_cpp26(3), 47);
+#endif
+
+#if PREVIEW_CXX_VERSION >= 20 && \
+    (!PREVIEW_ANDROID || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
+  auto forty_plus_cpp26 = preview::bind_front<plus>(40);
+  EXPECT_EQ(forty_plus(7), 47);
+
+  auto mul_plus_seven_cpp26 = preview::bind_back<madd>(7);
+  EXPECT_EQ(mul_plus_seven_cpp26(4, 10), 47);
+#endif
 }
