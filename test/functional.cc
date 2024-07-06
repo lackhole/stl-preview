@@ -40,6 +40,16 @@ TEST(VERSIONED(Functional), bind_partial) {
 
   auto member_minus_cpp26 = preview::bind_front<&S::minus>(S{50});
   EXPECT_EQ(member_minus_cpp26(3), 47);
+#else
+#if defined(__GNUC__) && !defined(__clang__)
+  auto fifty_minus_cpp26 = preview::bind_front<decltype(&minus), minus>(50);
+#else
+  auto fifty_minus_cpp26 = preview::bind_front<decltype(minus), minus>(50);
+#endif
+  EXPECT_EQ(fifty_minus_cpp26(3), 47);
+
+  auto member_minus_cpp26 = preview::bind_front<decltype(&S::minus), &S::minus>(S{50});
+  EXPECT_EQ(member_minus_cpp26(3), 47);
 #endif
 
 #if PREVIEW_CXX_VERSION >= 20 && \
@@ -49,5 +59,7 @@ TEST(VERSIONED(Functional), bind_partial) {
 
   auto mul_plus_seven_cpp26 = preview::bind_back<madd>(7);
   EXPECT_EQ(mul_plus_seven_cpp26(4, 10), 47);
+#else
+  // lambda expression is non-literal before C++17
 #endif
 }
