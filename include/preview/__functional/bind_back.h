@@ -5,41 +5,68 @@
 #include <type_traits>
 #include <utility>
 
-#include "preview/__functional/detail/bind_base.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__type_traits/conjunction.h"
-#include "preview/__type_traits/copy_cvref.h"
 #include "preview/__type_traits/is_invocable.h"
+#include "preview/__type_traits/negation.h"
+#include "preview/__type_traits/remove_cvref.h"
+#include "preview/__utility/compressed_pair.h"
 
 namespace preview {
 namespace detail {
 
-template<typename F, typename... Args>
-class bind_back_object : public bind_object_base<bind_back_object<F, Args...>, F, Args...> {
-  using base = bind_object_base<bind_back_object<F, Args...>, F, Args...>;
-  friend base;
-
-  template<typename Self, typename... U>
-  struct bind_invoke_result
-      : invoke_result<copy_cvref_t<Self&&, F>, U&&..., copy_cvref_t<Self&&, Args>...> {};
-
-  template<typename Self, typename... U>
-  struct bind_nothrow_invocable
-      : is_nothrow_invocable<copy_cvref_t<Self&&, F>, U&&..., copy_cvref_t<Self&&, Args>...> {};
-
-  template<std::size_t...I, typename Self, typename... U>
-  static constexpr typename bind_invoke_result<Self&&, U&&...>::type
-  call(Self&& self, std::index_sequence<I...>, U&&... args) noexcept(bind_nothrow_invocable<Self&&, U&&...>::value) {
-    return preview::invoke(
-        std::forward<Self>(self).func_,
-        std::forward<U>(args)...,
-        std::get<I>(std::forward<Self>(self).args_)...
-    );
-  }
+template<typename FD, typename... BoundArgs>
+class bind_back_object {
+  using indices = std::index_sequence_for<BoundArgs...>;
 
  public:
-  using base::base;
-  using base::operator();
+  template<typename F, typename... Args, std::enable_if_t<
+      negation<std::is_same<bind_back_object, remove_cvref_t<F>>>
+  ::value, int> = 0>
+  constexpr explicit bind_back_object(F&& f, Args&&... args)
+      : pair_(compressed_pair_variadic_construct_divider<1>{},
+              std::forward<F>(f),
+              std::forward<Args>(args)...) {}
+
+  template<typename... CallArgs>
+  constexpr invoke_result_t<FD&, CallArgs&&..., BoundArgs&...> operator()(CallArgs&&... call_args) &
+      noexcept(is_nothrow_invocable<FD&, CallArgs&&..., BoundArgs&...>::value)
+  {
+    return call(pair_.first(), pair_.second(), indices{}, std::forward<CallArgs>(call_args)...);
+  }
+
+  template<typename... CallArgs>
+  constexpr invoke_result_t<const FD&, CallArgs&&..., const BoundArgs&...> operator()(CallArgs&&... call_args) const &
+      noexcept(is_nothrow_invocable<const FD&, CallArgs&&..., const BoundArgs&...>::value)
+  {
+    return call(pair_.first(), pair_.second(), indices{}, std::forward<CallArgs>(call_args)...);
+  }
+
+  template<typename... CallArgs>
+  constexpr invoke_result_t<FD&&, CallArgs&&..., BoundArgs&&...> operator()(CallArgs&&... call_args) &&
+      noexcept(is_nothrow_invocable<FD&&, CallArgs&&..., BoundArgs&&...>::value)
+  {
+    return call(std::move(pair_.first()), std::move(pair_.second()), indices{}, std::forward<CallArgs>(call_args)...);
+  }
+
+  template<typename... CallArgs>
+  constexpr invoke_result_t<const FD&&, CallArgs&&..., const BoundArgs&&...> operator()(CallArgs&&... call_args) const &&
+      noexcept(is_nothrow_invocable<const FD&&, CallArgs&&..., const BoundArgs&&...>::value)
+  {
+    return call(std::move(pair_.first()), std::move(pair_.second()), indices{}, std::forward<CallArgs>(call_args)...);
+  }
+
+ private:
+  template<typename F, typename BoundArgsTuple, std::size_t...I, typename... Args>
+  static constexpr auto call(F&& f, BoundArgsTuple&& tup, std::index_sequence<I...>, Args&&... args)
+      noexcept(noexcept(
+          preview::invoke(std::forward<F>(f), std::forward<Args>(args)..., std::get<I>(std::forward<BoundArgsTuple>(tup))...)
+      ))
+  {
+    return preview::invoke(std::forward<F>(f), std::forward<Args>(args)..., std::get<I>(std::forward<BoundArgsTuple>(tup))...);
+  }
+
+  compressed_pair<FD, std::tuple<BoundArgs...>> pair_;
 };
 
 } // namespace detail
@@ -52,7 +79,6 @@ template<typename F, typename... Args, std::enable_if_t<conjunction<
 >::value, int> = 0>
 constexpr auto bind_back(F&& f, Args&&... args) {
   return detail::bind_back_object<std::decay_t<F>, std::decay_t<Args>...>{
-      detail::bind_object_ctor_tag{},
       std::forward<F>(f),
       std::forward<Args>(args)...
   };
