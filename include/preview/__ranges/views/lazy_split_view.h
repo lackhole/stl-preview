@@ -258,6 +258,10 @@ class lazy_split_view
     outer_iterator<Const> i_{};
     bool incremented_ = false;
 
+    constexpr bool equal_with(const inner_iterator& other) const {
+      return i_.current_ == other.i_.current_;
+    }
+
    public:
     using iterator_concept = typename outer_iterator<Const>::iterator_concept;
     using value_type = range_value_t<Base>;
@@ -308,7 +312,7 @@ class lazy_split_view
     }
 
     friend constexpr bool operator==(const inner_iterator& x, const inner_iterator& y) {
-      return x.i_.current_ == y.i_.current_;
+      return x.equal_with(y);
     }
     friend constexpr bool operator!=(const inner_iterator& x, const inner_iterator& y) {
       return !(x == y);
