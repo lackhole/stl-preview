@@ -33,6 +33,8 @@
 #include "preview/__ranges/views/join_with.h"
 #include "preview/__ranges/views/join_with_view.h"
 #include "preview/__ranges/views/keys_view.h"
+#include "preview/__ranges/views/lazy_split.h"
+#include "preview/__ranges/views/lazy_split_view.h"
 #include "preview/__ranges/views/repeat.h"
 #include "preview/__ranges/views/repeat_view.h"
 #include "preview/__ranges/views/reverse.h"

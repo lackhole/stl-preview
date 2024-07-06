@@ -944,3 +944,57 @@ TEST(VERSIONED(RangesViews), split_view_DeductionGuides) {
       ranges::split_view<preview::string_view, ranges::single_view<char>>>);
 }
 #endif
+
+TEST(VERSIONED(RangesViews), lazy_split_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  auto print = [](auto const& view) {
+    // `view` is of views::lazy_split_view::__outer_iterator::value_type
+    std::cout << "{ ";
+#if PREVIEW_CXX_VERSION >= 17
+    for (const auto element : view)
+      std::cout << element << ' ';
+#else
+    for (const auto element : view | views::common)
+      std::cout << element << ' ';
+#endif
+    std::cout << "} ";
+  };
+  constexpr static auto source = {0, 1, 0, 2, 3, 0, 4, 5, 6, 0, 7, 8, 9};
+  constexpr int delimiter{0};
+
+#if PREVIEW_CXX_VERSION >= 17
+  constexpr ranges::lazy_split_view outer_view{source, delimiter};
+#else
+  const auto outer_view = views::lazy_split(source, delimiter);
+#endif
+  for (auto const& inner_view : outer_view)
+    print(inner_view);
+  EXPECT_EQ(ranges::distance(outer_view), 5);
+  auto it = outer_view.begin();
+  EXPECT_TRUE(ranges::distance(*it++) == 0);
+  EXPECT_TRUE(ranges::equal(*it++, {1}));
+  EXPECT_TRUE(ranges::equal(*it++, {2, 3}));
+  EXPECT_TRUE(ranges::equal(*it++, {4, 5, 6}));
+  EXPECT_TRUE(ranges::equal(*it++, {7, 8, 9}));
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view hello{"Hello C++ 20 !"};
+  std::cout << "\n" "substrings: ";
+  ranges::for_each(hello | views::lazy_split(' '), print);
+  EXPECT_TRUE(ranges::equal(
+      hello | views::lazy_split(' '),
+      {"Hello"_sv, "C++"_sv, "20"_sv, "!"_sv},
+      ranges::equal
+  ));
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view text{"Hello-+-C++-+-20-+-!"};
+  PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view delim{"-+-"};
+  std::cout << "\n" "substrings: ";
+  ranges::for_each(text | views::lazy_split(delim), print);
+  EXPECT_TRUE(ranges::equal(
+      text | views::lazy_split(delim),
+      {"Hello"_sv, "C++"_sv, "20"_sv, "!"_sv},
+      ranges::equal
+  ));
+}

@@ -19,14 +19,11 @@
 #include "preview/__ranges/sized_range.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/negation.h"
-#include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 
 namespace preview {
 namespace ranges {
 namespace detail {
-
-using preview::detail::return_category;
 
 struct distance_niebloid {
   template<typename I, typename S, std::enable_if_t<conjunction<
@@ -43,21 +40,27 @@ struct distance_niebloid {
     return result;
   }
 
-  template<typename I, typename S, std::enable_if_t<sized_sentinel_for<S, std::decay_t<I>>::value, int> = 0>
+  template<typename I, typename S, std::enable_if_t<
+      sized_sentinel_for<S, std::decay_t<I>>
+      ::value, int> = 0>
   constexpr iter_difference_t<std::decay_t<I>> operator()(I&& first, S last) const {
     return last - static_cast<const std::decay_t<I>&>(first);
   }
 
-  template<typename R, std::enable_if_t<ranges::sized_range<remove_cvref_t<R>>::value, int> = 0>
-  constexpr ranges::range_difference_t<R> operator()(R&& r) const {
-    return static_cast<ranges::range_difference_t<R>>(ranges::size(r));
+  template<typename R, std::enable_if_t<
+      range<R>
+      ::value, int> = 0>
+  constexpr range_difference_t<R> operator()(R&& r) const {
+    return call(std::forward<R>(r), sized_range<R>{});
   }
 
-  template<typename R, std::enable_if_t<conjunction<
-      ranges::range<remove_cvref_t<R>>,
-      negation< ranges::sized_range<remove_cvref_t<R>> >
-  >::value, int> = 0>
-  constexpr ranges::range_difference_t<R> operator()(R&& r) const {
+ private:
+  template<typename R>
+  constexpr range_difference_t<R> call(R&& r, std::true_type) const {
+    return static_cast<range_difference_t<R>>(ranges::size(r));
+  }
+  template<typename R>
+  constexpr range_difference_t<R> call(R&& r, std::false_type) const {
     return (*this)(ranges::begin(r), ranges::end(r));
   }
 };
