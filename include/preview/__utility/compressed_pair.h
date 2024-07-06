@@ -15,6 +15,7 @@
 # include "preview/__type_traits/common_type.h"
 # include "preview/__type_traits/conjunction.h"
 # include "preview/__type_traits/is_swappable.h"
+# include "preview/__utility/integer_sequence.h"
 # include "preview/__utility/in_place.h"
 
 namespace preview {
