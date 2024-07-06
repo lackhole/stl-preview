@@ -443,24 +443,24 @@ Description
 
 * `<functional>` (6/16)
 
-  |                                 | Introduced | Revision   |
-  |---------------------------------|------------|------------|
-  | `default_searcher`              | ![][c17no] | ![][c20no] |
-  | `boyer_moore_searcher`          | ![][c17no] |            |
-  | `boyer_moore_horspool_searcher` | ![][c17no] |            |
-  | `invoke`                        | ![][c17ok] |            |
-  | `invoke_r`                      | ![][c23ok] |            |
-  | `not_fn`                        | ![][c17no] | ![][c26no] |
-  | `bind_front`                    | ![][c20ok] |            |
-  | `bind_back`                     | ![][c23ok] |            |
-  | `identity`                      | ![][c20ok] |            |
-  | `unwrap_reference`              | ![][c20no] |            |
-  | `unwrap_ref_decay`              | ![][c20no] |            |
-  | `ranges::equal_to`...           | ![][c20ok] |            |
-  | `ranges::three_way`             | ![][c20no] |            |
-  | `move_only_function`            | ![][c23no] |            |
-  | `copyable_function`             | ![][c26no] |            |
-  | `function_ref`                  | ![][c26no] |            |
+  |                                 | Introduced | Revision     |
+  |---------------------------------|------------|--------------|
+  | `default_searcher`              | ![][c17no] | ![][c20no]   |
+  | `boyer_moore_searcher`          | ![][c17no] |              |
+  | `boyer_moore_horspool_searcher` | ![][c17no] |              |
+  | `invoke`                        | ![][c17ok] |              |
+  | `invoke_r`                      | ![][c23ok] |              |
+  | `not_fn`                        | ![][c17no] | ![][c26no]   |
+  | `bind_front`                    | ![][c20ok] | ![][c26ok17] |
+  | `bind_back`                     | ![][c23ok] | ![][c26ok17] |
+  | `identity`                      | ![][c20ok] |              |
+  | `unwrap_reference`              | ![][c20no] |              |
+  | `unwrap_ref_decay`              | ![][c20no] |              |
+  | `ranges::equal_to`...           | ![][c20ok] |              |
+  | `ranges::three_way`             | ![][c20no] |              |
+  | `move_only_function`            | ![][c23no] |              |
+  | `copyable_function`             | ![][c26no] |              |
+  | `function_ref`                  | ![][c26no] |              |
 
 * `<hazard_pointer>`
 
