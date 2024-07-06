@@ -25,12 +25,12 @@ TEST(VERSIONED(Functional), bind_partial) {
 #endif
 
   // Binding of a lambda:
-  auto plus = [](int a, int b) { return a + b; };
+  PREVIEW_CONSTEXPR_AFTER_CXX20 auto plus = [](int a, int b) { return a + b; };
   auto forty_plus = preview::bind_front(plus, 40);
   EXPECT_EQ(forty_plus(7), 47); // equivalent to: plus(40, 7) == 47
 
   // bind_back
-  auto madd = [](int a, int b, int c) { return a * b + c; };
+  PREVIEW_CONSTEXPR_AFTER_CXX20 auto madd = [](int a, int b, int c) { return a * b + c; };
   auto mul_plus_seven = preview::bind_back(madd, 7);
   EXPECT_EQ(mul_plus_seven(4, 10), 47); //: madd(4, 10, 7) == 47
 
