@@ -53,9 +53,10 @@ TEST(VERSIONED(Functional), bind_partial) {
 #endif
 
 #if PREVIEW_CXX_VERSION >= 20 && \
+    (!defined(__linux) || (defined(__clang_major__) && __clang_major__ > 11)) &&       \
     (!PREVIEW_ANDROID || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
   auto forty_plus_cpp26 = preview::bind_front<plus>(40);
-  EXPECT_EQ(forty_plus(7), 47);
+  EXPECT_EQ(forty_plus_cpp26(7), 47);
 
   auto mul_plus_seven_cpp26 = preview::bind_back<madd>(7);
   EXPECT_EQ(mul_plus_seven_cpp26(4, 10), 47);
