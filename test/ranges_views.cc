@@ -500,7 +500,7 @@ TEST(VERSIONED(RangesViews), take_view) {
   { // size
     constexpr int arr[]{1, 2, 3};
     EXPECT_TRUE(ranges::equal(
-        views::iota(0, 6) | views::transform(preview::bind_front(views::take, arr)),
+        views::iota(0, 6) | views::transform(preview::bind_front(views::take, views::all(arr))),
         {0, 1, 2, 3, 3, 3},
         {},
         [](auto&& tv) { return tv.size(); }

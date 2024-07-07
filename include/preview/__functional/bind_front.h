@@ -4,35 +4,66 @@
 #include <type_traits>
 #include <utility>
 
+#include "preview/__core/std_version.h"
+#include "preview/__concepts/not_null.h"
+#include "preview/__functional/bind_partial.h"
 #include "preview/__functional/invoke.h"
-#include "preview/__functional/detail/bind_base.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
+#include "preview/__type_traits/copy_cvref.h"
 
 namespace preview {
 namespace detail {
 
-template<typename F, typename... Args>
-class bind_front_object : public bind_object_base<bind_front_object<F, Args...>, F, Args...> {
-  using base = bind_object_base<bind_front_object<F, Args...>, F, Args...>;
-  friend base;
+template<typename FD, typename... BoundArgs>
+class bind_partial_front : bind_partial<bind_partial_front<FD, BoundArgs...>, FD, BoundArgs...> {
+  using base = bind_partial<bind_partial_front<FD, BoundArgs...>, FD, BoundArgs...>;
+  friend class bind_partial<bind_partial_front<FD, BoundArgs...>, FD, BoundArgs...>;
 
-  template<typename Self, typename... U>
-  struct bind_invoke_result
-      : invoke_result<copy_cvref_t<Self&&, F>, copy_cvref_t<Self&&, Args>..., U&&...> {};
+  template<typename Self, typename... CallArgs>
+  struct bind_invocable
+      : is_invocable<copy_cvref_t<Self, FD>, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
 
-  template<typename Self, typename... U>
+  template<typename Self, typename... CallArgs>
   struct bind_nothrow_invocable
-      : is_nothrow_invocable<copy_cvref_t<Self&&, F>, copy_cvref_t<Self&&, Args>..., U&&...> {};
+      : is_nothrow_invocable<copy_cvref_t<Self, FD>, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
 
-  template<std::size_t...I, typename Self, typename... U>
-  static constexpr typename bind_invoke_result<Self&&, U&&...>::type
-  call(Self&& self, std::index_sequence<I...>, U&&... args) noexcept(bind_nothrow_invocable<Self&&, U&&...>::value) {
-    return preview::invoke(
-        std::forward<Self>(self).func_,
-        std::get<I>(std::forward<Self>(self).args_)...,
-        std::forward<U>(args)...
-    );
+  template<typename F, typename BoundArgsTuple, std::size_t...I, typename... CallArgs>
+  static constexpr decltype(auto) call(F&& f, BoundArgsTuple&& tup, std::index_sequence<I...>, CallArgs&&... call_args)
+      noexcept(noexcept(
+           preview::invoke(std::forward<F>(f), std::get<I>(std::forward<BoundArgsTuple>(tup))..., std::forward<CallArgs>(call_args)...)
+      ))
+  {
+    return preview::invoke(std::forward<F>(f), std::get<I>(std::forward<BoundArgsTuple>(tup))..., std::forward<CallArgs>(call_args)...);
+  }
+
+ public:
+  using base::base;
+  using base::operator();
+};
+
+template<typename F, F f, typename... BoundArgs>
+class bind_partial_front_const_fn
+    : bind_partial_const_fn<bind_partial_front_const_fn<F, f, BoundArgs...>, F, f, BoundArgs...>
+{
+  using base = bind_partial_const_fn<bind_partial_front_const_fn<F, f, BoundArgs...>, F, f, BoundArgs...>;
+  friend class bind_partial_const_fn<bind_partial_front_const_fn<F, f, BoundArgs...>, F, f, BoundArgs...>;
+
+  template<typename Self, typename... CallArgs>
+  struct bind_invocable
+      : is_invocable<F, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
+
+  template<typename Self, typename... CallArgs>
+  struct bind_nothrow_invocable
+      : is_nothrow_invocable<F, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
+
+  template<typename BoundArgsTuple, std::size_t...I, typename... CallArgs>
+  static constexpr decltype(auto) call(BoundArgsTuple&& tup, std::index_sequence<I...>, CallArgs&&... call_args)
+      noexcept(noexcept(
+           preview::invoke(f, std::get<I>(std::forward<BoundArgsTuple>(tup))..., std::forward<CallArgs>(call_args)...)
+      ))
+  {
+    return preview::invoke(f, std::get<I>(std::forward<BoundArgsTuple>(tup))..., std::forward<CallArgs>(call_args)...);
   }
 
  public:
@@ -49,12 +80,31 @@ template<typename F, typename... Args, std::enable_if_t<conjunction<
     std::is_move_constructible<std::decay_t<Args>>...
 >::value, int> = 0>
 constexpr auto bind_front(F&& f, Args&&... args) {
-  return detail::bind_front_object<std::decay_t<F>, Args&&...>{
-    detail::bind_object_ctor_tag{},
+  return detail::bind_partial_front<std::decay_t<F>, std::decay_t<Args>...>{
     std::forward<F>(f),
     std::forward<Args>(args)...
   };
 }
+
+#if PREVIEW_CXX_VERSION >= 17
+template<auto f, typename... Args, std::enable_if_t<conjunction<
+    std::is_constructible<std::decay_t<Args>, Args>...,
+    std::is_move_constructible<std::decay_t<Args>>...,
+    not_null<f>
+>::value, int> = 0>
+constexpr auto bind_front(Args&&... args) {
+  return detail::bind_partial_front_const_fn<decltype(f), f, std::decay_t<Args>...>{std::forward<Args>(args)...};
+}
+#else
+template<typename F, F f, typename... Args, std::enable_if_t<conjunction<
+    std::is_constructible<std::decay_t<Args>, Args>...,
+    std::is_move_constructible<std::decay_t<Args>>...,
+    not_null_cxx14<F, f>
+>::value, int> = 0>
+constexpr auto bind_front(Args&&... args) {
+  return detail::bind_partial_front_const_fn<F, f, std::decay_t<Args>...>{std::forward<Args>(args)...};
+}
+#endif
 
 } // namespace preview
 
