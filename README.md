@@ -470,6 +470,69 @@ Description
   | `hazard_pointer`          | ![][c26no] |          |
   | `make_hazard_pointer`     | ![][c26no] |          |
 
+* `<iterator>`
+
+  |                                                     | Introduced | Revision   |
+  |-----------------------------------------------------|------------|------------|
+  | `indirectly_readable`                               | ![][c20ok] |            |
+  | `indirectly_writable`                               | ![][c20ok] |            |
+  | `weakly_incrementable`                              | ![][c20ok] |            |
+  | `incrementable`                                     | ![][c20ok] |            |
+  | `input_or_output_iterator`                          | ![][c20ok] |            |
+  | `sentinel_for`                                      | ![][c20ok] |            |
+  | `sized_sentinel_for`                                | ![][c20ok] |            |
+  | `input_iterator`                                    | ![][c20ok] |            |
+  | `output_iterator`                                   | ![][c20ok] |            |
+  | `forward_iterator`                                  | ![][c20ok] |            |
+  | `bidirectional_iterator`                            | ![][c20ok] |            |
+  | `random_access_iterator`                            | ![][c20ok] |            |
+  | `contiguous_iterator`                               | ![][c20ok] |            |
+  | `indirectly_unary_invocable`                        | ![][c20ok] |            |
+  | `indirectly_regular_unary_invocable`                | ![][c20ok] |            |
+  | `indirect_unary_predicate`                          | ![][c20ok] |            |
+  | `indirect_binary_predicate`                         | ![][c20ok] |            |
+  | `indirect_equivalence_relation`                     | ![][c20ok] |            |
+  | `indirect_strict_weak_order`                        | ![][c20ok] |            |
+  | `indirectly_movable`                                | ![][c20ok] |            |
+  | `indirectly_movable_storable`                       | ![][c20ok] |            |
+  | `indirectly_copyable`                               | ![][c20ok] |            |
+  | `indirectly_copyable_storable`                      | ![][c20ok] |            |
+  | `indirectly_swappable`                              | ![][c20ok] |            |
+  | `indirectly_comparable`                             | ![][c20ok] |            |
+  | `permutable`                                        | ![][c20ok] |            |
+  | `mergeable`                                         | ![][c20ok] |            |
+  | `sortable`                                          | ![][c20ok] |            |
+  | `indirect_result_t`                                 | ![][c20ok] |            |
+  | `projected`                                         | ![][c20ok] |            |
+  | `projected_value_t`                                 | ![][c26no] |            |
+  | `incrementable_traits`                              | ![][c20ok] |            |
+  | `indirectly_readable_traits`                        | ![][c20ok] |            |
+  | `iter_value_t`<br/>`iter_reference_t`               | ![][c20ok] |            |
+  | `iter_const_reference_t`                            | ![][c23ok] |            |
+  | `iter_difference_t`                                 | ![][c20ok] |            |
+  | `iter_rvalue_reference_t`                           | ![][c20ok] |            |
+  | `iter_common_reference_t`                           | ![][c20ok] |            |
+  | `iterator_traits`                                   | ![][c98]   | ![][c20ok] |
+  | `move_sentinel`                                     | ![][c20ok] |            |
+  | `basic_const_iterator`                              | ![][c23ok] |            |
+  | `const_iterator`                                    | ![][c23ok] |            |
+  | `const_sentinel`                                    | ![][c23ok] |            |
+  | `common_iterator`                                   | ![][c20ok] |            |
+  | `default_sentinel_t`<br/>`default_sentinel`         | ![][c20ok] |            |
+  | `counted_iterator`                                  | ![][c20ok] |            |
+  | `unreachable_sentinel_t`<br/>`unreachable_sentinel` | ![][c20ok] |            |
+  | `iter_move`                                         | ![][c20ok] |            |
+  | `iter_swap`                                         | ![][c20ok] |            |
+  | `make_const_iterator`<br/>`make_const_sentinel`     | ![][c23ok] |            |
+  | `ranges::advance`                                   | ![][c20ok] |            |
+  | `ranges::distance`                                  | ![][c20ok] |            |
+  | `ranges::next`                                      | ![][c20ok] |            |
+  | `ranges::prev`                                      | ![][c20ok] |            |
+  | `size(C)`                                           | ![][c17ok] | ![][c20ok] |
+  | `ssize(C)`                                          | ![][c20ok] | ![][c20ok] |
+  | `empty(C)`                                          | ![][c17no] | ![][c20no] |
+  | `data(C)`                                           | ![][c17no] |            |
+
 * `<latch>`
 
   |         | Introduced | Revision |
@@ -885,15 +948,8 @@ Description
   |----------------------|------------|----------|
   |                      |            |          |
 
-* Others
 
-  |            | Introduced | Revision   |
-  |------------|------------|------------|
-  | `size(C)`  | ![][c17ok] | ![][c20ok] |
-  | `empty(C)` | ![][c17no] | ![][c20no] |
-  | `data(C)`  | ![][c17no] |            |
-
-
+[c98]: https://img.shields.io/badge/C++98-grey
 [c11]: https://img.shields.io/badge/C++11-grey
 [c14]: https://img.shields.io/badge/C++14-grey
 [c17]: https://img.shields.io/badge/C++17-0055AA
