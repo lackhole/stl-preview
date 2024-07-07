@@ -11,6 +11,7 @@
 #include "preview/__core/constexpr.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__iterator/bidirectional_iterator.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/iter_difference_t.h"
@@ -76,7 +77,7 @@ struct is_specialized_iterator_traits<std::move_iterator<Iter>> : std::false_typ
 
 } // namespace preview
 
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 namespace std {
 
@@ -96,6 +97,6 @@ constexpr void iter_swap(const move_iterator<Iter>& x, const move_iterator<Iter2
 
 } // namespace std
 
-#endif
+#endif // !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 #endif // PREVIEW_ITERATOR_MOVE_ITERATOR_H_

@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/derived_from.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/iter_move.h"
@@ -30,7 +31,7 @@ struct disable_sized_sentinel_for<std::reverse_iterator<I1>, std::reverse_iterat
     : negation<sized_sentinel_for<I1, I2>> {};
 
 // iterator_traits
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 template<typename Iter>
 struct iterator_traits<std::reverse_iterator<Iter>> {
@@ -57,12 +58,12 @@ struct is_specialized_iterator_traits<iterator_traits<std::reverse_iterator<Iter
 
 } // namespace detail
 
-#endif // __cplusplus < 202002L
+#endif // !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 } // namespace preview
 
 // iter_move, iter_swap
-#if __cplusplus < 202002L
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 namespace std {
 
@@ -92,6 +93,6 @@ constexpr void iter_swap(const reverse_iterator<Iter>& x, const reverse_iterator
 
 } // namespace std
 
-#endif // __cplusplus < 202002L
+#endif // !PREVIEW_STD_HAVE_CXX20_ITERATOR
 
 #endif // PREVIEW_ITERATOR_REVERSE_ITERATOR_H_

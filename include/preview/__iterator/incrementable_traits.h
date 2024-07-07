@@ -10,6 +10,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/subtractable.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__type_traits/has_typename_difference_type.h"
 #include "preview/__type_traits/no_traits.h"
 
@@ -62,14 +63,14 @@ struct incrementable_traits_impl<T*>
         no_traits
       > {};
 
-#if __cplusplus < 202002L
-template<typename T>
-struct incrementable_traits_impl<std::back_insert_iterator<T>> {
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
+template<typename Container>
+struct incrementable_traits_impl<std::back_insert_iterator<Container>> {
   using difference_type = std::ptrdiff_t;
 };
 
-template<typename T>
-struct incrementable_traits_impl<std::front_insert_iterator<T>> {
+template<typename Container>
+struct incrementable_traits_impl<std::front_insert_iterator<Container>> {
   using difference_type = std::ptrdiff_t;
 };
 
@@ -78,13 +79,13 @@ struct incrementable_traits_impl<std::insert_iterator<T>> {
   using difference_type = std::ptrdiff_t;
 };
 
-template<typename T>
-struct incrementable_traits_impl<std::ostream_iterator<T>> {
+template<typename T, typename CharT, typename Traits>
+struct incrementable_traits_impl<std::ostream_iterator<T, CharT, Traits>> {
   using difference_type = std::ptrdiff_t;
 };
 
-template<typename T>
-struct incrementable_traits_impl<std::ostreambuf_iterator<T>> {
+template<typename T, typename Traits>
+struct incrementable_traits_impl<std::ostreambuf_iterator<T, Traits>> {
   using difference_type = std::ptrdiff_t;
 };
 #endif
