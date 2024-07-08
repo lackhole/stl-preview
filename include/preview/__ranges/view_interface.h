@@ -25,6 +25,7 @@
 #include "preview/__ranges/random_access_range.h"
 #include "preview/__ranges/range_difference_t.h"
 #include "preview/__ranges/size.h"
+#include "preview/__ranges/sized_range.h"
 #include "preview/__ranges/sentinel_t.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
@@ -50,7 +51,7 @@ struct test_empty_call : public T, empty_fallback {};
 template<typename T, typename = void>
 struct derived_have_member_empty : std::true_type {};
 
-// empty() is callable. T doesn't have empty
+// empty_fallback::empty() is callable. T doesn't have empty
 template<typename T>
 struct derived_have_member_empty<T, void_t<decltype( std::declval<test_empty_call<T>&>().empty() )>>
     : std::false_type {};
@@ -79,7 +80,7 @@ struct is_empty_callable : is_invocable<decltype(ranges::empty), T&> {};
 template<typename Derived>
 class view_interface {
   template<typename D, typename...>
-  struct derived_is_t : std::false_type {};
+  struct derived_is_t;
   template<typename... B>
   struct derived_is_t<Derived, B...> : conjunction<B...> {};
   template<typename D, typename... B>
@@ -91,10 +92,10 @@ class view_interface {
 
   using _$preview_derived = Derived;
 
-  template<typename D = Derived, std::enable_if_t<disjunction<
+  template<typename D = Derived, derived_is<D, disjunction<
       sized_range<D>,
       forward_range<D>
-  >::value, int> = 0>
+  >> = 0>
   constexpr bool empty() {
     return empty_impl(sized_range<D>{});
   }
@@ -151,13 +152,19 @@ class view_interface {
     return preview::to_address(ranges::begin(derived()));
   }
 
-  template<typename D = Derived>
-  constexpr auto size() -> decltype(preview::to_unsigned_like(ranges::end(std::declval<D&>()) - ranges::begin(std::declval<D&>()))) {
+  template<typename D = Derived, derived_is<D,
+      forward_range<D>,
+      sized_sentinel_for<sentinel_t<D>, iterator_t<D>>
+  > = 0>
+  constexpr auto size() {
     return preview::to_unsigned_like(ranges::end(derived()) - ranges::begin(derived()));
   }
 
-  template<typename D = Derived>
-  constexpr auto size() const -> decltype(preview::to_unsigned_like(ranges::end(std::declval<const D&>()) - ranges::begin(std::declval<const D&>()))) {
+  template<typename D = Derived, derived_is<D,
+      forward_range<const D>,
+      sized_sentinel_for<sentinel_t<const D>, iterator_t<const D>>
+  > = 0>
+  constexpr auto size() const {
     return preview::to_unsigned_like(ranges::end(derived()) - ranges::begin(derived()));
   }
 
