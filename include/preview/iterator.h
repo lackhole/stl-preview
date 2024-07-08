@@ -63,6 +63,7 @@
 #include "preview/__iterator/permutable.h"
 #include "preview/__iterator/prev.h"
 #include "preview/__iterator/projected.h"
+#include "preview/__iterator/projected_value_t.h"
 #include "preview/__iterator/random_access_iterator.h"
 #include "preview/__iterator/reverse_iterator.h"
 #include "preview/__iterator/sentinel_for.h"
