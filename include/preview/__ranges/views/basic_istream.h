@@ -5,11 +5,15 @@
 #ifndef PREVIEW_RANGES_VIEWS_BASIC_ISTREAM_H_
 #define PREVIEW_RANGES_VIEWS_BASIC_ISTREAM_H_
 
+#include <istream>
+#include <iterator>
 #include <type_traits>
+#include <utility>
 
 #include "preview/__concepts/derived_from.h"
 #include "preview/__core/inline_variable.h"
 #include "preview/__ranges/views/basic_istream_view.h"
+#include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
@@ -36,8 +40,8 @@ struct derived_from_basic_istream<U, true>
 template<typename T>
 struct basic_istream_niebloid {
   template<typename E, std::enable_if_t<
-      derived_from_basic_istream<std::remove_reference_t<E>
-  >::value, int> = 0>
+      derived_from_basic_istream<std::remove_reference_t<E>>
+  ::value, int> = 0>
   constexpr auto operator()(E&& e) const {
     using U = std::remove_reference_t<decltype(e)>;
     return basic_istream_view<T, typename U::char_type, typename U::traits_type>(std::forward<E>(e));

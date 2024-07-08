@@ -295,6 +295,8 @@ struct maybe_key_value_container
         bool_constant<(template_arity<C>::value > 2)>
       > {};
 
+using preview::detail::return_category;
+
 template<
     template<typename...> class C,
     typename R,

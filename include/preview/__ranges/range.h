@@ -18,15 +18,12 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-template<typename T, bool = is_referencable<T>::value /* false */>
+template<typename T, bool = is_referencable<T>::value /* false */, typename = void, typename = void>
 struct is_range : std::false_type {};
 
 template<typename T>
-struct is_range<T, true>
-    : conjunction<
-        is_invocable<decltype(ranges::begin), T&>,
-        is_invocable<decltype(ranges::end), T&>
-    > {};
+struct is_range<T, true, void_t<decltype( ranges::begin(std::declval<T&>()) )>, void_t<decltype( ranges::end(std::declval<T&>()) )>>
+    : std::true_type {};
 
 } // namespace detail
 

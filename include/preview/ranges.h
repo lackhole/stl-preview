@@ -24,7 +24,7 @@
 #include "preview/__ranges/crend.h"
 #include "preview/__ranges/dangling.h"
 #include "preview/__ranges/data.h"
-#include "preview/__ranges/disabled_sized_range.h"
+#include "preview/__ranges/disable_sized_range.h"
 #include "preview/__ranges/distance.h"
 #include "preview/__ranges/empty.h"
 #include "preview/__ranges/enable_borrowed_range.h"

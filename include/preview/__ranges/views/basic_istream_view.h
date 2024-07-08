@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <istream>
+#include <memory>
 #include <string>
 #include <type_traits>
 
@@ -15,7 +16,6 @@
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/default_sentinel_t.h"
 #include "preview/__iterator/iterator_tag.h"
-#include "preview/__memory/addressof.h"
 #include "preview/__ranges/view_interface.h"
 #include "preview/__type_traits/void_t.h"
 
@@ -40,6 +40,8 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
   static_assert(default_initializable<Val>::value, "Constraints not satisfied");
   static_assert(detail::stream_extractable<Val, CharT, Traits>::value, "Constraints not satisfied");
 
+  struct iterator;
+  friend struct iterator;
   struct iterator {
     using iterator_concept = input_iterator_tag;
     using difference_type = std::ptrdiff_t;
@@ -52,20 +54,12 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
 
     constexpr explicit iterator(basic_istream_view& parent)
         : parent_(preview::addressof(parent)) {}
+
     iterator(const iterator&) = delete;
-    iterator(iterator&& other) noexcept
-        : parent_(other.parent_) {
-      other.parent_ = nullptr;
-    }
+    iterator(iterator&& other) = default;
 
     iterator& operator=(const iterator&) = delete;
-    iterator& operator=(iterator&& other) noexcept {
-      if (this != preview::addressof(other)) {
-        parent_ = other.parent_;
-        other.parent_ = nullptr;
-      }
-      return *this;
-    }
+    iterator& operator=(iterator&& other) = default;
 
     iterator& operator++() {
       parent_->read();
@@ -73,7 +67,7 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
     }
 
     void operator++(int) {
-      parent_->read();
+      ++*this;
     }
 
     Val& operator*() const {
@@ -81,7 +75,7 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
     }
 
     friend bool operator==(const iterator& x, default_sentinel_t) {
-      return x.parent_ == nullptr || x.fail();
+      return x.fail();
     }
 
     friend bool operator!=(const iterator& x, default_sentinel_t) {
@@ -103,11 +97,10 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
 
     basic_istream_view* parent_;
   };
-  friend struct iterator;
-
 
   PREVIEW_CONSTEXPR_AFTER_CXX17 explicit basic_istream_view(std::basic_istream<CharT, Traits>& stream)
-      : stream_(std::addressof(stream)), value_() {}
+      : stream_(std::addressof(stream))
+      , value_() {}
 
   constexpr auto begin() {
     read();
