@@ -123,16 +123,14 @@ TEST(VERSIONED(RangesViews), basic_istream_view) {
   }
 #endif
 
-//#if !PREVIEW_ANDROID || (PREVIEW_CXX_VERSION < 17 || PREVIEW_NDK_VERSION_MAJOR >= 26)
-//  auto floats = std::istringstream{"1.1  2.2\t3.3\v4.4\f55\n66\r7.7  8.8"};
-//  std::ostringstream oss;
-//  ranges::copy(
-//      views::istream<float>(floats),
-//      std::ostream_iterator<float>{oss, ", "}
-//  );
-//
-//  EXPECT_EQ(oss.str(), "1.1, 2.2, 3.3, 4.4, 55, 66, 7.7, 8.8, ");
-//#endif
+  auto floats = std::istringstream{"1.1  2.2\t3.3\v4.4\f55\n66\r7.7  8.8"};
+  std::ostringstream oss;
+  ranges::copy(
+      views::istream<float>(floats),
+      std::ostream_iterator<float>{oss, ", "}
+  );
+
+  EXPECT_EQ(oss.str(), "1.1, 2.2, 3.3, 4.4, 55, 66, 7.7, 8.8, ");
 }
 
 TEST(VERSIONED(RangesViews), repeat_view) {
@@ -407,14 +405,12 @@ TEST(VERSIONED(RangesViews), transform_view) {
   ranges::for_each(in | views::transform(rot13), show);
   EXPECT_TRUE(ranges::equal(in | views::transform(rot13), "pccersrerapr.pbz\n"s));
 
-#if !PREVIEW_ANDROID || defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26
   std::string out;
   ranges::copy(views::transform(in, rot13), std::back_inserter(out));
   EXPECT_EQ(out, "pccersrerapr.pbz\n"s);
   ranges::for_each(out, show);
   ranges::for_each(out | views::transform(rot13), show);
   EXPECT_TRUE(ranges::equal(out | views::transform(rot13), "cppreference.com\n"s));
-#endif
 }
 
 template<typename F, typename BoundArgs>

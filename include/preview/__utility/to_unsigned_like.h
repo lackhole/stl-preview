@@ -2,8 +2,8 @@
 // Created by YongGyu Lee on 2024. 6. 28
 //
 
-#ifndef PREVIEW_TYPE_TRAITS_TO_UNSIGNED_LIKE_H_
-#define PREVIEW_TYPE_TRAITS_TO_UNSIGNED_LIKE_H_
+#ifndef PREVIEW_UTILITY_TO_UNSIGNED_LIKE_H_
+#define PREVIEW_UTILITY_TO_UNSIGNED_LIKE_H_
 
 #include <type_traits>
 #include "preview/__type_traits/is_integer_like.h"
@@ -17,4 +17,4 @@ constexpr auto to_unsigned_like(T x) noexcept {
 
 } // namespace preview
 
-#endif // PREVIEW_TYPE_TRAITS_TO_UNSIGNED_LIKE_H_
+#endif // PREVIEW_UTILITY_TO_UNSIGNED_LIKE_H_
