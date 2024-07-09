@@ -87,6 +87,7 @@ Description
 
   |                                     | Introduced | Revision   |
   |-------------------------------------|------------|------------|
+  | `search`                            | ![][c98]   | ![][c17no] |
   | `clamp`                             | ![][c17ok] | ![][c20ok] |
   | `for_each_n`                        | ![][c17ok] | ![][c20ok] |
   | `sample`                            | ![][c17no] | ![][c23no] |
@@ -120,7 +121,7 @@ Description
   | `ranges::adjacent_find`             | ![][c20no] |            |
   | `ranges::search`                    | ![][c20ok] |            |
   | `ranges::search_n`                  | ![][c20no] |            |
-  | `ranges::contains`                  | ![][c23ok] |            |
+  | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
   | `ranges::contains_subrange`         | ![][c23ok] |            |
   | `ranges::starts_with`               | ![][c23no] |            |
   | `ranges::ends_with`                 | ![][c23no] |            |
@@ -445,17 +446,17 @@ Description
 
   |                                 | Introduced | Revision     |
   |---------------------------------|------------|--------------|
-  | `default_searcher`              | ![][c17no] | ![][c20no]   |
+  | `default_searcher`              | ![][c17ok] | ![][c20ok]   |
   | `boyer_moore_searcher`          | ![][c17no] |              |
   | `boyer_moore_horspool_searcher` | ![][c17no] |              |
   | `invoke`                        | ![][c17ok] |              |
   | `invoke_r`                      | ![][c23ok] |              |
-  | `not_fn`                        | ![][c17no] | ![][c26no]   |
+  | `not_fn`                        | ![][c17ok] | ![][c26ok]   |
   | `bind_front`                    | ![][c20ok] | ![][c26ok17] |
   | `bind_back`                     | ![][c23ok] | ![][c26ok17] |
   | `identity`                      | ![][c20ok] |              |
-  | `unwrap_reference`              | ![][c20no] |              |
-  | `unwrap_ref_decay`              | ![][c20no] |              |
+  | `unwrap_reference`              | ![][c20ok] |              |
+  | `unwrap_ref_decay`              | ![][c20ok] |              |
   | `ranges::equal_to`...           | ![][c20ok] |              |
   | `ranges::three_way`             | ![][c20no] |              |
   | `move_only_function`            | ![][c23no] |              |

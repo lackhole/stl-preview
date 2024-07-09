@@ -1,5 +1,7 @@
 #include "preview/core.h"
 #include "preview/functional.h"
+#include "preview/string_view.h"
+
 #include "gtest.h"
 
 int minus(int a, int b) {
@@ -62,5 +64,76 @@ TEST(VERSIONED(Functional), bind_partial) {
   EXPECT_EQ(mul_plus_seven_cpp26(4, 10), 47);
 #else
   // lambda expression is non-literal before C++17
+#endif
+}
+
+TEST(VERSIONED(Functional), default_searcher) {
+  PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view in =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed "
+      "do eiusmod tempor incididunt ut labore et dolore magna aliqua";
+
+  const preview::string_view needle{"pisci"};
+
+#if PREVIEW_CXX_VERSION >= 17
+  auto it = std::search(in.begin(), in.end(), preview::default_searcher(needle.begin(), needle.end()));
+  EXPECT_NE(it, in.end());
+  EXPECT_EQ(it - in.begin(), 43);
+#endif
+}
+
+bool is_same(int a, int b) noexcept {
+  return a == b;
+}
+
+struct S2 {
+  int val;
+  bool is_same(int arg) const noexcept { return val == arg; }
+};
+
+TEST(VERSIONED(Functional), not_fn) {
+  auto is_differ = preview::not_fn(is_same);
+  EXPECT_FALSE(is_differ(8, 8)); // equivalent to: !is_same(8, 8) == false
+  EXPECT_TRUE (is_differ(6, 9)); // equivalent to: !is_same(8, 0) == true
+
+  // Using with a member function:
+  auto member_differ = preview::not_fn(&S2::is_same);
+  EXPECT_FALSE(member_differ(S2{3}, 3)); //: S tmp{6}; !tmp.is_same(6) == false
+
+  // Noexcept-specification is preserved:
+  EXPECT_EQ(noexcept(is_differ), noexcept(is_same));
+  EXPECT_EQ(noexcept(member_differ), noexcept(&S2::is_same));
+
+  // Using with a function object:
+  PREVIEW_CONSTEXPR_AFTER_CXX20 auto same = [](int a, int b) { return a == b; };
+  auto differ = preview::not_fn(same);
+  EXPECT_TRUE (differ(1, 2)); //: !same(1, 2) == true
+  EXPECT_FALSE(differ(2, 2)); //: !same(2, 2) == false
+
+#if PREVIEW_CXX_VERSION >= 17
+  auto is_differ_cpp26 = preview::not_fn<is_same>();
+  EXPECT_FALSE(is_differ_cpp26(8, 8));
+  EXPECT_TRUE (is_differ_cpp26(6, 9));
+
+  auto member_differ_cpp26 = preview::not_fn<&S2::is_same>();
+  EXPECT_FALSE(member_differ_cpp26(S2{3}, 3));
+#else
+  #if defined(__GNUC__) && !defined(__clang__)
+  auto is_differ_cpp26 = preview::not_fn<decltype(&is_same), is_same>();
+#else
+  auto is_differ_cpp26 = preview::not_fn<decltype(is_same), is_same>();
+#endif
+  EXPECT_FALSE(is_differ_cpp26(8, 8));
+  EXPECT_TRUE (is_differ_cpp26(6, 9));
+
+  auto member_differ_cpp26 = preview::not_fn<decltype(&S2::is_same), &S2::is_same>();
+  EXPECT_FALSE(member_differ_cpp26(S2{3}, 3));
+#endif
+
+#if PREVIEW_CXX_VERSION >= 20 && \
+    (!defined(__linux) || (defined(__clang_major__) && __clang_major__ > 11)) &&       \
+    (!PREVIEW_ANDROID || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
+  auto differ_cpp26 = preview::not_fn<same>();
+  static_assert(differ_cpp26(1, 2) == true);
+  static_assert(differ_cpp26(2, 2) == false);
 #endif
 }
