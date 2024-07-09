@@ -8,6 +8,7 @@
 #include "preview/__algorithm/clamp.h"
 #include "preview/__algorithm/for_each_n.h"
 #include "preview/__algorithm/shift.h"
+#include "preview/__algorithm/ranges/adjacent_find.h"
 #include "preview/__algorithm/ranges/all_of.h"
 #include "preview/__algorithm/ranges/any_of.h"
 #include "preview/__algorithm/ranges/clamp.h"
