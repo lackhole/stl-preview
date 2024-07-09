@@ -20,17 +20,21 @@ std::cout << map[0] << ' '
 
 **`preview` is standard-conforming, and is compatible with existing STL**
 ```c++
+// Pre-C++20 iterators are fully compatible
+auto floats = std::istringstream{"1.1  2.2\t3.3\v4.4\f55\n66\r7.7  8.8"};
+ranges::copy(views::istream<float>(floats), std::ostream_iterator<float>{std::cout, ", "});
+
+// Complex ranges/iterators are also compatible with both pre C++20 and 
+// post C++20 std::iterator_traits
 auto r = preview::views::iota(0) |
       preview::views::take(10) |
       preview::views::filter([](auto x) { return x % 2 == 0; });
 
-// Compatible with both pre C++20 and post C++20 std::iterator_traits
 static_assert(std::is_same<
     std::iterator_traits<decltype(r.begin())>::reference,
     int
 >::value, "");
 
-// Others such as std::get, std::tuple_size are also compatible 
 ```
 
 **Up to C++26 STL are available**
@@ -52,10 +56,21 @@ int main() {
   preview::string_view sv = "world";
   std::list<char> l = {'!'};
 
+  // hello, world!
   for (auto c : preview::views::concat(v, s, sv, l)) {
     std::cout << c;
   }
-  // hello, world!
+  
+  // expected
+  auto process = [](preview::string_view str) -> preview::expected<int, std::string> {
+    return parse_number(str)
+      .transform([](double v) { return static_cast<int>(v); })
+      .transform_error([](parse_error e) {
+        return e == parse_error::invalid_input ? "invalid input" : "overflow";
+      });
+  };
+  std::cout << process("42").value_or(-1) << '\n;'; // 42
+  std::cout << process("inf").value_or(-1) << '\n'; // -1
 }
 ```
 

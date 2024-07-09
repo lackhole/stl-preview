@@ -770,6 +770,22 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
     return bool(*this) ? std::move(**this) : static_cast<T>(std::forward<U>(default_value));
   }
 
+  template<typename G = E, std::enable_if_t<conjunction<
+      std::is_copy_constructible<E>,
+      std::is_convertible<G, E>
+  >::value, int> = 0>
+  constexpr E error_or(G&& default_value) const & {
+    return has_value() ? std::forward<G>(default_value) : error();
+  }
+
+  template<typename G = E, std::enable_if_t<conjunction<
+      std::is_move_constructible<E>,
+      std::is_convertible<G, E>
+  >::value, int> = 0>
+  constexpr E error_or(G&& default_value) && {
+    return has_value() ? std::forward<G>(default_value) : std::move(error());
+  }
+
   template<typename F, std::enable_if_t<conjunction<
       std::is_constructible<E, E&>,
       is_invocable<and_then_t, F, expected&>

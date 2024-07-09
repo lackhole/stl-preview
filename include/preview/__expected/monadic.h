@@ -133,13 +133,13 @@ class expected_transform_t<Expected<T, E>> {
   using U = std::remove_cv_t<expected_value_invoke_result_t<F, Self>>;
 
   template<typename F, typename Self>
-  constexpr auto valued(F&& f, Self&& self, std::true_type /* void */) const {
+  constexpr auto valued(F&& f, Self&& self, std::true_type /* is_void<U> */) const {
     expected_value_invoke(std::forward<F>(f), std::forward<Self>(self));
     return Expected<U<F, Self>, E>();
   }
 
   template<typename F, typename Self>
-  constexpr auto valued(F&& f, Self&& self, std::false_type /* void */) const {
+  constexpr auto valued(F&& f, Self&& self, std::false_type /* is_void<U> */) const {
     return Expected<U<F, Self>, E>(expected_value_invoke(std::forward<F>(f), std::forward<Self>(self)));
   }
 
@@ -147,11 +147,11 @@ class expected_transform_t<Expected<T, E>> {
   template<typename F, typename Self, std::enable_if_t<conjunction<
       expected_value_invocable<F, Self>,
       expected_valid_value_type<U<F, Self>>,
-      void_or<T, std::is_constructible, U<F, Self>, expected_value_invoke_result_t<F, Self>>
+      void_or<U<F, Self>, std::is_constructible, U<F, Self>, expected_value_invoke_result_t<F, Self>>
   >::value, int> = 0>
   constexpr auto operator()(F&& f, Self&& self) const {
     if (self.has_value()) {
-      return valued(std::forward<F>(f), std::forward<Self>(self), std::is_void<T>{});
+      return valued(std::forward<F>(f), std::forward<Self>(self), std::is_void<U<F, Self>>{});
     } else {
       return Expected<U<F, Self>, E>(unexpect, std::forward<Self>(self).error());
     }
