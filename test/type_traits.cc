@@ -100,3 +100,48 @@ TEST(VERSIONED(type_traits), negation) {
   EXPECT_TRUE((preview::negation<std::false_type>::value == preview::negation_v<std::false_type>));
   EXPECT_TRUE((preview::negation<std::true_type>::value == preview::negation_v<std::true_type>));
 }
+
+template<typename T>
+void reset (T&& z) {
+  decltype(auto) r = preview::unwrap_reference_t<T>(z);
+  r = 0;
+};
+
+TEST(VERSIONED(type_traits), unwrap_reference) {
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_reference_t<int>, int>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_reference_t<const int>, const int>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_reference_t<int&>, int&>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_reference_t<int&&>, int&&>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_reference_t<int*>, int*>);
+
+  {
+    using T = std::reference_wrapper<int>;
+    using X = preview::unwrap_reference_t<T>;
+    EXPECT_TRUE_TYPE(std::is_same<X, int&>);
+  }
+  {
+    using T = std::reference_wrapper<int&>;
+    using X = preview::unwrap_reference_t<T>;
+    EXPECT_TRUE_TYPE(std::is_same<X, int&>);
+  }
+
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_ref_decay_t<int>, int>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_ref_decay_t<const int>, int>);
+  EXPECT_TRUE_TYPE(std::is_same<preview::unwrap_ref_decay_t<const int&>, int>);
+
+  {
+    using T = std::reference_wrapper<int&&>;
+    using X = preview::unwrap_ref_decay_t<T>;
+    EXPECT_TRUE_TYPE(std::is_same<X, int&>);
+  }
+
+  {
+    int x = 1;
+    reset(x);
+    EXPECT_EQ(x, 0);
+
+    int y = 2;
+    reset(std::ref(y));
+    EXPECT_EQ(y, 0);
+  }
+}
