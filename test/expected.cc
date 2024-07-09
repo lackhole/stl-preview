@@ -1,9 +1,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <string>
-#include <list>
-#include <unordered_map>
-#include <vector>
 
 #include "preview/algorithm.h"
 #include "preview/expected.h"
@@ -47,18 +44,4 @@ TEST(VERSIONED(Expected), basics) {
   EXPECT_EQ(process("42abc"), 42);
   EXPECT_EQ(process("meow").error_or(""), "invalid input");
   EXPECT_EQ(process("inf").error_or(""), "overflow");
-
-
-  // views::concat
-  std::vector<char> v = {'h', 'e', 'l'};
-  std::string s = "lo, ";
-  preview::string_view sv = "world";
-  std::list<char> l = {'!'};
-
-  // hello, world!
-  for (auto c : preview::views::concat(v, s, sv, l)) {
-    std::cout << c;
-  }
-
-  preview::string_view svvv{v};
 }
