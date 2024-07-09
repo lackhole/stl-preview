@@ -21,7 +21,7 @@ template<typename I, typename Proj,
         indirectly_regular_unary_invocable<Proj, I>
         >::value
     >
-struct projected_value_impl : std::false_type {};
+struct projected_value_impl {};
 
 template<typename I, typename Proj>
 struct projected_value_impl<I, Proj, true> {
