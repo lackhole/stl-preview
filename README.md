@@ -504,7 +504,7 @@ Description
   | `sortable`                                          | ![][c20ok] |            |
   | `indirect_result_t`                                 | ![][c20ok] |            |
   | `projected`                                         | ![][c20ok] |            |
-  | `projected_value_t`                                 | ![][c26no] | ![][c26ok] |
+  | `projected_value_t`                                 | ![][c26ok] |            |
   | `incrementable_traits`                              | ![][c20ok] |            |
   | `indirectly_readable_traits`                        | ![][c20ok] |            |
   | `iter_value_t`<br/>`iter_reference_t`               | ![][c20ok] |            |
