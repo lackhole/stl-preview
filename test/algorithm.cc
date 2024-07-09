@@ -13,25 +13,25 @@ using namespace std::literals;
 using namespace preview::literals;
 
 TEST(VERSIONED(Algorithm), clamp) {
-  EXPECT_EQ(preview::clamp(-129, INT8_MIN, INT8_MAX), -128);
-  EXPECT_EQ(preview::clamp(-128, INT8_MIN, INT8_MAX), -128);
-  EXPECT_EQ(preview::clamp(  -1, INT8_MIN, INT8_MAX),   -1);
-  EXPECT_EQ(preview::clamp(   0, INT8_MIN, INT8_MAX),   0);
-  EXPECT_EQ(preview::clamp(  42, INT8_MIN, INT8_MAX),  42);
-  EXPECT_EQ(preview::clamp( 127, INT8_MIN, INT8_MAX), 127);
-  EXPECT_EQ(preview::clamp( 128, INT8_MIN, INT8_MAX), 127);
-  EXPECT_EQ(preview::clamp( 255, INT8_MIN, INT8_MAX), 127);
-  EXPECT_EQ(preview::clamp( 256, INT8_MIN, INT8_MAX), 127);
+  EXPECT_EQ(preview::clamp     (-129, (int)INT8_MIN, (int)INT8_MAX), -128);
+  EXPECT_EQ(preview::clamp     (-128, (int)INT8_MIN, (int)INT8_MAX), -128);
+  EXPECT_EQ(preview::clamp     (  -1, (int)INT8_MIN, (int)INT8_MAX),   -1);
+  EXPECT_EQ(preview::clamp     (   0, (int)INT8_MIN, (int)INT8_MAX),   0);
+  EXPECT_EQ(preview::clamp     (  42, (int)INT8_MIN, (int)INT8_MAX),  42);
+  EXPECT_EQ(preview::clamp<int>( 127,      INT8_MIN,      INT8_MAX), 127);
+  EXPECT_EQ(preview::clamp<int>( 128,      INT8_MIN,      INT8_MAX), 127);
+  EXPECT_EQ(preview::clamp<int>( 255,      INT8_MIN,      INT8_MAX), 127);
+  EXPECT_EQ(preview::clamp<int>( 256,      INT8_MIN,      INT8_MAX), 127);
 
-  EXPECT_EQ(preview::clamp(-129, 0, UINT8_MAX),   0);
-  EXPECT_EQ(preview::clamp(-128, 0, UINT8_MAX),   0);
-  EXPECT_EQ(preview::clamp(  -1, 0, UINT8_MAX),   0);
-  EXPECT_EQ(preview::clamp(   0, 0, UINT8_MAX),   0);
-  EXPECT_EQ(preview::clamp(  42, 0, UINT8_MAX),  42);
-  EXPECT_EQ(preview::clamp( 127, 0, UINT8_MAX), 127);
-  EXPECT_EQ(preview::clamp( 128, 0, UINT8_MAX), 128);
-  EXPECT_EQ(preview::clamp( 255, 0, UINT8_MAX), 255);
-  EXPECT_EQ(preview::clamp( 256, 0, UINT8_MAX), 255);
+  EXPECT_EQ(preview::clamp     (-129, 0, (int)UINT8_MAX),   0);
+  EXPECT_EQ(preview::clamp     (-128, 0, (int)UINT8_MAX),   0);
+  EXPECT_EQ(preview::clamp     (  -1, 0, (int)UINT8_MAX),   0);
+  EXPECT_EQ(preview::clamp     (   0, 0, (int)UINT8_MAX),   0);
+  EXPECT_EQ(preview::clamp     (  42, 0, (int)UINT8_MAX),  42);
+  EXPECT_EQ(preview::clamp<int>( 127, 0,      UINT8_MAX), 127);
+  EXPECT_EQ(preview::clamp<int>( 128, 0,      UINT8_MAX), 128);
+  EXPECT_EQ(preview::clamp<int>( 255, 0,      UINT8_MAX), 255);
+  EXPECT_EQ(preview::clamp<int>( 256, 0,      UINT8_MAX), 255);
 }
 
 TEST(VERSIONED(Algorithm), for_each_n) {
