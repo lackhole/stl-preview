@@ -41,9 +41,7 @@ class bind_partial {
       std::is_constructible<BoundArgs, Args>...
   >::value, int> = 0>
   constexpr explicit bind_partial(F&& f, Args&&... args)
-      : pair_(compressed_pair_variadic_divider_t<1>{},
-              std::forward<F>(f),
-              std::forward<Args>(args)...) {}
+      : pair_(std::piecewise_construct, std::forward_as_tuple(std::forward<F>(f)), std::forward_as_tuple(std::forward<Args>(args))...) {}
 
   template<typename... CallArgs, std::enable_if_t<bind_invocable<Derived&, CallArgs&&...>::value, int> = 0>
   constexpr decltype(auto) operator()(CallArgs&&... call_args) &
