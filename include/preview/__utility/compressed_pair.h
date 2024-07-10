@@ -11,6 +11,7 @@
 # include <utility>
 #
 # include "preview/__core/inline_variable.h"
+# include "preview/__concepts/different_from.h"
 # include "preview/__tuple/specialize_tuple.h"
 # include "preview/__type_traits/common_type.h"
 # include "preview/__type_traits/conjunction.h"
@@ -19,44 +20,65 @@
 # include "preview/__utility/in_place.h"
 
 namespace preview {
-
 namespace detail {
 
-template<typename T, std::size_t index, bool v = std::is_empty<T>::value /* false */>
-struct compressed_slot {
-  constexpr compressed_slot() = default;
+template<typename T, bool = /* false */ std::is_empty<T>::value>
+struct basic_compressed_slot {
+  template<typename... Args, std::enable_if_t<conjunction<
+    different_from_variadic<basic_compressed_slot, Args...>,
+    std::is_constructible<T, Args...>
+  >::value, int> = 0>
+  constexpr basic_compressed_slot(Args&&... args)
+    : value_(std::forward<Args>(args)...) {}
 
-  template<typename U, std::enable_if_t<std::is_same<std::decay_t<U>, compressed_slot>::value == false, int> = 0>
-  constexpr compressed_slot(U&& u) : value_(std::forward<U>(u)) {}
-
-  template<typename U, std::size_t... I>
-  constexpr explicit compressed_slot(std::piecewise_construct_t, std::index_sequence<I...>, U&& ArgTuple)
-      : value_(std::get<I>(std::forward<U>(ArgTuple))...) {}
-
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), T&>        get() & noexcept { return value_; }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), T&&>       get() && noexcept { return std::move(value_); }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&>  get() const & noexcept { return value_; }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&&> get() const && noexcept { return std::move(value_); }
+  constexpr       T&  value()       &  noexcept { return value_; }
+  constexpr const T&  value() const &  noexcept { return value_; }
+  constexpr       T&& value()       && noexcept { return std::move(value_); }
+  constexpr const T&& value() const && noexcept { return std::move(value_); }
 
  private:
   T value_;
 };
 
-template<typename T, std::size_t index>
-struct compressed_slot<T, index, true> : public T {
-  constexpr compressed_slot() = default;
+template<typename T>
+struct basic_compressed_slot<T, true> : public T {
+  constexpr basic_compressed_slot() = default;
 
-  template<typename U, std::enable_if_t<std::is_same<std::decay_t<U>, compressed_slot>::value == false, int> = 0>
-  constexpr compressed_slot(U&& u) : T(std::forward<U>(u)) {}
+  template<typename Arg, typename... Args, std::enable_if_t<conjunction<
+    different_from<basic_compressed_slot, Arg>,
+    std::is_constructible<T, Arg, Args...>
+  >::value, int> = 0>
+  constexpr basic_compressed_slot(Arg&& arg, Args&&... args)
+    : T(std::forward<Arg>(arg), std::forward<Args>(args)...) {}
+
+  constexpr       T&  value()       &  noexcept { return static_cast<      T& >(*this); }
+  constexpr const T&  value() const &  noexcept { return static_cast<const T& >(*this); }
+  constexpr       T&& value()       && noexcept { return static_cast<      T&&>(*this); }
+  constexpr const T&& value() const && noexcept { return static_cast<const T&&>(*this); }
+};
+
+template<typename T, typename IndexSequence, typename Tuple>
+struct tuple_index_constructible_from;
+template<typename T, std::size_t... I, typename Tuple>
+struct tuple_index_constructible_from<T, std::index_sequence<I...>, Tuple>
+  : std::is_constructible<T, std::tuple_element_t<I, Tuple>...> {};
+
+template<typename T, std::size_t index>
+class compressed_slot : basic_compressed_slot<T> {
+  using slot_base = basic_compressed_slot<T>;
+  using slot_base::value;
+
+ public:
+  using slot_base::slot_base;
 
   template<typename U, std::size_t... I>
   constexpr explicit compressed_slot(std::piecewise_construct_t, std::index_sequence<I...>, U&& ArgTuple)
-      : T(std::get<I>(std::forward<U>(ArgTuple))...) {}
+      : slot_base(std::get<I>(std::forward<U>(ArgTuple))...) {}
 
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), T&> get() & noexcept { return static_cast<T&>(*this); }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), T&&> get() && noexcept { return static_cast<T&&>(*this); }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&> get() const & noexcept { return static_cast<const T&>(*this); }
-  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&&> get() const && noexcept { return static_cast<const T&&>(*this); }
+  template<std::size_t I> constexpr std::enable_if_t<(I == index),       T&>  get()       &  noexcept { return value(); }
+  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&>  get() const &  noexcept { return value(); }
+  template<std::size_t I> constexpr std::enable_if_t<(I == index),       T&&> get()       && noexcept { return std::move(value()); }
+  template<std::size_t I> constexpr std::enable_if_t<(I == index), const T&&> get() const && noexcept { return std::move(value()); }
 };
 
 } // namespace detail
@@ -65,7 +87,7 @@ struct compressed_pair_empty_t {};
 PREVIEW_INLINE_VARIABLE constexpr compressed_pair_empty_t compressed_pair_empty;
 
 template<std::size_t I>
-struct compressed_pair_variadic_construct_divider {};
+struct compressed_pair_variadic_divider_t {};
 
 // A size-optimized pair using empty base optimization
 template<typename T, typename U>
@@ -94,9 +116,12 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
   >::value, int> = 0>
   constexpr compressed_pair(T2&& t, U2&& u) : first_base(std::forward<T2>(t)), second_base(std::forward<U2>(u)) {}
 
-  template<std::size_t N, typename... Args>
-  constexpr explicit compressed_pair(compressed_pair_variadic_construct_divider<N>, Args&&... args)
-      : first_base(std::piecewise_construct, make_index_sequence<0, N>{}, std::forward_as_tuple(args...))
+  template<std::size_t N, typename... Args, std::enable_if_t<conjunction<
+      detail::tuple_index_constructible_from<T, make_index_sequence<0, N              >, std::tuple<Args&&...>>,
+      detail::tuple_index_constructible_from<U, make_index_sequence<N, sizeof...(Args)>, std::tuple<Args&&...>>
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(compressed_pair_variadic_divider_t<N>, Args&&... args)
+      : first_base (std::piecewise_construct, make_index_sequence<0, N              >{}, std::forward_as_tuple(args...))
       , second_base(std::piecewise_construct, make_index_sequence<N, sizeof...(Args)>{}, std::forward_as_tuple(args...)) {}
 
   constexpr T& first() & noexcept { return first_base::template get<0>(); }

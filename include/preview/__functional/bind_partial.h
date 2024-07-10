@@ -34,9 +34,14 @@ class bind_partial {
       : Derived::template bind_nothrow_invocable<DerivedSelf, CallArgs...> {};
 
  public:
-  template<typename F, typename... Args, std::enable_if_t<different_from<F, bind_partial>::value, int> = 0>
+  template<typename F, typename... Args, std::enable_if_t<conjunction<
+      different_from<F, bind_partial>,
+      std::is_constructible<FD, F>,
+      bool_constant<sizeof...(BoundArgs) == sizeof...(Args)>,
+      std::is_constructible<BoundArgs, Args>...
+  >::value, int> = 0>
   constexpr explicit bind_partial(F&& f, Args&&... args)
-      : pair_(compressed_pair_variadic_construct_divider<1>{},
+      : pair_(compressed_pair_variadic_divider_t<1>{},
               std::forward<F>(f),
               std::forward<Args>(args)...) {}
 

@@ -20,8 +20,8 @@ namespace detail {
 struct not_fn_object_tag {};
 
 template<typename FD>
-class not_fn_object : private compressed_slot<FD, 0> {
-  using slot_base = compressed_slot<FD, 0>;
+class not_fn_object : private basic_compressed_slot<FD> {
+  using slot_base = basic_compressed_slot<FD>;
 
  public:
   template<typename F>
@@ -34,27 +34,27 @@ class not_fn_object : private compressed_slot<FD, 0> {
 
   template<typename... Args>
   constexpr auto operator()(Args&&... args) & noexcept(
-         noexcept(!preview::invoke(std::declval<FD&>()         , std::forward<Args>(args)...)))
-      -> decltype(!preview::invoke(std::declval<FD&>()         , std::forward<Args>(args)...))
-         { return !preview::invoke(slot_base::template get<0>(), std::forward<Args>(args)...); }
+         noexcept(!preview::invoke(std::declval<FD&>(), std::forward<Args>(args)...)))
+      -> decltype(!preview::invoke(std::declval<FD&>(), std::forward<Args>(args)...))
+         { return !preview::invoke(slot_base::value() , std::forward<Args>(args)...); }
 
   template<typename... Args>
   constexpr auto operator()(Args&&... args) const & noexcept(
-         noexcept(!preview::invoke(std::declval<const FD&>()   , std::forward<Args>(args)...)))
-      -> decltype(!preview::invoke(std::declval<const FD&>()   , std::forward<Args>(args)...))
-         { return !preview::invoke(slot_base::template get<0>(), std::forward<Args>(args)...); }
+         noexcept(!preview::invoke(std::declval<const FD&>(), std::forward<Args>(args)...)))
+      -> decltype(!preview::invoke(std::declval<const FD&>(), std::forward<Args>(args)...))
+         { return !preview::invoke(slot_base::value()       , std::forward<Args>(args)...); }
 
   template<typename... Args>
   constexpr auto operator()(Args&&... args) && noexcept(
-         noexcept(!preview::invoke(std::declval<FD&&>()        , std::forward<Args>(args)...)))
-      -> decltype(!preview::invoke(std::declval<FD&&>()        , std::forward<Args>(args)...))
-         { return !preview::invoke(slot_base::template get<0>(), std::forward<Args>(args)...); }
+         noexcept(!preview::invoke(std::declval<FD&&>()         , std::forward<Args>(args)...)))
+      -> decltype(!preview::invoke(std::declval<FD&&>()         , std::forward<Args>(args)...))
+         { return !preview::invoke(std::move(slot_base::value()), std::forward<Args>(args)...); }
 
   template<typename... Args>
   constexpr auto operator()(Args&&... args) const && noexcept(
-         noexcept(!preview::invoke(std::declval<const FD&&>()  , std::forward<Args>(args)...)))
-      -> decltype(!preview::invoke(std::declval<const FD&&>()  , std::forward<Args>(args)...))
-         { return !preview::invoke(slot_base::template get<0>(), std::forward<Args>(args)...); }
+         noexcept(!preview::invoke(std::declval<const FD&&>()   , std::forward<Args>(args)...)))
+      -> decltype(!preview::invoke(std::declval<const FD&&>()   , std::forward<Args>(args)...))
+         { return !preview::invoke(std::move(slot_base::value()), std::forward<Args>(args)...); }
 };
 
 template<typename F, F ConstFn>
