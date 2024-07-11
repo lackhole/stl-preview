@@ -1,10 +1,13 @@
 #include "preview/utility.h"
 #include "gtest.h"
 
+#include <complex>
 #include <memory>
 #include <vector>
 
 #include "preview/optional.h"
+
+using namespace std::literals;
 
 static constexpr int kTypeLvalueReference = 0x0;
 static constexpr int kTypeRvalueReference = 0x1;
@@ -62,42 +65,38 @@ struct FarStates {
   auto&& from_ptr()       && { return from_ptr_impl(std::move(*this)); }
 };
 
-TEST(VERSIONED(Utility), forward_like) {
-  FarStates my_state;
-  my_state.ptr = std::make_unique<TypeTeller>();
-  my_state.opt.emplace(TypeTeller{});
-  my_state.container = std::vector<TypeTeller>(1);
+struct empty {};
+struct not_empty {
+  int x;
+};
 
-  EXPECT_EQ(my_state.from_ptr()(), kTypeLvalueReference);
-  EXPECT_EQ(my_state.from_opt()(), kTypeLvalueReference);
-  EXPECT_EQ(my_state[0](),         kTypeLvalueReference);
+TEST(VERSIONED(Utility), compressed_pair) {
+  {
+    EXPECT_EQ(sizeof(preview::compressed_pair<int      , int  >), sizeof(int) * 2);
+    EXPECT_EQ(sizeof(preview::compressed_pair<empty    , int  >), sizeof(int)    );
+    EXPECT_EQ(sizeof(preview::compressed_pair<int      , empty>), sizeof(int)    );
+    EXPECT_EQ(sizeof(preview::compressed_pair<not_empty, int  >), sizeof(int) * 2);
+    EXPECT_EQ(sizeof(preview::compressed_pair<empty    , empty>), 1);
+  }
 
-  EXPECT_EQ(preview::as_const(my_state).from_ptr()(), kTypeLvalueReference | kTypeConst);
-  EXPECT_EQ(preview::as_const(my_state).from_opt()(), kTypeLvalueReference | kTypeConst);
-  EXPECT_EQ(preview::as_const(my_state)[0](),         kTypeLvalueReference | kTypeConst);
+  { // ctor
+    preview::compressed_pair<int, float> p1;
+    EXPECT_EQ(p1.first(), 0);
+    EXPECT_EQ(p1.second(), 0.f);
 
-  EXPECT_EQ(std::move(my_state).from_ptr()(), kTypeRvalueReference);
-  EXPECT_EQ(std::move(my_state).from_opt()(), kTypeRvalueReference);
-  EXPECT_EQ(std::move(my_state)[0](),         kTypeRvalueReference);
+    preview::compressed_pair<int, double> p2{42, 3.1415};
+    EXPECT_EQ(p2.first(), 42);
+    EXPECT_EQ(p2.second(), 3.1415);
 
-  EXPECT_EQ(std::move(preview::as_const(my_state)).from_ptr()(), kTypeRvalueReference | kTypeConst);
-  EXPECT_EQ(std::move(preview::as_const(my_state)).from_opt()(), kTypeRvalueReference | kTypeConst);
-  EXPECT_EQ(std::move(preview::as_const(my_state))[0](),         kTypeRvalueReference | kTypeConst);
-}
+    preview::compressed_pair<char, int> p4{p2};
+    EXPECT_EQ(p4.first(), '*');
+    EXPECT_EQ(p4.second(), 3);
 
-TEST(VERSIONED(Utility), force_forward_like) {
-  FarStates my_state;
-  my_state.ptr = std::make_unique<TypeTeller>();
-  my_state.opt.emplace(TypeTeller{});
-  my_state.container = std::vector<TypeTeller>(1);
+    preview::compressed_pair<std::complex<double>, std::string> p6
+        { std::piecewise_construct, std::forward_as_tuple(0.123, 7.7), std::forward_as_tuple(10, 'a') };
+    EXPECT_EQ(p6.first().real(), 0.123);
+    EXPECT_EQ(p6.first().imag(), 7.7);
+    EXPECT_EQ(p6.second(), "aaaaaaaaaa"s);
 
-  const auto& cref_my_state = my_state;
-
-  EXPECT_EQ(cref_my_state.from_ptr()(), kTypeLvalueReference | kTypeConst);
-  EXPECT_EQ(cref_my_state.from_opt()(), kTypeLvalueReference | kTypeConst);
-  EXPECT_EQ(cref_my_state[0](),         kTypeLvalueReference | kTypeConst);
-
-  EXPECT_EQ(preview::force_forward_like<decltype((my_state))>(cref_my_state.from_ptr())(), kTypeLvalueReference);
-  EXPECT_EQ(preview::force_forward_like<decltype((my_state))>(cref_my_state.from_opt())(), kTypeLvalueReference);
-  EXPECT_EQ(preview::force_forward_like<decltype((my_state))>(cref_my_state[0])(),         kTypeLvalueReference);
+  }
 }

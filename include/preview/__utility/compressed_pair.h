@@ -12,11 +12,13 @@
 #
 # include "preview/__core/inline_variable.h"
 # include "preview/__concepts/different_from.h"
+# include "preview/__ranges/subrange.h"
 # include "preview/__tuple/make_from_tuple.h"
 # include "preview/__tuple/specialize_tuple.h"
 # include "preview/__tuple/tuple_like.h"
 # include "preview/__type_traits/conjunction.h"
 # include "preview/__type_traits/is_swappable.h"
+# include "preview/__type_traits/unwrap_reference.h"
 
 namespace preview {
 namespace detail {
@@ -74,6 +76,7 @@ struct compressed_pair_empty_t {};
 PREVIEW_INLINE_VARIABLE constexpr compressed_pair_empty_t compressed_pair_empty;
 
 // A size-optimized pair using empty base optimization
+// TODO: Check reference_binds_to_temporary
 template<typename T, typename U>
 class compressed_pair : public detail::compressed_slot<T, 0>, public detail::compressed_slot<U, 1> {
  private:
@@ -93,19 +96,155 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
 
   constexpr compressed_pair() = default;
 
-  template<typename T2, std::enable_if_t<std::is_constructible<T, T2>::value, int> = 0>
-  constexpr compressed_pair(T2&& t, compressed_pair_empty_t) : first_base(std::forward<T2>(t)) {}
+  template<typename T2, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2>,
+      std::is_constructible<U>
+  >::value, int> = 0>
+  constexpr compressed_pair(T2&& t, compressed_pair_empty_t)
+      : first_base(std::forward<T2>(t)) {}
 
-  template<typename U2, std::enable_if_t<std::is_constructible<U, U2>::value, int> = 0>
-  constexpr compressed_pair(compressed_pair_empty_t, U2&& u) : second_base(std::forward<U2>(u)) {}
+  template<typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T>,
+      std::is_constructible<U, U2>
+  >::value, int> = 0>
+  constexpr compressed_pair(compressed_pair_empty_t, U2&& u)
+      : second_base(std::forward<U2>(u)) {}
 
   template<typename T2, typename U2, std::enable_if_t<conjunction<
       std::is_constructible<T, T2>,
-      std::is_constructible<U, U2>
+      std::is_constructible<U, U2>,
+      std::is_convertible<T2, T>,
+      std::is_convertible<U2, U>
   >::value, int> = 0>
   constexpr compressed_pair(T2&& t, U2&& u)
       : first_base(std::forward<T2>(t))
       , second_base(std::forward<U2>(u)) {}
+
+  template<typename T2 = T, typename U2 = U, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2>,
+      std::is_constructible<U, U2>,
+      disjunction<
+          negation<std::is_convertible<T2, T>>,
+          negation<std::is_convertible<U2, U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(T2&& t, U2&& u)
+      : first_base(std::forward<T2>(t))
+      , second_base(std::forward<U2>(u)) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2&>,
+      std::is_constructible<U, U2&>,
+      std::is_convertible<T2&, T>,
+      std::is_convertible<U2&, U>
+  >::value, int> = 0>
+  constexpr compressed_pair(compressed_pair<T2, U2>& p)
+      : first_base(p.first())
+      , second_base(p.second()) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2&>,
+      std::is_constructible<U, U2&>,
+      disjunction<
+          negation<std::is_convertible<T2&, T>>,
+          negation<std::is_convertible<U2&, U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(compressed_pair<T2, U2>& p)
+      : first_base(p.first())
+      , second_base(p.second()) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, const T2&>,
+      std::is_constructible<U, const U2&>,
+      std::is_convertible<const T2&, T>,
+      std::is_convertible<const U2&, U>
+  >::value, int> = 0>
+  constexpr compressed_pair(const compressed_pair<T2, U2>& p)
+      : first_base(p.first())
+      , second_base(p.second()) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, const T2&>,
+      std::is_constructible<U, const U2&>,
+      disjunction<
+          negation<std::is_convertible<const T2&, T>>,
+          negation<std::is_convertible<const U2&, U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(const compressed_pair<T2, U2>& p)
+      : first_base(p.first())
+      , second_base(p.second()) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2>,
+      std::is_constructible<U, U2>,
+      std::is_convertible<T2, T>,
+      std::is_convertible<U2, U>
+  >::value, int> = 0>
+  constexpr compressed_pair(compressed_pair<T2, U2>&& p)
+      : first_base(std::move(p.first()))
+      , second_base(std::move(p.second())) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, T2>,
+      std::is_constructible<U, U2>,
+      disjunction<
+          negation<std::is_convertible<T2, T>>,
+          negation<std::is_convertible<U2, U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(compressed_pair<T2, U2>&& p)
+      : first_base(std::move(p.first()))
+      , second_base(std::move(p.second())) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, const T2>,
+      std::is_constructible<U, const U2>,
+      std::is_convertible<const T2, T>,
+      std::is_convertible<const U2, U>
+  >::value, int> = 0>
+  constexpr compressed_pair(const compressed_pair<T2, U2>&& p)
+      : first_base(std::move(p.first()))
+      , second_base(std::move(p.second())) {}
+
+  template<typename T2, typename U2, std::enable_if_t<conjunction<
+      std::is_constructible<T, const T2>,
+      std::is_constructible<U, const U2>,
+      disjunction<
+          negation<std::is_convertible<const T2, T>>,
+          negation<std::is_convertible<const U2, U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(const compressed_pair<T2, U2>&& p)
+      : first_base(std::move(p.first()))
+      , second_base(std::move(p.second())) {}
+
+  template<typename P, std::enable_if_t<conjunction<
+      pair_like<P>,
+      negation<ranges::detail::is_subrange<remove_cvref_t<P>>>,
+      std::is_constructible<T, decltype(std::get<0>(std::declval<P>()))>,
+      std::is_constructible<U, decltype(std::get<1>(std::declval<P>()))>,
+      std::is_convertible<decltype(std::get<0>(std::declval<P>())), T>,
+      std::is_convertible<decltype(std::get<1>(std::declval<P>())), U>
+  >::value, int> = 0>
+  constexpr compressed_pair(P&& u)
+      : first_base(std::get<0>(std::forward<P>(u)))
+      , second_base(std::get<1>(std::forward<P>(u))) {}
+
+  template<typename P, std::enable_if_t<conjunction<
+      pair_like<P>,
+      negation<ranges::detail::is_subrange<remove_cvref_t<P>>>,
+      std::is_constructible<T, decltype(std::get<0>(std::declval<P>()))>,
+      std::is_constructible<U, decltype(std::get<1>(std::declval<P>()))>,
+      disjunction<
+          negation<std::is_convertible<decltype(std::get<0>(std::declval<P>())), T>>,
+          negation<std::is_convertible<decltype(std::get<1>(std::declval<P>())), U>>
+      >
+  >::value, int> = 0>
+  constexpr explicit compressed_pair(P&& u)
+      : first_base(std::get<0>(std::forward<P>(u)))
+      , second_base(std::get<1>(std::forward<P>(u))) {}
 
   template<typename Tuple1, typename Tuple2, std::enable_if_t<conjunction<
       tuple_like<Tuple1>,
@@ -117,6 +256,9 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       : compressed_pair(std::piecewise_construct,
                         std::forward<Tuple1>(first_args), std::forward<Tuple2>(second_args),
                         tuple_index_sequence<Tuple1>{}, tuple_index_sequence<Tuple2>{}) {}
+
+  compressed_pair(const compressed_pair&) = default;
+  compressed_pair(compressed_pair&&) = default;
 
   constexpr       T&  first()       &  noexcept { return first_base::value(); }
   constexpr const T&  first() const &  noexcept { return first_base::value(); }
@@ -179,25 +321,11 @@ constexpr void swap(const compressed_pair<T, U>& lhs, const compressed_pair<T, U
   lhs.swap(rhs);
 }
 
-namespace detail {
+template<typename T, typename U>
+constexpr compressed_pair<unwrap_ref_decay<T>, unwrap_ref_decay<U>> make_compressed_pair(T&& t, U&& u) {
+  return compressed_pair<unwrap_ref_decay<T>, unwrap_ref_decay<U>>(std::forward<T>(t), std::forward<U>(u));
+}
 
-template<std::size_t I> struct compressed_pair_getter;
-template<>
-struct compressed_pair_getter<0> {
-  template<typename T, typename U> static constexpr T& get(compressed_pair<T, U>& p) noexcept { return p.first(); }
-  template<typename T, typename U> static constexpr const T& get(const compressed_pair<T, U>& p) noexcept { return p.first(); }
-  template<typename T, typename U> static constexpr T&& get(compressed_pair<T, U>&& p) noexcept { return std::move(p.first()); }
-  template<typename T, typename U> static constexpr const T&& get(const compressed_pair<T, U>&& p) noexcept { return std::move(p.first()); }
-};
-template<>
-struct compressed_pair_getter<1> {
-  template<typename T, typename U> static constexpr U& get(compressed_pair<T, U>& p) noexcept { return p.second(); }
-  template<typename T, typename U> static constexpr const U& get(const compressed_pair<T, U>& p) noexcept { return p.second(); }
-  template<typename T, typename U> static constexpr U&& get(compressed_pair<T, U>&& p) noexcept { return std::move(p.second()); }
-  template<typename T, typename U> static constexpr const U&& get(const compressed_pair<T, U>&& p) noexcept { return std::move(p.second()); }
-};
-
-} // namespace detail
 } // namespace preview
 
 template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_SIZE(preview::compressed_pair<T, U>)
@@ -208,34 +336,31 @@ template<typename T, typename U> PREVIEW_SPECIALIZE_STD_TUPLE_ELEMENT(1, preview
 namespace std {
 
 template<std::size_t I, typename T, typename U>
-constexpr tuple_element_t<I, preview::compressed_pair<T, U>>& get(preview::compressed_pair<T, U>& p) noexcept {
-  return preview::detail::compressed_pair_getter<I>::get(p);
+constexpr       tuple_element_t<I, preview::compressed_pair<T, U>>&  get(      preview::compressed_pair<T, U>&  p) noexcept {
+  return p.template get<I>();
 }
 template<std::size_t I, typename T, typename U>
-constexpr const tuple_element_t<I, preview::compressed_pair<T, U>>& get(const preview::compressed_pair<T, U>& p) noexcept {
-  return preview::detail::compressed_pair_getter<I>::get(p);
+constexpr const tuple_element_t<I, preview::compressed_pair<T, U>>&  get(const preview::compressed_pair<T, U>&  p) noexcept {
+  return p.template get<I>();
 }
 template<std::size_t I, typename T, typename U>
-constexpr tuple_element_t<I, preview::compressed_pair<T, U>>&& get(preview::compressed_pair<T, U>&& p) noexcept {
-  return preview::detail::compressed_pair_getter<I>::get(std::move(p));
+constexpr       tuple_element_t<I, preview::compressed_pair<T, U>>&& get(      preview::compressed_pair<T, U>&& p) noexcept {
+  return std::move(p.template get<I>());
 }
 template<std::size_t I, typename T, typename U>
 constexpr const tuple_element_t<I, preview::compressed_pair<T, U>>&& get(const preview::compressed_pair<T, U>&& p) noexcept {
-  return preview::detail::compressed_pair_getter<I>::get(std::move(p));
+  return std::move(p.template get<I>());
 }
 
-template<typename T, typename U> constexpr T& get(preview::compressed_pair<T, U>& p) noexcept { return p.first(); }
-template<typename T, typename U> constexpr const T& get(const preview::compressed_pair<T, U>& p) noexcept { return p.first(); }
-template<typename T, typename U> constexpr T&& get(preview::compressed_pair<T, U>&& p) noexcept { return std::move(p.first()); }
+template<typename T, typename U> constexpr       T&  get(      preview::compressed_pair<T, U>&  p) noexcept { return p.first(); }
+template<typename T, typename U> constexpr const T&  get(const preview::compressed_pair<T, U>&  p) noexcept { return p.first(); }
+template<typename T, typename U> constexpr       T&& get(      preview::compressed_pair<T, U>&& p) noexcept { return std::move(p.first()); }
 template<typename T, typename U> constexpr const T&& get(const preview::compressed_pair<T, U>&& p) noexcept { return std::move(p.first()); }
 
-template<typename T, typename U> constexpr T& get(preview::compressed_pair<U, T>& p) noexcept { return p.second(); }
-template<typename T, typename U> constexpr const T& get(const preview::compressed_pair<U, T>& p) noexcept { return p.second(); }
-template<typename T, typename U> constexpr T&& get(preview::compressed_pair<U, T>&& p) noexcept { return std::move(p.second()); }
+template<typename T, typename U> constexpr       T&  get(      preview::compressed_pair<U, T>&  p) noexcept { return p.second(); }
+template<typename T, typename U> constexpr const T&  get(const preview::compressed_pair<U, T>&  p) noexcept { return p.second(); }
+template<typename T, typename U> constexpr       T&& get(      preview::compressed_pair<U, T>&& p) noexcept { return std::move(p.second()); }
 template<typename T, typename U> constexpr const T&& get(const preview::compressed_pair<U, T>&& p) noexcept { return std::move(p.second()); }
-
-// template<std::size_t I, typename T, typename U>
-
 
 } // namespace std
 
