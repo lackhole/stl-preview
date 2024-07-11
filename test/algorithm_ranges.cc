@@ -146,10 +146,12 @@ TEST(VERSIONED(AlgorithmRanges), count) {
   EXPECT_EQ((ranges::count(v.begin(), v.end(), 5)), 0);
 
   // use a lambda expression to count elements divisible by 3.
-  EXPECT_EQ((ranges::count_if(v.begin(), v.end(), [](int i){ return i % 3 == 0; })), 3);
+  auto count1 = ranges::count_if(v.begin(), v.end(), [](int i){ return i % 3 == 0; }); // NDK < 21 guard
+  EXPECT_EQ(count1, 3);
 
   // use a lambda expression to count elements divisible by 11.
-  EXPECT_EQ((ranges::count_if(v, [](int i){ return i % 11 == 0; })), 0);
+  auto count2 = ranges::count_if(v, [](int i){ return i % 11 == 0; });
+  EXPECT_EQ(count2, 0);
 
   std::vector<std::complex<double>> nums{{4, 2}, {1, 3}, {4, 2}};
   EXPECT_EQ((ranges::count(nums, {4, 2})), 2);
