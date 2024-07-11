@@ -122,29 +122,29 @@ Description
   | `ranges::none_of`                   | ![][c20ok] |            |
   | `ranges::for_each`                  | ![][c20ok] |            |
   | `ranges::for_each_n`                | ![][c20ok] |            |
-  | `ranges::count`                     | ![][c20ok] |            |
-  | `ranges::count_if`                  | ![][c20ok] |            |
+  | `ranges::count`                     | ![][c20ok] | ![][c26no] |
+  | `ranges::count_if`                  | ![][c20ok] | ![][c26no] |
   | `ranges::mismatch`                  | ![][c20ok] |            |
-  | `ranges::find`                      | ![][c20ok] |            |
+  | `ranges::find`                      | ![][c20ok] | ![][c26no] |
   | `ranges::find_if`                   | ![][c20ok] |            |
   | `ranges::find_if_not`               | ![][c20ok] |            |
-  | `ranges::find_last`                 | ![][c23ok] |            |
+  | `ranges::find_last`                 | ![][c23ok] | ![][c26no] |
   | `ranges::find_last_if` `            | ![][c23ok] |            |
   | `ranges::find_last_if_not`          | ![][c23ok] |            |
   | `ranges::find_end`                  | ![][c20ok] |            |
   | `ranges::find_first_of`             | ![][c20ok] |            |
   | `ranges::adjacent_find`             | ![][c20no] |            |
   | `ranges::search`                    | ![][c20ok] |            |
-  | `ranges::search_n`                  | ![][c20no] |            |
+  | `ranges::search_n`                  | ![][c20no] | ![][c26ok] |
   | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
   | `ranges::contains_subrange`         | ![][c23ok] |            |
   | `ranges::starts_with`               | ![][c23no] |            |
   | `ranges::ends_with`                 | ![][c23no] |            |
-  | `ranges::fold_left`                 | ![][c23ok] |            |
+  | `ranges::fold_left`                 | ![][c23ok] | ![][c26no] |
   | `ranges::fold_left_first`           | ![][c23no] |            |
-  | `ranges::fold_right`                | ![][c23no] |            |
+  | `ranges::fold_right`                | ![][c23no] | ![][c26no] |
   | `ranges::fold_right_last`           | ![][c23no] |            |
-  | `ranges::fold_left_with_iter`       | ![][c23no] |            |
+  | `ranges::fold_left_with_iter`       | ![][c23no] | ![][c26no] |
   | `ranges::fold_left_first_with_iter` | ![][c23no] |            |
   | `ranges::copy`                      | ![][c20ok] |            |
   | `ranges::copy_if`                   | ![][c20no] |            |
@@ -152,19 +152,19 @@ Description
   | `ranges::copy_backward`             | ![][c20no] |            |
   | `ranges::move`                      | ![][c20no] |            |
   | `ranges::move_backward`             | ![][c20no] |            |
-  | `ranges::fill`                      | ![][c20no] |            |
-  | `ranges::fill_n`                    | ![][c20no] |            |
+  | `ranges::fill`                      | ![][c20no] | ![][c26no] |
+  | `ranges::fill_n`                    | ![][c20no] | ![][c26no] |
   | `ranges::transform`                 | ![][c20no] |            |
   | `ranges::generate`                  | ![][c20no] |            |
   | `ranges::generate_n`                | ![][c20no] |            |
-  | `ranges::remove`                    | ![][c20no] |            |
+  | `ranges::remove`                    | ![][c20no] | ![][c26no] |
   | `ranges::remove_if`                 | ![][c20no] |            |
-  | `ranges::remove_copy`               | ![][c20no] |            |
+  | `ranges::remove_copy`               | ![][c20no] | ![][c26no] |
   | `ranges::remove_copy_if`            | ![][c20no] |            |
-  | `ranges::replace`                   | ![][c20no] |            |
-  | `ranges::replace_if`                | ![][c20no] |            |
-  | `ranges::replace_copy`              | ![][c20no] |            |
-  | `ranges::replace_copy_if`           | ![][c20no] |            |
+  | `ranges::replace`                   | ![][c20no] | ![][c26no] |
+  | `ranges::replace_if`                | ![][c20no] | ![][c26no] |
+  | `ranges::replace_copy`              | ![][c20no] | ![][c26no] |
+  | `ranges::replace_copy_if`           | ![][c20no] | ![][c26no] |
   | `ranges::swap_ranges`               | ![][c20ok] |            |
   | `ranges::reverse`                   | ![][c20no] |            |
   | `ranges::reverse_copy`              | ![][c20no] |            |
@@ -179,21 +179,21 @@ Description
   | `ranges::is_partitioned`            | ![][c20no] |            |
   | `ranges::partition`                 | ![][c20no] |            |
   | `ranges::partition_copy`            | ![][c20no] |            |
-  | `ranges::stable_partition`          | ![][c20no] |            |
+  | `ranges::stable_partition`          | ![][c20no] | ![][c26no] |
   | `ranges::partition_point`           | ![][c20no] |            |
   | `ranges::is_sorted`                 | ![][c20no] |            |
   | `ranges::is_sorted_until`           | ![][c20no] |            |
   | `ranges::sort`                      | ![][c20ok] |            |
   | `ranges::partial_sort`              | ![][c20no] |            |
   | `ranges::partial_sort_copy`         | ![][c20no] |            |
-  | `ranges::stable_sort`               | ![][c20no] |            |
+  | `ranges::stable_sort`               | ![][c20no] | ![][c26no] |
   | `ranges::nth_element`               | ![][c20no] |            |
-  | `ranges::lower_bound`               | ![][c20no] |            |
-  | `ranges::upper_bound`               | ![][c20no] |            |
-  | `ranges::binary_search`             | ![][c20no] |            |
-  | `ranges::equal_range`               | ![][c20no] |            |
+  | `ranges::lower_bound`               | ![][c20no] | ![][c26no] |
+  | `ranges::upper_bound`               | ![][c20no] | ![][c26no] |
+  | `ranges::binary_search`             | ![][c20no] | ![][c26no] |
+  | `ranges::equal_range`               | ![][c20no] | ![][c26no] |
   | `ranges::merge`                     | ![][c20no] |            |
-  | `ranges::inplace_merge`             | ![][c20no] |            |
+  | `ranges::inplace_merge`             | ![][c20no] | ![][c26no] |
   | `ranges::includes`                  | ![][c20no] |            |
   | `ranges::set_difference`            | ![][c20no] |            |
   | `ranges::set_intersection`          | ![][c20ok] |            |
