@@ -155,6 +155,19 @@ TEST(VERSIONED(AlgorithmRanges), count) {
   EXPECT_EQ((ranges::count(nums, {4, 2})), 2);
 }
 
+PREVIEW_CONSTEXPR_AFTER_CXX17 preview::string_view mirror_ends(const preview::string_view in) {
+  const auto end = ranges::mismatch(in, in | views::reverse).in1;
+  return {in.cbegin(), end};
+}
+TEST(VERSIONED(AlgorithmRanges), mismatch) {
+  EXPECT_EQ(mirror_ends("abXYZba"), "ab"_sv);
+  EXPECT_EQ(mirror_ends("abca"), "a"_sv);
+  EXPECT_EQ(mirror_ends("ABBA"), "ABBA"_sv);
+  EXPECT_EQ(mirror_ends("level"), "level"_sv);
+  EXPECT_EQ("123"_sv, mirror_ends("123!@#321"));
+  EXPECT_EQ("radar"_sv, mirror_ends("radar"));
+}
+
 TEST(VERSIONED(AlgorithmRanges), contains) {
   constexpr auto haystack = std::array<int, 5>{3, 1, 4, 1, 5};
   constexpr auto needle = std::array<int, 3>{1, 4, 1};
