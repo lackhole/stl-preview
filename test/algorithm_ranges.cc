@@ -4,6 +4,7 @@
 #include <list>
 #include <map>
 #include <numeric>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -168,6 +169,52 @@ TEST(VERSIONED(AlgorithmRanges), mismatch) {
   EXPECT_EQ(mirror_ends("level"), "level"_sv);
   EXPECT_EQ("123"_sv, mirror_ends("123!@#321"));
   EXPECT_EQ("radar"_sv, mirror_ends("radar"));
+}
+
+TEST(VERSIONED(AlgorithmRanges), find) {
+  {
+    struct folk_info {
+      unsigned uid;
+      std::string name, position;
+    };
+
+    std::vector<folk_info> folks {
+      {0, "Ana", "dev"},
+      {1, "Bob", "devops"},
+      {2, "Eve", "ops"}
+    };
+
+    const auto who{"Eve"};
+    auto it = ranges::find(folks, who, &folk_info::name);
+    EXPECT_NE(it, folks.end());
+    EXPECT_EQ(it->uid, 2);
+    EXPECT_EQ(it->name, "Eve");
+    EXPECT_EQ(it->position, "ops");
+  }
+
+  const int n1 = 3;
+  const int n2 = 5;
+  const auto v = {4, 1, 3, 2};
+
+  EXPECT_NE(ranges::find(v, n1), v.end());
+  EXPECT_EQ(ranges::find(v.begin(), v.end(), n2), v.end());
+
+  auto is_even = [](int x) { return x % 2 == 0; };
+  {
+    auto result = ranges::find_if(v.begin(), v.end(), is_even);
+    EXPECT_TRUE(result != v.end() && *result == 4);
+  }
+  {
+    auto result = ranges::find_if_not(v, is_even);
+    EXPECT_TRUE(result != v.end() && *result == 1);
+  }
+
+  auto divides_13 = [](int x) { return x % 13 == 0; };
+  EXPECT_EQ(ranges::find_if(v, divides_13), v.end());
+  EXPECT_EQ(*ranges::find_if_not(v.begin(), v.end(), divides_13), 4);
+
+  std::vector<std::complex<double>> nums{{4, 2}};
+  EXPECT_EQ(ranges::find(nums, {4, 2}), nums.begin());
 }
 
 TEST(VERSIONED(AlgorithmRanges), contains) {
