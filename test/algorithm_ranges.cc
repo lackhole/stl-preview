@@ -10,6 +10,7 @@
 #include "preview/algorithm.h"
 #include "preview/functional.h"
 #include "preview/ranges.h"
+#include "preview/utility.h"
 
 #include "gtest.h"
 
@@ -66,7 +67,7 @@ TEST(VERSIONED(AlgorithmRanges), any_of) {
 TEST(VERSIONED(AlgorithmRanges), for_each) {
   std::vector<int> nums {3, 4, 2, 8, 15, 267};
   auto print = [](const auto& n) { std::cout << ' ' << n; };
-  ranges::for_each(std::as_const(nums), print);
+  ranges::for_each(preview::as_const(nums), print);
   print('\n');
 
   ranges::for_each(nums, [](int& n) { ++n; });
