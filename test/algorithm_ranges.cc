@@ -1,6 +1,9 @@
+#include "preview/algorithm.h"
+
 #include <algorithm>
 #include <complex>
 #include <cstdlib>
+#include <forward_list>
 #include <list>
 #include <map>
 #include <numeric>
@@ -8,12 +11,23 @@
 #include <unordered_map>
 #include <vector>
 
-#include "preview/algorithm.h"
+#include "preview/core.h"
 #include "preview/functional.h"
 #include "preview/ranges.h"
 #include "preview/utility.h"
 
 #include "gtest.h"
+
+
+#if PREVIEW_CXX_VERSION >= 20 && \
+    (!defined(__clang_major__) || (defined(__clang_major__) && __clang_major__ > 11)) && \
+    (!defined(PREVIEW_NDK_VERSION_MAJOR) || PREVIEW_NDK_VERSION_MAJOR >= 26)
+#define PREVIEW_FULL_CXX20_SUPPORT 1
+#define PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT constexpr
+#else
+#define PREVIEW_FULL_CXX20_SUPPORT 0
+#define PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT
+#endif
 
 namespace ranges = preview::ranges;
 namespace views  = preview::views;
@@ -215,6 +229,135 @@ TEST(VERSIONED(AlgorithmRanges), find) {
 
   std::vector<std::complex<double>> nums{{4, 2}};
   EXPECT_EQ(ranges::find(nums, {4, 2}), nums.begin());
+}
+
+TEST(VERSIONED(AlgorithmRanges), find_last) {
+  constexpr static auto v = {1, 2, 3, 1, 2, 3, 1, 2};
+
+  {
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last(v.begin(), v.end(), 3);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last(v, 3);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(ranges::distance(v.begin(), i1.begin()) == 5);
+    static_assert(ranges::distance(v.begin(), i2.begin()) == 5);
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(ranges::distance(v.begin(), i1.begin()), 5);
+    EXPECT_EQ(ranges::distance(v.begin(), i2.begin()), 5);
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+  {
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last(v.begin(), v.end(), -3);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last(v, -3);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(i1.begin() == v.end());
+    static_assert(i2.begin() == v.end());
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(i1.begin(), v.end());
+    EXPECT_EQ(i2.begin(), v.end());
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+
+  auto abs = [](int x) { return x < 0 ? -x : x; };
+
+  {
+    auto pred = [](int x) { return x == 3; };
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last_if(v.begin(), v.end(), pred, abs);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last_if(v, pred, abs);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(ranges::distance(v.begin(), i1.begin()) == 5);
+    static_assert(ranges::distance(v.begin(), i2.begin()) == 5);
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(ranges::distance(v.begin(), i1.begin()), 5);
+    EXPECT_EQ(ranges::distance(v.begin(), i2.begin()), 5);
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+  {
+    auto pred = [](int x) { return x == -3; };
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last_if(v.begin(), v.end(), pred, abs);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last_if(v, pred, abs);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(i1.begin() == v.end());
+    static_assert(i2.begin() == v.end());
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(i1.begin(), v.end());
+    EXPECT_EQ(i2.begin(), v.end());
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+
+  {
+    auto pred = [](int x) { return x == 1 || x == 2; };
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last_if_not(v.begin(), v.end(), pred, abs);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last_if_not(v, pred, abs);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(ranges::distance(v.begin(), i1.begin()) == 5);
+    static_assert(ranges::distance(v.begin(), i2.begin()) == 5);
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(ranges::distance(v.begin(), i1.begin()), 5);
+    EXPECT_EQ(ranges::distance(v.begin(), i2.begin()), 5);
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+  {
+    auto pred = [](int x) { return x == 1 or x == 2 or x == 3; };
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i1 = ranges::find_last_if_not(v.begin(), v.end(), pred, abs);
+    PREVIEW_CONSTEXPR_AFTER_CXX20_STRICT auto i2 = ranges::find_last_if_not(v, pred, abs);
+#if PREVIEW_FULL_CXX20_SUPPORT
+    static_assert(i1.begin() == v.end());
+    static_assert(i2.begin() == v.end());
+    static_assert(i1.end() == v.end());
+    static_assert(i2.end() == v.end());
+#else
+    EXPECT_EQ(i1.begin(), v.end());
+    EXPECT_EQ(i2.begin(), v.end());
+    EXPECT_EQ(i1.end(), v.end());
+    EXPECT_EQ(i2.end(), v.end());
+#endif
+  }
+
+  using P = std::pair<preview::string_view, int>;
+  std::forward_list<P> list {
+      {"one", 1}, {"two", 2}, {"three", 3},
+      {"one", 4}, {"two", 5}, {"three", 6},
+  };
+  auto cmp_one = preview::bind_back(ranges::equal_to{}, "one");
+  auto cmp_zero = preview::bind_back(ranges::equal_to{}, "zero");
+
+  {
+    // find latest element that satisfy the comparator, and projecting pair::first
+    const auto subrange = ranges::find_last_if(list, cmp_one, &P::first);
+    EXPECT_EQ(subrange.begin(), ranges::next(list.begin(), 3));
+    EXPECT_EQ(subrange.end(), list.end());
+  }
+
+  {
+    // find latest element that satisfy the comparator, and projecting pair::first
+    const auto subrange = ranges::find_last_if(list, cmp_zero, &P::first);
+    EXPECT_EQ(subrange.begin(), list.end());
+    EXPECT_EQ(subrange.end(), list.end());
+  }
+
+  const auto i3 = ranges::find_last(list, {"three", 3}); // (2) C++26
+  EXPECT_EQ(i3.begin()->first, "three");
+  EXPECT_EQ(i3.begin()->second, 3);
 }
 
 TEST(VERSIONED(AlgorithmRanges), contains) {

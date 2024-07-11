@@ -128,14 +128,14 @@ Description
   | `ranges::find`                      | ![][c20ok] | ![][c26ok] |
   | `ranges::find_if`                   | ![][c20ok] |            |
   | `ranges::find_if_not`               | ![][c20ok] |            |
-  | `ranges::find_last`                 | ![][c23ok] | ![][c26no] |
+  | `ranges::find_last`                 | ![][c23ok] | ![][c26ok] |
   | `ranges::find_last_if` `            | ![][c23ok] |            |
   | `ranges::find_last_if_not`          | ![][c23ok] |            |
   | `ranges::find_end`                  | ![][c20ok] |            |
   | `ranges::find_first_of`             | ![][c20ok] |            |
   | `ranges::adjacent_find`             | ![][c20no] |            |
   | `ranges::search`                    | ![][c20ok] |            |
-  | `ranges::search_n`                  | ![][c20no] | ![][c26ok] |
+  | `ranges::search_n`                  | ![][c20no] | ![][c26no] |
   | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
   | `ranges::contains_subrange`         | ![][c23ok] |            |
   | `ranges::starts_with`               | ![][c23no] |            |
