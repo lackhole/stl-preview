@@ -63,6 +63,42 @@ TEST(VERSIONED(AlgorithmRanges), any_of) {
   EXPECT_FALSE(ranges::any_of(v, DivisibleBy(11)));
 }
 
+TEST(VERSIONED(AlgorithmRanges), for_each) {
+  std::vector<int> nums {3, 4, 2, 8, 15, 267};
+  auto print = [](const auto& n) { std::cout << ' ' << n; };
+  ranges::for_each(std::as_const(nums), print);
+  print('\n');
+
+  ranges::for_each(nums, [](int& n) { ++n; });
+  ranges::for_each(nums.cbegin(), nums.cend(), print);
+  EXPECT_TRUE((ranges::equal(nums, {4, 5, 3, 9, 16, 268})));
+
+  struct Sum {
+    void operator()(int n) { sum += n; }
+    int sum {0};
+  };
+  // calls Sum::operator() for each number
+#if PREVIEW_CXX_VERSION < 17
+  auto i_s = ranges::for_each(nums.begin(), nums.end(), Sum());
+  EXPECT_EQ(i_s.in, nums.end());
+  EXPECT_EQ(i_s.fun.sum, 305);
+#else
+  auto [i, s] = ranges::for_each(nums.begin(), nums.end(), Sum());
+  EXPECT_EQ(i, nums.end());
+  EXPECT_EQ(s.sum, 305);
+#endif
+
+  using pair = std::pair<int, std::string>;
+  std::vector<pair> pairs {{1,"one"}, {2,"two"}, {3,"tree"}};
+
+  std::cout << "project the pair::first: ";
+  ranges::for_each(pairs, print, [](const pair& p) { return p.first; });
+
+  std::cout << "\n" "project the pair::second:";
+  ranges::for_each(pairs, print, &pair::second);
+  print('\n');
+}
+
 TEST(VERSIONED(AlgorithmRanges), contains) {
   constexpr auto haystack = std::array<int, 5>{3, 1, 4, 1, 5};
   constexpr auto needle = std::array<int, 3>{1, 4, 1};
