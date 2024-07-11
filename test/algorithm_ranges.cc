@@ -100,6 +100,44 @@ TEST(VERSIONED(AlgorithmRanges), for_each) {
   print('\n');
 }
 
+struct P {
+  int first;
+  char second;
+  friend std::ostream& operator<<(std::ostream& os, const P& p)
+  {
+    return os << '{' << p.first << ",'" << p.second << "'}";
+  }
+};
+TEST(VERSIONED(AlgorithmRanges), for_each_n) {
+  auto print = [](preview::string_view name, auto const& v) {
+    std::cout << name << ": ";
+    auto n = v.size();
+    for (const auto& e : v)
+      std::cout << e << (--n ? ", " : "\n");
+  };
+  auto p_equal = [](const P& x, const P& y) {
+    return x.first == y.first && x.second == y.second;
+  };
+
+  std::array<int, 5> a {1, 2, 3, 4, 5};
+
+  // Negate first three numbers:
+  ranges::for_each_n(a.begin(), 3, [](auto& n) { n *= -1; });
+  EXPECT_TRUE(ranges::equal(a, {-1, -2, -3, 4, 5}));
+
+  std::array<P, 4> s { P{1,'a'}, P{2, 'b'}, P{3, 'c'}, P{4, 'd'} };
+
+  // Negate data members 'P::first' using projection:
+  ranges::for_each_n(s.begin(), 2, [](auto& x) { x *= -1; }, &P::first);
+  print("s", s);
+  EXPECT_TRUE(ranges::equal(s, { P{-1,'a'}, P{-2, 'b'}, P{3, 'c'}, P{4, 'd'} }, p_equal));
+
+  // Capitalize data members 'P::second' using projection:
+  ranges::for_each_n(s.begin(), 3, [](auto& c) { c -= 'a'-'A'; }, &P::second);
+  print("s", s);
+  EXPECT_TRUE(ranges::equal(s, { P{-1,'A'}, P{-2, 'B'}, P{3, 'C'}, P{4, 'd'} }, p_equal));
+}
+
 TEST(VERSIONED(AlgorithmRanges), contains) {
   constexpr auto haystack = std::array<int, 5>{3, 1, 4, 1, 5};
   constexpr auto needle = std::array<int, 3>{1, 4, 1};
