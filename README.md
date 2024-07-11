@@ -122,7 +122,7 @@ Description
   | `ranges::none_of`                   | ![][c20ok] |            |
   | `ranges::for_each`                  | ![][c20ok] |            |
   | `ranges::for_each_n`                | ![][c20ok] |            |
-  | `ranges::count`                     | ![][c20ok] | ![][c26no] |
+  | `ranges::count`                     | ![][c20ok] | ![][c26ok] |
   | `ranges::count_if`                  | ![][c20ok] | ![][c26no] |
   | `ranges::mismatch`                  | ![][c20ok] |            |
   | `ranges::find`                      | ![][c20ok] | ![][c26no] |

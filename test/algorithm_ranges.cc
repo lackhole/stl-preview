@@ -138,6 +138,23 @@ TEST(VERSIONED(AlgorithmRanges), for_each_n) {
   EXPECT_TRUE(ranges::equal(s, { P{-1,'A'}, P{-2, 'B'}, P{3, 'C'}, P{4, 'd'} }, p_equal));
 }
 
+TEST(VERSIONED(AlgorithmRanges), count) {
+  std::vector<int> v{1, 2, 3, 4, 4, 3, 7, 8, 9, 10};
+
+  // determine how many integers in a std::vector match a target value.
+  EXPECT_EQ(ranges::count(v.begin(), v.end(), 3), 2);
+  EXPECT_EQ(ranges::count(v.begin(), v.end(), 5), 0);
+
+  // use a lambda expression to count elements divisible by 3.
+  EXPECT_EQ(ranges::count_if(v.begin(), v.end(), [](int i){ return i % 3 == 0; }), 3);
+
+  // use a lambda expression to count elements divisible by 11.
+  EXPECT_EQ(ranges::count_if(v, [](int i){ return i % 11 == 0; }), 0);
+
+  std::vector<std::complex<double>> nums{{4, 2}, {1, 3}, {4, 2}};
+  EXPECT_EQ(ranges::count(nums, {4, 2}), 2);
+}
+
 TEST(VERSIONED(AlgorithmRanges), contains) {
   constexpr auto haystack = std::array<int, 5>{3, 1, 4, 1, 5};
   constexpr auto needle = std::array<int, 3>{1, 4, 1};
