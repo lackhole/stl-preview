@@ -142,17 +142,17 @@ TEST(VERSIONED(AlgorithmRanges), count) {
   std::vector<int> v{1, 2, 3, 4, 4, 3, 7, 8, 9, 10};
 
   // determine how many integers in a std::vector match a target value.
-  EXPECT_EQ(ranges::count(v.begin(), v.end(), 3), 2);
-  EXPECT_EQ(ranges::count(v.begin(), v.end(), 5), 0);
+  EXPECT_EQ((ranges::count(v.begin(), v.end(), 3)), 2);
+  EXPECT_EQ((ranges::count(v.begin(), v.end(), 5)), 0);
 
   // use a lambda expression to count elements divisible by 3.
-  EXPECT_EQ(ranges::count_if(v.begin(), v.end(), [](int i){ return i % 3 == 0; }), 3);
+  EXPECT_EQ((ranges::count_if(v.begin(), v.end(), [](int i){ return i % 3 == 0; })), 3);
 
   // use a lambda expression to count elements divisible by 11.
-  EXPECT_EQ(ranges::count_if(v, [](int i){ return i % 11 == 0; }), 0);
+  EXPECT_EQ((ranges::count_if(v, [](int i){ return i % 11 == 0; })), 0);
 
   std::vector<std::complex<double>> nums{{4, 2}, {1, 3}, {4, 2}};
-  EXPECT_EQ(ranges::count(nums, {4, 2}), 2);
+  EXPECT_EQ((ranges::count(nums, {4, 2})), 2);
 }
 
 TEST(VERSIONED(AlgorithmRanges), contains) {
