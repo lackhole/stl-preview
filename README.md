@@ -122,29 +122,29 @@ Description
   | `ranges::none_of`                   | ![][c20ok] |            |
   | `ranges::for_each`                  | ![][c20ok] |            |
   | `ranges::for_each_n`                | ![][c20ok] |            |
-  | `ranges::count`                     | ![][c20ok] |            |
+  | `ranges::count`                     | ![][c20ok] | ![][c26ok] |
   | `ranges::count_if`                  | ![][c20ok] |            |
   | `ranges::mismatch`                  | ![][c20ok] |            |
-  | `ranges::find`                      | ![][c20ok] |            |
+  | `ranges::find`                      | ![][c20ok] | ![][c26ok] |
   | `ranges::find_if`                   | ![][c20ok] |            |
   | `ranges::find_if_not`               | ![][c20ok] |            |
-  | `ranges::find_last`                 | ![][c23ok] |            |
+  | `ranges::find_last`                 | ![][c23ok] | ![][c26ok] |
   | `ranges::find_last_if` `            | ![][c23ok] |            |
   | `ranges::find_last_if_not`          | ![][c23ok] |            |
   | `ranges::find_end`                  | ![][c20ok] |            |
   | `ranges::find_first_of`             | ![][c20ok] |            |
-  | `ranges::adjacent_find`             | ![][c20no] |            |
+  | `ranges::adjacent_find`             | ![][c20ok] |            |
   | `ranges::search`                    | ![][c20ok] |            |
-  | `ranges::search_n`                  | ![][c20no] |            |
+  | `ranges::search_n`                  | ![][c20no] | ![][c26no] |
   | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
   | `ranges::contains_subrange`         | ![][c23ok] |            |
   | `ranges::starts_with`               | ![][c23no] |            |
   | `ranges::ends_with`                 | ![][c23no] |            |
-  | `ranges::fold_left`                 | ![][c23ok] |            |
+  | `ranges::fold_left`                 | ![][c23ok] | ![][c26no] |
   | `ranges::fold_left_first`           | ![][c23no] |            |
-  | `ranges::fold_right`                | ![][c23no] |            |
+  | `ranges::fold_right`                | ![][c23no] | ![][c26no] |
   | `ranges::fold_right_last`           | ![][c23no] |            |
-  | `ranges::fold_left_with_iter`       | ![][c23no] |            |
+  | `ranges::fold_left_with_iter`       | ![][c23no] | ![][c26no] |
   | `ranges::fold_left_first_with_iter` | ![][c23no] |            |
   | `ranges::copy`                      | ![][c20ok] |            |
   | `ranges::copy_if`                   | ![][c20no] |            |
@@ -152,19 +152,19 @@ Description
   | `ranges::copy_backward`             | ![][c20no] |            |
   | `ranges::move`                      | ![][c20no] |            |
   | `ranges::move_backward`             | ![][c20no] |            |
-  | `ranges::fill`                      | ![][c20no] |            |
-  | `ranges::fill_n`                    | ![][c20no] |            |
+  | `ranges::fill`                      | ![][c20no] | ![][c26no] |
+  | `ranges::fill_n`                    | ![][c20no] | ![][c26no] |
   | `ranges::transform`                 | ![][c20no] |            |
   | `ranges::generate`                  | ![][c20no] |            |
   | `ranges::generate_n`                | ![][c20no] |            |
-  | `ranges::remove`                    | ![][c20no] |            |
+  | `ranges::remove`                    | ![][c20no] | ![][c26no] |
   | `ranges::remove_if`                 | ![][c20no] |            |
-  | `ranges::remove_copy`               | ![][c20no] |            |
+  | `ranges::remove_copy`               | ![][c20no] | ![][c26no] |
   | `ranges::remove_copy_if`            | ![][c20no] |            |
-  | `ranges::replace`                   | ![][c20no] |            |
-  | `ranges::replace_if`                | ![][c20no] |            |
-  | `ranges::replace_copy`              | ![][c20no] |            |
-  | `ranges::replace_copy_if`           | ![][c20no] |            |
+  | `ranges::replace`                   | ![][c20no] | ![][c26no] |
+  | `ranges::replace_if`                | ![][c20no] | ![][c26no] |
+  | `ranges::replace_copy`              | ![][c20no] | ![][c26no] |
+  | `ranges::replace_copy_if`           | ![][c20no] | ![][c26no] |
   | `ranges::swap_ranges`               | ![][c20ok] |            |
   | `ranges::reverse`                   | ![][c20no] |            |
   | `ranges::reverse_copy`              | ![][c20no] |            |
@@ -179,21 +179,21 @@ Description
   | `ranges::is_partitioned`            | ![][c20no] |            |
   | `ranges::partition`                 | ![][c20no] |            |
   | `ranges::partition_copy`            | ![][c20no] |            |
-  | `ranges::stable_partition`          | ![][c20no] |            |
+  | `ranges::stable_partition`          | ![][c20no] | ![][c26no] |
   | `ranges::partition_point`           | ![][c20no] |            |
   | `ranges::is_sorted`                 | ![][c20no] |            |
   | `ranges::is_sorted_until`           | ![][c20no] |            |
   | `ranges::sort`                      | ![][c20ok] |            |
   | `ranges::partial_sort`              | ![][c20no] |            |
   | `ranges::partial_sort_copy`         | ![][c20no] |            |
-  | `ranges::stable_sort`               | ![][c20no] |            |
+  | `ranges::stable_sort`               | ![][c20no] | ![][c26no] |
   | `ranges::nth_element`               | ![][c20no] |            |
-  | `ranges::lower_bound`               | ![][c20no] |            |
-  | `ranges::upper_bound`               | ![][c20no] |            |
-  | `ranges::binary_search`             | ![][c20no] |            |
-  | `ranges::equal_range`               | ![][c20no] |            |
+  | `ranges::lower_bound`               | ![][c20no] | ![][c26no] |
+  | `ranges::upper_bound`               | ![][c20no] | ![][c26no] |
+  | `ranges::binary_search`             | ![][c20no] | ![][c26no] |
+  | `ranges::equal_range`               | ![][c20no] | ![][c26no] |
   | `ranges::merge`                     | ![][c20no] |            |
-  | `ranges::inplace_merge`             | ![][c20no] |            |
+  | `ranges::inplace_merge`             | ![][c20no] | ![][c26no] |
   | `ranges::includes`                  | ![][c20no] |            |
   | `ranges::set_difference`            | ![][c20no] |            |
   | `ranges::set_intersection`          | ![][c20ok] |            |
@@ -488,66 +488,66 @@ Description
 
 * `<iterator>`
 
-  |                                                     | Introduced | Revision   |
-  |-----------------------------------------------------|------------|------------|
-  | `indirectly_readable`                               | ![][c20ok] |            |
-  | `indirectly_writable`                               | ![][c20ok] |            |
-  | `weakly_incrementable`                              | ![][c20ok] |            |
-  | `incrementable`                                     | ![][c20ok] |            |
-  | `input_or_output_iterator`                          | ![][c20ok] |            |
-  | `sentinel_for`                                      | ![][c20ok] |            |
-  | `sized_sentinel_for`                                | ![][c20ok] |            |
-  | `input_iterator`                                    | ![][c20ok] |            |
-  | `output_iterator`                                   | ![][c20ok] |            |
-  | `forward_iterator`                                  | ![][c20ok] |            |
-  | `bidirectional_iterator`                            | ![][c20ok] |            |
-  | `random_access_iterator`                            | ![][c20ok] |            |
-  | `contiguous_iterator`                               | ![][c20ok] |            |
-  | `indirectly_unary_invocable`                        | ![][c20ok] |            |
-  | `indirectly_regular_unary_invocable`                | ![][c20ok] |            |
-  | `indirect_unary_predicate`                          | ![][c20ok] |            |
-  | `indirect_binary_predicate`                         | ![][c20ok] |            |
-  | `indirect_equivalence_relation`                     | ![][c20ok] |            |
-  | `indirect_strict_weak_order`                        | ![][c20ok] |            |
-  | `indirectly_movable`                                | ![][c20ok] |            |
-  | `indirectly_movable_storable`                       | ![][c20ok] |            |
-  | `indirectly_copyable`                               | ![][c20ok] |            |
-  | `indirectly_copyable_storable`                      | ![][c20ok] |            |
-  | `indirectly_swappable`                              | ![][c20ok] |            |
-  | `indirectly_comparable`                             | ![][c20ok] |            |
-  | `permutable`                                        | ![][c20ok] |            |
-  | `mergeable`                                         | ![][c20ok] |            |
-  | `sortable`                                          | ![][c20ok] |            |
-  | `indirect_result_t`                                 | ![][c20ok] |            |
-  | `projected`                                         | ![][c20ok] |            |
-  | `projected_value_t`                                 | ![][c26ok] |            |
-  | `incrementable_traits`                              | ![][c20ok] |            |
-  | `indirectly_readable_traits`                        | ![][c20ok] |            |
-  | `iter_value_t`<br/>`iter_reference_t`               | ![][c20ok] |            |
-  | `iter_const_reference_t`                            | ![][c23ok] |            |
-  | `iter_difference_t`                                 | ![][c20ok] |            |
-  | `iter_rvalue_reference_t`                           | ![][c20ok] |            |
-  | `iter_common_reference_t`                           | ![][c20ok] |            |
-  | `iterator_traits`                                   | ![][c98]   | ![][c20ok] |
-  | `move_sentinel`                                     | ![][c20ok] |            |
-  | `basic_const_iterator`                              | ![][c23ok] |            |
-  | `const_iterator`                                    | ![][c23ok] |            |
-  | `const_sentinel`                                    | ![][c23ok] |            |
-  | `common_iterator`                                   | ![][c20ok] |            |
-  | `default_sentinel_t`<br/>`default_sentinel`         | ![][c20ok] |            |
-  | `counted_iterator`                                  | ![][c20ok] |            |
-  | `unreachable_sentinel_t`<br/>`unreachable_sentinel` | ![][c20ok] |            |
-  | `iter_move`                                         | ![][c20ok] |            |
-  | `iter_swap`                                         | ![][c20ok] |            |
-  | `make_const_iterator`<br/>`make_const_sentinel`     | ![][c23ok] |            |
-  | `ranges::advance`                                   | ![][c20ok] |            |
-  | `ranges::distance`                                  | ![][c20ok] |            |
-  | `ranges::next`                                      | ![][c20ok] |            |
-  | `ranges::prev`                                      | ![][c20ok] |            |
-  | `size(C)`                                           | ![][c17ok] | ![][c20ok] |
-  | `ssize(C)`                                          | ![][c20ok] | ![][c20ok] |
-  | `empty(C)`                                          | ![][c17no] | ![][c20no] |
-  | `data(C)`                                           | ![][c17no] |            |
+  |                                                     | Introduced | Revision    |
+  |-----------------------------------------------------|------------|-------------|
+  | `indirectly_readable`                               | ![][c20ok] |             |
+  | `indirectly_writable`                               | ![][c20ok] |             |
+  | `weakly_incrementable`                              | ![][c20ok] |             |
+  | `incrementable`                                     | ![][c20ok] |             |
+  | `input_or_output_iterator`                          | ![][c20ok] |             |
+  | `sentinel_for`                                      | ![][c20ok] |             |
+  | `sized_sentinel_for`                                | ![][c20ok] |             |
+  | `input_iterator`                                    | ![][c20ok] |             |
+  | `output_iterator`                                   | ![][c20ok] |             |
+  | `forward_iterator`                                  | ![][c20ok] |             |
+  | `bidirectional_iterator`                            | ![][c20ok] |             |
+  | `random_access_iterator`                            | ![][c20ok] |             |
+  | `contiguous_iterator`                               | ![][c20ok] |             |
+  | `indirectly_unary_invocable`                        | ![][c20ok] |             |
+  | `indirectly_regular_unary_invocable`                | ![][c20ok] |             |
+  | `indirect_unary_predicate`                          | ![][c20ok] |             |
+  | `indirect_binary_predicate`                         | ![][c20ok] |             |
+  | `indirect_equivalence_relation`                     | ![][c20ok] |             |
+  | `indirect_strict_weak_order`                        | ![][c20ok] |             |
+  | `indirectly_movable`                                | ![][c20ok] |             |
+  | `indirectly_movable_storable`                       | ![][c20ok] |             |
+  | `indirectly_copyable`                               | ![][c20ok] |             |
+  | `indirectly_copyable_storable`                      | ![][c20ok] |             |
+  | `indirectly_swappable`                              | ![][c20ok] |             |
+  | `indirectly_comparable`                             | ![][c20ok] |             |
+  | `permutable`                                        | ![][c20ok] |             |
+  | `mergeable`                                         | ![][c20ok] |             |
+  | `sortable`                                          | ![][c20ok] |             |
+  | `indirect_result_t`                                 | ![][c20ok] |             |
+  | `projected`                                         | ![][c20ok] | ![][c26ok]* |
+  | `projected_value_t`                                 | ![][c26ok] |             |
+  | `incrementable_traits`                              | ![][c20ok] |             |
+  | `indirectly_readable_traits`                        | ![][c20ok] |             |
+  | `iter_value_t`<br/>`iter_reference_t`               | ![][c20ok] |             |
+  | `iter_const_reference_t`                            | ![][c23ok] |             |
+  | `iter_difference_t`                                 | ![][c20ok] |             |
+  | `iter_rvalue_reference_t`                           | ![][c20ok] |             |
+  | `iter_common_reference_t`                           | ![][c20ok] |             |
+  | `iterator_traits`                                   | ![][c98]   | ![][c20ok]  |
+  | `move_sentinel`                                     | ![][c20ok] |             |
+  | `basic_const_iterator`                              | ![][c23ok] |             |
+  | `const_iterator`                                    | ![][c23ok] |             |
+  | `const_sentinel`                                    | ![][c23ok] |             |
+  | `common_iterator`                                   | ![][c20ok] |             |
+  | `default_sentinel_t`<br/>`default_sentinel`         | ![][c20ok] |             |
+  | `counted_iterator`                                  | ![][c20ok] |             |
+  | `unreachable_sentinel_t`<br/>`unreachable_sentinel` | ![][c20ok] |             |
+  | `iter_move`                                         | ![][c20ok] |             |
+  | `iter_swap`                                         | ![][c20ok] |             |
+  | `make_const_iterator`<br/>`make_const_sentinel`     | ![][c23ok] |             |
+  | `ranges::advance`                                   | ![][c20ok] |             |
+  | `ranges::distance`                                  | ![][c20ok] |             |
+  | `ranges::next`                                      | ![][c20ok] |             |
+  | `ranges::prev`                                      | ![][c20ok] |             |
+  | `size(C)`                                           | ![][c17ok] | ![][c20ok]  |
+  | `ssize(C)`                                          | ![][c20ok] | ![][c20ok]  |
+  | `empty(C)`                                          | ![][c17no] | ![][c20no]  |
+  | `data(C)`                                           | ![][c17no] |             |
 
 * `<latch>`
 

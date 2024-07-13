@@ -257,7 +257,7 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
 
     friend constexpr bool operator==(const iterator<Const>& x, const sentinel& y) {
       using namespace preview::rel_ops;
-      return x.current_ == y.end_;
+      return x.base() == y.end_;
     }
 
     friend constexpr bool operator!=(const iterator<Const>& x, const sentinel& y) {

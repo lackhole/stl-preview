@@ -35,15 +35,15 @@ struct is_invocable_r_impl {
  private:
   template<typename F2, typename ...Args2>
   static auto test(int)
-  noexcept(noexcept(detail::INVOKE(std::declval<F2>(), std::declval<Args2>()...)))
-       -> decltype(detail::INVOKE(std::declval<F2>(), std::declval<Args2>()...));
+  noexcept(noexcept(preview::detail::INVOKE(std::declval<F2>(), std::declval<Args2>()...)))
+        -> decltype(preview::detail::INVOKE(std::declval<F2>(), std::declval<Args2>()...));
   template<typename F2, typename ...Args2>
   static auto test(...) -> not_invocable;
 
  public:
-  using test_return_type = decltype(test<F, Args...>(0));
-  using convertible = disjunction<std::is_void<R>, std::is_convertible<test_return_type, R>>;
-  using invocable = conjunction<negation<std::is_same<test_return_type, not_invocable>>, convertible>;
+  using test_return_type  = decltype(test<F, Args...>(0));
+  using convertible       = disjunction<std::is_void<R>, std::is_convertible<test_return_type, R>>;
+  using invocable         = conjunction<negation<std::is_same<test_return_type, not_invocable>>, convertible>;
   using nothrow_invocable = conjunction<invocable, bool_constant<noexcept(test<F, Args...>(0))>>;
 };
 

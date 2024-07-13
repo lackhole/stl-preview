@@ -39,7 +39,7 @@ struct mismatch_niebloid {
       typename Proj1 = identity, typename Proj2 = identity,
       std::enable_if_t<conjunction<
           input_iterator<I1>, sentinel_for<S1, I1>,
-          input_iterator<I2>, sentinel_for<S2, I1>,
+          input_iterator<I2>, sentinel_for<S2, I2>,
           indirectly_comparable<I1, I2, Pred, Proj1, Proj2>
       >::value, int> = 0
   >
@@ -53,7 +53,11 @@ struct mismatch_niebloid {
     return {first1, first2};
   }
 
-  template<typename R1, typename R2, typename Pred = equal_to, typename Proj1 = identity, typename Proj2 = identity>
+  template<typename R1, typename R2, typename Pred = equal_to, typename Proj1 = identity, typename Proj2 = identity, std::enable_if_t<conjunction<
+      input_range<R1>,
+      input_range<R2>,
+      indirectly_comparable<iterator_t<R1>, iterator_t<R2>, Pred, Proj1, Proj2>
+  >::value, int> = 0>
   constexpr mismatch_result<borrowed_iterator_t<R1>, borrowed_iterator_t<R2>>
   operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(

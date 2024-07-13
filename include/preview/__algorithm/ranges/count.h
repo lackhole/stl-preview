@@ -15,6 +15,7 @@
 #include "preview/__functional/invoke.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
 #include "preview/__iterator/iter_difference_t.h"
+#include "preview/__iterator/projected_value_t.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/range_difference_t.h"
@@ -25,7 +26,7 @@ namespace ranges {
 namespace detail {
 
 struct count_niebloid {
-  template<typename I, typename S, typename T, typename Proj = identity, std::enable_if_t<
+  template<typename I, typename S, typename Proj = identity, typename T = projected_value_t<I, Proj>, std::enable_if_t<
       algo_check_binary_input_iterator<indirect_binary_predicate, I, S, const T*, Proj, ranges::equal_to>
   ::value, int> = 0>
   constexpr iter_difference_t<I> operator()(I first, S last, const T& value, Proj proj = {}) const {
@@ -42,7 +43,7 @@ struct count_niebloid {
     return counter;
   }
 
-  template<typename R, typename T, typename Proj = identity, std::enable_if_t<
+  template<typename R, typename Proj = identity, typename T = projected_value_t<iterator_t<R>, Proj>, std::enable_if_t<
       algo_check_binary_input_range<indirect_binary_predicate, R, const T*, Proj, ranges::equal_to>::value, int> = 0>
   constexpr range_difference_t<R>
   operator()(R&& r, const T& value, Proj proj = {}) const {

@@ -2,17 +2,16 @@ name: CMake on multiple platforms
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - '**'
 
 jobs:
   windows:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
@@ -42,9 +41,9 @@ jobs:
   ubuntu-gcc:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
@@ -87,9 +86,9 @@ jobs:
   ubuntu-clang:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
@@ -132,9 +131,9 @@ jobs:
   android-ndk:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
@@ -180,9 +179,9 @@ jobs:
   emscripten:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
@@ -223,9 +222,9 @@ jobs:
   macos-appleclang:
     runs-on: ${{ matrix.os }}
 
-    concurrency:
-      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}
-      cancel-in-progress: true
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}
+#      cancel-in-progress: true
 
     strategy:
       fail-fast: false
