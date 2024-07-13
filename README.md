@@ -133,7 +133,7 @@ Description
   | `ranges::find_last_if_not`          | ![][c23ok] |            |
   | `ranges::find_end`                  | ![][c20ok] |            |
   | `ranges::find_first_of`             | ![][c20ok] |            |
-  | `ranges::adjacent_find`             | ![][c20no] |            |
+  | `ranges::adjacent_find`             | ![][c20ok] |            |
   | `ranges::search`                    | ![][c20ok] |            |
   | `ranges::search_n`                  | ![][c20no] | ![][c26no] |
   | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
