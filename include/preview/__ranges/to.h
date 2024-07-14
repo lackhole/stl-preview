@@ -239,9 +239,8 @@ struct deduce_expr_t : conditional_t<
     is_deductible<C, R, Args...>,                                                           deduce_direct    <C, R, Args...>,
     is_deductible<C, from_range_t, R, Args...>,                                             deduce_from_range<C, R, Args...>,
     is_deductible<C, ranges_to_input_iterator<R>, ranges_to_input_iterator<R>, Args&&...>,  deduce_iterator  <C, R, Args...>,
-#if PREVIEW_CXX_VERSION < 23
-    pair_like<range_value_t<R>>,                                                            deduce_expr_t_key_value<C, R, Args...>,
-#endif
+    conjunction<bool_constant<mandatory_template_arity<C>::value == 2>,
+                pair_like<range_value_t<R>>>,                                               deduce_expr_t_key_value<C, R, Args...>,
     not_deductible
 > {};
 #else // PREVIEW_CXX_VERSION >= 17
