@@ -130,6 +130,11 @@ constexpr C ranges_to_unnested(tag_1, R&& r, Args&&... args) {
   return C(std::forward<R>(r), std::forward<Args>(args)...);
 }
 
+template<typename C, typename R, typename... Args>
+constexpr C ranges_to_unnested(tag_2, R&& r, Args&&... args) {
+  return C(from_range, std::forward<R>(r), std::forward<Args>(args)...);
+}
+
 // after C++23 (or clang tuple-to-pair-extension falls here)
 template<typename C, typename R, typename...Args>
 constexpr C ranges_to_iterator_sentinel(std::false_type, R&& r, Args&&... args) {
@@ -160,7 +165,7 @@ constexpr C ranges_to_unnested(tag_3, R&& r, Args&&... args) {
 template<typename C, typename R, typename... Args>
 constexpr C ranges_to_unnested(tag_4, R&& r, Args&&... args) {
   C c(std::forward<Args>(args)...);
-  preview::ranges::detail::try_reserve(c, std::forward<R>(r));
+  preview::ranges::detail::try_reserve(c, r);
   ranges::for_each(r, container_appender(c));
 }
 
@@ -365,29 +370,44 @@ constexpr C ranges_to(std::false_type/* unnested */, R&& r, Args&&... args) {
 
 template<typename C, typename... Args>
 class to_adaptor_closure : public range_adaptor_closure<to_adaptor_closure<C, Args...>> {
+  template<typename R, typename... CVArgs>
+  using callable = conjunction<
+      input_range<R>,
+      disjunction<
+          detail::ranges_to_unnested_callable<C, R, CVArgs...>,
+          detail::ranges_to_nested_callable<C, R, CVArgs...>
+      >
+  >;
+
  public:
   template<typename... T>
   constexpr explicit to_adaptor_closure(in_place_t, T&&... arg)
       : tup_(std::forward<T>(arg)...) {}
 
-  template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
-  constexpr auto operator()(R&& r) const& {
-    return call(std::forward<R>(r), std::index_sequence_for<Args...>{});
+  template<typename R, std::enable_if_t<callable<R, Args&...>::value, int> = 0>
+  constexpr C operator()(R&& r) & {
+    return call(std::forward<R>(r), tup_, std::index_sequence_for<Args...>{});
   }
 
-  template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
-  constexpr auto operator()(R&& r) && {
-    return std::move(*this).call(std::forward<R>(r), std::index_sequence_for<Args...>{});
+  template<typename R, std::enable_if_t<callable<R, const Args&...>::value, int> = 0>
+  constexpr C operator()(R&& r) const& {
+    return call(std::forward<R>(r), tup_, std::index_sequence_for<Args...>{});
+  }
+
+  template<typename R, std::enable_if_t<callable<R, Args...>::value, int> = 0>
+  constexpr C operator()(R&& r) && {
+    return call(std::forward<R>(r), std::move(tup_), std::index_sequence_for<Args...>{});
+  }
+
+  template<typename R, std::enable_if_t<callable<R, const Args...>::value, int> = 0>
+  constexpr C operator()(R&& r) const && {
+    return call(std::forward<R>(r), std::move(tup_), std::index_sequence_for<Args...>{});
   }
 
  private:
-  template<typename R, std::size_t... I>
-  constexpr auto call(R&& r, std::index_sequence<I...>) const& {
-    return preview::ranges::to<C>(std::forward<R>(r), std::get<I>(tup_)...);
-  }
-  template<typename R, std::size_t... I>
-  constexpr auto call(R&& r, std::index_sequence<I...>) && {
-    return preview::ranges::to<C>(std::forward<R>(r), std::get<I>(std::move(tup_))...);
+  template<typename R, typename Tuple, std::size_t...I>
+  static constexpr C call(R&& r, Tuple&& t, std::index_sequence<I...>) {
+    return preview::ranges::to<C>(std::forward<R>(r), std::get<I>(std::forward<Tuple>(t))...);
   }
 
   std::tuple<Args...> tup_;
@@ -406,12 +426,22 @@ class to_adaptor_closure<template_type_holder<C>, Args...>
       : tup_(std::forward<T>(arg)...) {}
 
   template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
-  constexpr auto operator()(R&& r) const& {
+  constexpr detail::deduce_expr<C, R, Args&...> operator()(R&& r) & {
     return call(std::forward<R>(r), tup_, std::index_sequence_for<Args...>{});
   }
 
   template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
-  constexpr auto operator()(R&& r) && {
+  constexpr detail::deduce_expr<C, R, const Args&...> operator()(R&& r) const& {
+    return call(std::forward<R>(r), tup_, std::index_sequence_for<Args...>{});
+  }
+
+  template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
+  constexpr detail::deduce_expr<C, R, Args...> operator()(R&& r) && {
+    return call(std::forward<R>(r), std::move(tup_), std::index_sequence_for<Args...>{});
+  }
+
+  template<typename R, std::enable_if_t<input_range<R>::value, int> = 0>
+  constexpr detail::deduce_expr<C, R, const Args...> operator()(R&& r) const && {
     return call(std::forward<R>(r), std::move(tup_), std::index_sequence_for<Args...>{});
   }
 
@@ -424,27 +454,15 @@ class to_adaptor_closure<template_type_holder<C>, Args...>
   std::tuple<Args...> tup_;
 };
 
-template<typename...>
-struct to_check_arg;
-template<>
-struct to_check_arg<> : std::true_type {};
-template<typename T, typename... U>
-struct to_check_arg<T, U...> : negation<input_range<T>> {};
-
 } // namespace detail
 
-template<typename C, typename... Args, std::enable_if_t<conjunction<
-    detail::to_check_arg<Args...>,
-    view<C>
->::value == false, int> = 0>
-constexpr detail::to_adaptor_closure<C, std::decay_t<Args>...> to(Args&&... args) {
+template<typename C, typename... Args, std::enable_if_t<negation<view<C>>::value, int> = 0>
+constexpr auto to(Args&&... args) {
   return detail::to_adaptor_closure<C, std::decay_t<Args>...>(in_place, std::forward<Args>(args)...);
 }
 
-template<template<typename...> class C, typename... Args, std::enable_if_t<
-    detail::to_check_arg<Args...>::value, int> = 0>
-constexpr detail::to_adaptor_closure<detail::template_type_holder<C>, std::decay_t<Args>...>
-to(Args&&... args) {
+template<template<typename...> class C, typename... Args>
+constexpr auto to(Args&&... args) {
   return detail::to_adaptor_closure<detail::template_type_holder<C>, std::decay_t<Args>...>(in_place, std::forward<Args>(args)...);
 }
 
