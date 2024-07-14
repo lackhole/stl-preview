@@ -15,6 +15,8 @@
 #include "preview/__concepts/derived_from.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/iterator_tag.h"
+#include "preview/__iterator/iter_key_t.h"
+#include "preview/__iterator/iter_mapped_t.h"
 #include "preview/__ranges/detail/container_appender.h"
 #include "preview/__ranges/detail/reservable_container.h"
 #include "preview/__ranges/begin.h"
@@ -226,11 +228,28 @@ struct deduce_expr_t_default : conditional_t<
 > {};
 
 template<template<typename...> class C, typename R, typename... Args>
+struct deduce_iter_key_mapped_dumb : std::true_type {
+  using expr = C<iter_key_t<iterator_t<R>>, iter_mapped_t<iterator_t<R>>, Args...>;
+};
+
+template<template<typename...> class C, typename R, typename... Args>
 struct deduce_expr_t_key_value : conditional_t<
     is_deductible<C, as_pair_view_t<R>, Args...>,                                           deduce_direct<C, as_pair_view_t<R>, Args...>,
     is_deductible<C, from_range_t, as_pair_view_t<R>, Args...>,                             deduce_from_range<C, as_pair_view_t<R>, Args...>,
     is_deductible<C, ranges_to_input_iterator<as_pair_view_t<R>>,
-                  ranges_to_input_iterator<as_pair_view_t<R>>, Args&&...>,                  deduce_iterator<C, as_pair_view_t<R>, Args...>,
+                     ranges_to_input_iterator<as_pair_view_t<R>>, Args...>,                 deduce_iterator<C, as_pair_view_t<R>, Args...>,
+    // Defense for Android NDK < 21 vvvvvvvvvv
+    conjunction<
+        has_typename_type<iter_key<iterator_t<R>>>,
+        has_typename_type<iter_mapped<iterator_t<R>>>,
+        std::is_constructible<
+            C<iter_key_t<iterator_t<R>>, iter_mapped_t<iterator_t<R>>, Args...>,
+            ranges_to_input_iterator<R>,
+            ranges_to_input_iterator<R>,
+            Args...
+        >
+    >,                                                                                      deduce_iter_key_mapped_dumb<C, R, Args...>,
+    // Defense for Android NDK < 21 ^^^^^^^^^^
     not_deductible
 > {};
 
@@ -239,8 +258,10 @@ struct deduce_expr_t : conditional_t<
     is_deductible<C, R, Args...>,                                                           deduce_direct    <C, R, Args...>,
     is_deductible<C, from_range_t, R, Args...>,                                             deduce_from_range<C, R, Args...>,
     is_deductible<C, ranges_to_input_iterator<R>, ranges_to_input_iterator<R>, Args&&...>,  deduce_iterator  <C, R, Args...>,
+    // Defense for C++23 vvvvvvvvvv
     conjunction<bool_constant<mandatory_template_arity<C>::value == 2>,
                 pair_like<range_value_t<R>>>,                                               deduce_expr_t_key_value<C, R, Args...>,
+    // Defense for C++23 ^^^^^^^^^^
     not_deductible
 > {};
 #else // PREVIEW_CXX_VERSION >= 17
