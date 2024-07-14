@@ -27,12 +27,11 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-using preview::detail::tag_1;
-using preview::detail::tag_2;
-using preview::detail::tag_3;
-
 struct rbegin_niebloid {
  private:
+  using tag_1 = preview::detail::tag_1;
+  using tag_2 = preview::detail::tag_2;
+  using tag_3 = preview::detail::tag_3;
 
   template<typename T, typename = void>
   struct rbegin_member_check : std::false_type {};
@@ -52,7 +51,7 @@ struct rbegin_niebloid {
   struct common_bidi_check<T, true> : bidirectional_iterator<decltype( ranges::begin(std::declval<T>()) )> {};
 
   template<typename T>
-  using rbegin_tag = conditional_tag<rbegin_member_check<T>, rbegin_global_check<T>, common_bidi_check<T>>;
+  using rbegin_tag = preview::detail::conditional_tag<rbegin_member_check<T>, rbegin_global_check<T>, common_bidi_check<T>>;
 
   template<typename T>
   constexpr auto run(T&& t, tag_1) const {

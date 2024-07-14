@@ -26,12 +26,13 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-using preview::detail::tag_1;
-using preview::detail::tag_2;
-using preview::detail::tag_3;
 
 struct rend_niebloid {
  private:
+  using tag_1 = preview::detail::tag_1;
+  using tag_2 = preview::detail::tag_2;
+  using tag_3 = preview::detail::tag_3;
+
   template<typename T, bool = is_invocable<rbegin_niebloid, T&&>::value, typename = void>
   struct rend_member_check : std::false_type {};
   template<typename T>
@@ -56,7 +57,7 @@ struct rend_niebloid {
   struct common_bidi_check<T, true> : bidirectional_iterator<decltype( ranges::begin(std::declval<T>()) )> {};
 
   template<typename T>
-  using rend_tag = conditional_tag<rend_member_check<T>, rend_global_check<T>, common_bidi_check<T>>;
+  using rend_tag = preview::detail::conditional_tag<rend_member_check<T>, rend_global_check<T>, common_bidi_check<T>>;
 
   template<typename T>
   constexpr auto run(T&& t, tag_1) const {
