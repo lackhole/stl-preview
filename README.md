@@ -10,7 +10,7 @@
 
 auto map = preview::views::iota('A', 'E') | 
            preview::views::enumerate | 
-           preview::ranges::to<std::map>();
+           preview::ranges::to<std::map>(); // See notes about CTAD below
 
 std::cout << map[0] << ' '
           << map[1] << ' '
@@ -726,90 +726,96 @@ Description
 
 * `<ranges>`
 
-  |                                                                   | Introduced           | Revision   |
-  |-------------------------------------------------------------------|----------------------|------------|
-  | `ranges::range`                                                   | ![][c20ok]           |            |
-  | `ranges::borrowed_range`                                          | ![][c20ok]           |            |
-  | `ranges::sized_range`                                             | ![][c20ok]           |            |
-  | `ranges::view`                                                    | ![][c20ok]           |            |
-  | `ranges::input_range`                                             | ![][c20ok]           |            |
-  | `ranges::output_range`                                            | ![][c20ok]           |            |
-  | `ranges::forward_range`                                           | ![][c20ok]           |            |
-  | `ranges::bidirectional_range`                                     | ![][c20ok]           |            |
-  | `ranges::random_access_range`                                     | ![][c20ok]           |            |
-  | `ranges::contiguous_range`                                        | ![][c20ok]           |            |
-  | `ranges::common_range`                                            | ![][c20ok]           |            |
-  | `ranges::viewable_range`                                          | ![][c20ok]           |            |
-  | `ranges::constant_range`                                          | ![][c23ok]           |            |
-  | `ranges::to`                                                      | ![][c23ok] (Partial) |            |
-  | `ranges::iterator_t`                                              | ![][c20ok]           |            |
-  | `ranges::const_iterator_t`                                        | ![][c23ok]           |            |
-  | `ranges::sentinel_t`                                              | ![][c20ok]           |            |
-  | `ranges::const_sentinel_t`                                        | ![][c23ok]           |            |
-  | `ranges::range_difference_t`                                      | ![][c20ok]           |            |
-  | `ranges::range_size_t`                                            | ![][c20ok]           |            |
-  | `ranges::range_value_t`                                           | ![][c20ok]           |            |
-  | `ranges::range_refernce_t`                                        | ![][c20ok]           |            |
-  | `ranges::range_const_reference_t`                                 | ![][c23ok]           |            |
-  | `ranges::range_rvalue_reference_t`                                | ![][c20ok]           |            |
-  | `ranges::range_common_reference_t`                                | ![][c20ok]           |            |
-  | `ranges::view_interface`                                          | ![][c20ok]           | ![][c23ok] |
-  | `ranges::subrange`                                                | ![][c20ok]           | ![][c23ok] |
-  | `ranges::dangling`                                                | ![][c20ok]           |            |
-  | `ranges::borrowed_iterator_t`                                     | ![][c20ok]           |            |
-  | `ranges::borrowed_subrange_t`                                     | ![][c20ok]           |            |
-  | `ranges::range_adaptor_closure`                                   | ![][c23ok]           |            |
-  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20ok]           |            |
-  | `ranges::single_view`<br/>`views::single`                         | ![][c20ok]           |            |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]           |            |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]           |            |
-  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20ok]           |            |
-  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23ok]           |            |
-  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23ok]           |            |
-  | `views::all_t`<br/>`views::all`                                   | ![][c20ok]           |            |
-  | `ranges::ref_view`                                                | ![][c20ok]           |            |
-  | `ranges::owning_view`                                             | ![][c20ok]           |            |
-  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]           |            |
-  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]           |            |
-  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]           |            |
-  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]           | ![][c23ok] |
-  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]           |            |
-  | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]           |            |
-  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20no]           | ![][c20ok] |
-  | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]           |            |
-  | `views::counted`                                                  | ![][c20ok]           |            |
-  | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]           |            |
-  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20ok]           |            |
-  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23ok]           |            |
-  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23no]           |            |
-  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20ok]           |            |
-  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20ok]           |            |
-  | `ranges::values_view`<br/>`views::values`                         | ![][c20ok]           |            |
-  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23ok]           |            |
-  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23ok]           |            |
-  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23ok]           |            |
-  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23no]           |            |
-  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23no]           |            |
-  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23ok]           |            |
-  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23no]           |            |
-  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]           |            |
-  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]           |            |
-  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]           |            |
-  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok]           |            |
-  | `ranges::begin`                                                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::end`                                                     | ![][c20ok]           | ![][c23ok] |
-  | `ranges::cbegin`                                                  | ![][c20ok]           | ![][c23ok] |
-  | `ranges::cend`                                                    | ![][c20ok]           | ![][c23ok] |
-  | `ranges::crbegin`                                                 | ![][c20ok]           | ![][c23ok] |
-  | `ranges::crend`                                                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::size`                                                    | ![][c20ok]           | ![][c23ok] |
-  | `ranges::ssize`                                                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::empty`                                                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::data`                                                    | ![][c20ok]           | ![][c23ok] |
-  | `ranges::cdata`                                                   | ![][c20ok]           | ![][c23ok] |
-  | `ranges::subrange_kind`                                           | ![][c20ok]           |            |
-  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]           |            |
+  |                                                                   | Introduced   | Revision   |
+  |-------------------------------------------------------------------|--------------|------------|
+  | `ranges::range`                                                   | ![][c20ok]   |            |
+  | `ranges::borrowed_range`                                          | ![][c20ok]   |            |
+  | `ranges::sized_range`                                             | ![][c20ok]   |            |
+  | `ranges::view`                                                    | ![][c20ok]   |            |
+  | `ranges::input_range`                                             | ![][c20ok]   |            |
+  | `ranges::output_range`                                            | ![][c20ok]   |            |
+  | `ranges::forward_range`                                           | ![][c20ok]   |            |
+  | `ranges::bidirectional_range`                                     | ![][c20ok]   |            |
+  | `ranges::random_access_range`                                     | ![][c20ok]   |            |
+  | `ranges::contiguous_range`                                        | ![][c20ok]   |            |
+  | `ranges::common_range`                                            | ![][c20ok]   |            |
+  | `ranges::viewable_range`                                          | ![][c20ok]   |            |
+  | `ranges::constant_range`                                          | ![][c23ok]   |            |
+  | `ranges::to`                                                      | ![][c23ok] * |            |
+  | `ranges::iterator_t`                                              | ![][c20ok]   |            |
+  | `ranges::const_iterator_t`                                        | ![][c23ok]   |            |
+  | `ranges::sentinel_t`                                              | ![][c20ok]   |            |
+  | `ranges::const_sentinel_t`                                        | ![][c23ok]   |            |
+  | `ranges::range_difference_t`                                      | ![][c20ok]   |            |
+  | `ranges::range_size_t`                                            | ![][c20ok]   |            |
+  | `ranges::range_value_t`                                           | ![][c20ok]   |            |
+  | `ranges::range_refernce_t`                                        | ![][c20ok]   |            |
+  | `ranges::range_const_reference_t`                                 | ![][c23ok]   |            |
+  | `ranges::range_rvalue_reference_t`                                | ![][c20ok]   |            |
+  | `ranges::range_common_reference_t`                                | ![][c20ok]   |            |
+  | `ranges::view_interface`                                          | ![][c20ok]   | ![][c23ok] |
+  | `ranges::subrange`                                                | ![][c20ok]   | ![][c23ok] |
+  | `ranges::dangling`                                                | ![][c20ok]   |            |
+  | `ranges::borrowed_iterator_t`                                     | ![][c20ok]   |            |
+  | `ranges::borrowed_subrange_t`                                     | ![][c20ok]   |            |
+  | `ranges::range_adaptor_closure`                                   | ![][c23ok]   |            |
+  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20ok]   |            |
+  | `ranges::single_view`<br/>`views::single`                         | ![][c20ok]   |            |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |            |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |            |
+  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20ok]   |            |
+  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23ok]   |            |
+  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23ok]   |            |
+  | `views::all_t`<br/>`views::all`                                   | ![][c20ok]   |            |
+  | `ranges::ref_view`                                                | ![][c20ok]   |            |
+  | `ranges::owning_view`                                             | ![][c20ok]   |            |
+  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]   |            |
+  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]   |            |
+  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]   |            |
+  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]   | ![][c23ok] |
+  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]   |            |
+  | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]   |            |
+  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20no]   | ![][c20ok] |
+  | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]   |            |
+  | `views::counted`                                                  | ![][c20ok]   |            |
+  | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]   |            |
+  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20ok]   |            |
+  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23ok]   |            |
+  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23no]   |            |
+  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20ok]   |            |
+  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20ok]   |            |
+  | `ranges::values_view`<br/>`views::values`                         | ![][c20ok]   |            |
+  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23ok]   |            |
+  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23ok]   |            |
+  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23ok]   |            |
+  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23no]   |            |
+  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23no]   |            |
+  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23ok]   |            |
+  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23no]   |            |
+  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]   |            |
+  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]   |            |
+  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]   |            |
+  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok]   |            |
+  | `ranges::begin`                                                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::end`                                                     | ![][c20ok]   | ![][c23ok] |
+  | `ranges::cbegin`                                                  | ![][c20ok]   | ![][c23ok] |
+  | `ranges::cend`                                                    | ![][c20ok]   | ![][c23ok] |
+  | `ranges::crbegin`                                                 | ![][c20ok]   | ![][c23ok] |
+  | `ranges::crend`                                                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::size`                                                    | ![][c20ok]   | ![][c23ok] |
+  | `ranges::ssize`                                                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::empty`                                                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::data`                                                    | ![][c20ok]   | ![][c23ok] |
+  | `ranges::cdata`                                                   | ![][c20ok]   | ![][c23ok] |
+  | `ranges::subrange_kind`                                           | ![][c20ok]   |            |
+  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]   |            |
+
+  * Notes
+    * `ranges::to`
+      * CTAD for `Args...` may be incorrect before C++17
+      * Equipped with C++23 conversions(e.g., `pair-like` -> `std::pair`)
+
 
 * `<semaphore>`
 
