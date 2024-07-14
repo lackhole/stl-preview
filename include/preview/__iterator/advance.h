@@ -23,118 +23,30 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-struct advance_niebloid;
-using preview::detail::conditional_tag;
-using preview::detail::tag_1;
-using preview::detail::tag_2;
-using preview::detail::tag_3;
-using preview::detail::tag_else;
-
-template<typename I>
-using advance_n_tag = conditional_tag<random_access_iterator<I>, bidirectional_iterator<I>>;
-
-template<typename I>
-constexpr void advance_n(I& i, iter_difference_t<I> n, tag_1 /* random_access_iterator */) {
-  i += n;
-}
-
-template<typename I>
-constexpr void advance_n(I& i, iter_difference_t<I> n, tag_2 /* bidirectional_iterator */) {
-  while (n > 0) {
-    --n;
-    ++i;
-  }
-
-  while (n < 0) {
-    ++n;
-    --i;
-  }
-}
-
-template<typename I>
-constexpr void advance_n(I& i, iter_difference_t<I> n, tag_else) {
-  while (n > 0) {
-    --n;
-    ++i;
-  }
-}
-
-template<typename I, typename S>
-struct advance_bound_check_impl : conjunction<input_or_output_iterator<I>, sentinel_for<S, I>> {};
-
-template<typename I, typename S, bool = has_typename_type<iter_difference<I>>::value /* true */>
-struct advance_bound_check : conjunction< negation<std::is_same<iter_difference_t<I>, S>>,
-                                          advance_bound_check_impl<I, S>                  > {};
-template<typename I, typename S>
-struct advance_bound_check<I, S, false> : advance_bound_check_impl<I, S> {};
-
-template<typename I, typename S>
-using advance_bound_tag = conditional_tag<assignable_from<I&, S>, sized_sentinel_for<S, I>>;
-
-template<typename I, typename S>
-constexpr void advance_bound(I& i, S bound, tag_1 /* assignable_from */) {
-  i = std::move(bound);
-}
-
-template<typename I, typename S>
-constexpr void advance_bound(I& i, S bound, tag_2 /* sized_sentinel_for */);
-
-template<typename I, typename S>
-constexpr void advance_bound(I& i, S bound, tag_else) {
-  while (i != bound)
-    ++i;
-}
-
-
-template<typename I, typename S>
-using advance_mixed_tag = conditional_tag<sized_sentinel_for<S, I>, bidirectional_iterator<I>>;
-
-template<typename I, typename S>
-constexpr iter_difference_t<I>
-advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_1 /* sized_sentinel_for */);
-
-template<typename I, typename S>
-constexpr iter_difference_t<I>
-advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_2 /* bidirectional_iterator */) {
-  while (n > 0 && i != bound) {
-    --n;
-    ++i;
-  }
-
-  while (n < 0 && i != bound) {
-    ++n;
-    --i;
-  }
-
-  return n;
-}
-
-template<typename I, typename S>
-constexpr iter_difference_t<I>
-advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_else) {
-  while (n > 0 && i != bound) {
-    --n;
-    ++i;
-  }
-
-  return n;
-}
-
 struct advance_niebloid {
+ private:
+  template<typename I, typename S, bool = has_typename_type<iter_difference<I>>::value /* false */>
+  struct convertible_to_iter_difference : std::false_type {};
+  template<typename I, typename S>
+  struct convertible_to_iter_difference<I, S, true> : convertible_to<S, iter_difference_t<I>> {};
+
+ public:
   template<typename I>
   constexpr std::enable_if_t<input_or_output_iterator<I>::value>
   operator()(I& i, iter_difference_t<I> n) const {
-    advance_n(i, n, advance_n_tag<I>{});
+    using tag_t = preview::detail::conditional_tag<random_access_iterator<I>, bidirectional_iterator<I>>;
+    advance_n(i, n, tag_t{});
   }
 
-
-  // Subsumes above
-  template<typename I, typename S>
-  constexpr std::enable_if_t<advance_bound_check<I, S>::value>
-  operator()(I& i, S bound) const {
-    advance_bound(i, bound, advance_bound_tag<I, S>{});
+  template<typename I, typename S, std::enable_if_t<conjunction<
+      input_or_output_iterator<I>,
+      negation<convertible_to_iter_difference<I, S>>,
+      sentinel_for<S, I>
+  >::value, int> = 0>
+  constexpr void operator()(I& i, S bound) const {
+    using tag_t = preview::detail::conditional_tag<assignable_from<I&, S>, sized_sentinel_for<S, I>>;
+    advance_bound(i, bound, tag_t{});
   }
-
 
   template<typename I, typename S, std::enable_if_t<conjunction<
       input_or_output_iterator<I>,
@@ -142,7 +54,95 @@ struct advance_niebloid {
   >::value, int> = 0>
   constexpr iter_difference_t<I>
   operator()(I& i, iter_difference_t<I> n, S bound) const {
-    return advance_mixed(i, n, bound, advance_mixed_tag<I, S>{});
+    using tag_t = preview::detail::conditional_tag<sized_sentinel_for<S, I>, bidirectional_iterator<I>>;
+    return advance_mixed(i, n, bound, tag_t{});
+  }
+
+ private:
+  using tag_1 = preview::detail::tag_1;
+  using tag_2 = preview::detail::tag_2;
+  using tag_else = preview::detail::tag_else;
+
+  template<typename I>
+  constexpr void advance_n(I& i, iter_difference_t<I> n, tag_1 /* random_access_iterator */) const {
+    i += n;
+  }
+
+  template<typename I>
+  constexpr void advance_n(I& i, iter_difference_t<I> n, tag_2 /* bidirectional_iterator */) {
+    while (n > 0) {
+      --n;
+      ++i;
+    }
+
+    while (n < 0) {
+      ++n;
+      --i;
+    }
+  }
+
+  template<typename I>
+  constexpr void advance_n(I& i, iter_difference_t<I> n, tag_else) const {
+    while (n > 0) {
+      --n;
+      ++i;
+    }
+  }
+
+  template<typename I, typename S>
+  constexpr void advance_bound(I& i, S bound, tag_1 /* assignable_from */) const {
+    i = std::move(bound);
+  }
+
+  template<typename I, typename S>
+  constexpr void advance_bound(I& i, S bound, tag_2 /* sized_sentinel_for */) const {
+    (*this)(i, bound - i);
+  }
+
+  template<typename I, typename S>
+  constexpr void advance_bound(I& i, S bound, tag_else) const {
+    while (i != bound)
+      ++i;
+  }
+
+  template<typename I, typename S>
+  constexpr iter_difference_t<I>
+  advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_1 /* sized_sentinel_for */) const {
+    const iter_difference_t<I> d = bound - i;
+    if ((n < 0 && n <= d) || (n > 0 && n >= d)) {
+      (*this)(i, d);
+      return n - d;
+    }
+
+    (*this)(i, n);
+    return 0;
+  }
+
+  template<typename I, typename S>
+  constexpr iter_difference_t<I>
+  advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_2 /* bidirectional_iterator */) const {
+    while (n > 0 && i != bound) {
+      --n;
+      ++i;
+    }
+
+    while (n < 0 && i != bound) {
+      ++n;
+      --i;
+    }
+
+    return n;
+  }
+
+  template<typename I, typename S>
+  constexpr iter_difference_t<I>
+  advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_else) const {
+    while (n > 0 && i != bound) {
+      --n;
+      ++i;
+    }
+
+    return n;
   }
 };
 } // namespace detail
@@ -154,27 +154,6 @@ PREVIEW_INLINE_VARIABLE constexpr detail::advance_niebloid advance{};
 } // namespace niebloid
 using namespace niebloid;
 
-namespace detail {
-
-template<typename I, typename S>
-constexpr void advance_bound(I& i, S bound, tag_2 /* sized_sentinel_for */) {
-  ranges::advance(i, bound - i);
-}
-
-template<typename I, typename S>
-constexpr iter_difference_t<I>
-advance_mixed(I& i, iter_difference_t<I> n, S bound, tag_1 /* sized_sentinel_for */) {
-  const iter_difference_t<I> d = bound - i;
-  if ((n < 0 && n <= d) || (n > 0 && n >= d)) {
-    ranges::advance(i, d);
-    return n - d;
-  }
-
-  ranges::advance(i, n);
-  return 0;
-}
-
-} // namespace detail
 } // namespace ranges
 } // namespace preview
 

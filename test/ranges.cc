@@ -284,6 +284,26 @@ TEST(VERSIONED(Ranges), to) {
   std::cout << map[0] << std::endl;
   std::cout << map[1] << std::endl;
   std::cout << map[2] << std::endl;
+  EXPECT_EQ(map[0], 'A');
+  EXPECT_TRUE((ranges::equal(map | views::keys, {0, 1, 2, 3, 4})));
+  EXPECT_TRUE((ranges::equal(map | views::values, {'A', 'B', 'C', 'D', 'E'})));
+
+  auto f1 = views::iota(1, 5) | views::transform([](auto const v){ return v * 2; });
+
+  auto vec = f1 | ranges::to<std::vector>();
+  static_assert(preview::same_as<decltype(vec), std::vector<int>>::value, "");
+  EXPECT_TRUE((ranges::equal(vec, {2, 4, 6, 8})));
+
+  auto vec2 = ranges::to<std::vector>(f1);
+  static_assert(preview::same_as<decltype(vec2), std::vector<int>>::value, "");
+  EXPECT_TRUE((ranges::equal(vec2, {2, 4, 6, 8})));
+
+  auto lst = vec | views::take(3) | ranges::to<std::list<double>>();
+  EXPECT_TRUE((ranges::equal(lst, {2, 4, 6})));
+
+  EXPECT_TRUE((ranges::equal(lst, ranges::to<std::list<double>>(vec | views::take(3)))));
+
+  auto str = ranges::to<std::string>(10, 'A');
 }
 
 template<class T, class A>

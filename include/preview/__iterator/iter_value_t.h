@@ -21,13 +21,13 @@ template<
 struct iter_value_impl {};
 
 template<typename T, bool v>
-struct iter_value_impl<T, false, v> {
-  using type = typename iterator_traits<remove_cvref_t<T>>::value_type;
+struct iter_value_impl<T, true, v> {
+  using type = typename indirectly_readable_traits<remove_cvref_t<T>>::value_type;
 };
 
 template<typename T>
-struct iter_value_impl<T, true, true> {
-  using type = typename indirectly_readable_traits<remove_cvref_t<T>>::value_type;
+struct iter_value_impl<T, false, true> {
+  using type = typename iterator_traits<remove_cvref_t<T>>::value_type;
 };
 
 } // namespace detail

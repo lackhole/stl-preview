@@ -26,6 +26,7 @@
 #include "preview/__type_traits/is_character.h"
 #include "preview/__type_traits/is_class_or_enum.h"
 #include "preview/__type_traits/is_complete.h"
+#include "preview/__type_traits/is_deductible.h"
 #include "preview/__type_traits/is_explicitly_constructible.h"
 #include "preview/__type_traits/is_explicitly_convertible.h"
 #include "preview/__type_traits/is_implicitly_constructible.h"
