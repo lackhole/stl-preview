@@ -2,7 +2,7 @@
 ![logo.png](logo.png)
 
 ## Description
-**Use the latest STL implementation in C++14**
+**Use the latest STL implementation regardless of your C++ version (C++14 ~)**
 
 ```c++
 // All implementations are written under C++14 standard semantics
