@@ -16,7 +16,7 @@ TEST(VERSIONED(Random), uniform_random_bit_generator) {
 
   struct my_random_generator3 : my_random_generator {
     static constexpr unsigned int min() { return 0; }
-    static constexpr unsigned int max() { return 0; }
+    static constexpr unsigned int max() { return 2000; }
   };
 
   EXPECT_FALSE_TYPE(preview::uniform_random_bit_generator<int>);
