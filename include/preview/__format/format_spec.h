@@ -7,9 +7,16 @@
 
 namespace preview {
 
+namespace _format {
+
 // https://en.cppreference.com/w/cpp/utility/format/spec
+enum fill_and_align {
+
+};
 
 
+
+}
 } // namespace preview
 
 #endif // PREVIEW_FORMAT_FORMAT_SPEC_H_
