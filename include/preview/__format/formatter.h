@@ -7,6 +7,7 @@
 
 #include "preview/__format/basic_format_parse_context.h"
 #include "preview/__format/basic_format_context.h"
+#include "preview/__format/format_spec.h"
 
 namespace preview {
 namespace detail {
