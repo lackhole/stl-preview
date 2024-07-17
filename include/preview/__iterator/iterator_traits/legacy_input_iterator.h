@@ -8,7 +8,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/equality_comparable.h"
-#include "preview/__concepts/signed_integral.h"
+#include "preview/__concepts/integral.h"
 #include "preview/__iterator/iterator_traits/legacy_iterator.h"
 #include "preview/__iterator/incrementable_traits.h"
 #include "preview/__iterator/indirectly_readable_traits.h"

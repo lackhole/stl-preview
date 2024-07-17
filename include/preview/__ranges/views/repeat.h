@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/constructible_from.h"
+#include "preview/__concepts/integer_like.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
@@ -15,7 +16,6 @@
 #include "preview/__ranges/views/repeat_view.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
-#include "preview/__type_traits/is_integer_like.h"
 #include "preview/__type_traits/remove_cvref.h"
 
 namespace preview {
@@ -36,7 +36,7 @@ struct repeat_niebloid {
       move_constructible< remove_cvref_t<W> >,
       std::is_object< remove_cvref_t<W> >,
       disjunction<
-          is_integer_like< remove_cvref_t<Bound> >,
+          integer_like< remove_cvref_t<Bound> >,
           same_as< remove_cvref_t<Bound>, unreachable_sentinel_t >
       >
   >::value, int> = 0>

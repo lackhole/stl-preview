@@ -75,7 +75,7 @@ struct drop_niebloid {
     return T(
         ranges::begin(e) + inc,
         ranges::end(e),
-        to_unsigned_like(ranges::distance(e) - inc)
+        preview::to_unsigned_like(ranges::distance(e) - inc)
     );
   }
 
@@ -123,6 +123,7 @@ struct drop_niebloid {
     using category = return_category<0>;
   };
 
+  // TODO: Investigate for subrange fallback
   template<typename R, typename D, typename U>
   constexpr U operator()(R&& e, D f, return_category<3, U>) const {
     return U(

@@ -41,6 +41,13 @@ namespace detail {
 
 // __GNUC__ < 11 defense
 #if defined(__GNUC__) && (__GNUC__ < 11) && !defined(__clang__)
+template<typename I, typename S>
+struct begin_end_comparable
+  : conjunction<
+    rel_ops::is_equality_comparable<I, S>,
+    forward_iterator<I>
+  > {};
+
 struct empty_fallback {
   constexpr empty_fallback& empty() const;
 };
@@ -60,7 +67,7 @@ template<typename T, typename = void, typename = void>
 struct comparable_range : std::false_type {};
 template<typename T>
 struct comparable_range<T, void_t<decltype( ranges::begin(std::declval<T&>()) )>, void_t<decltype( ranges::end(std::declval<T&>()) )>>
-    : begin_end_comparable_range_impl<decltype( ranges::begin(std::declval<T&>()) ), decltype( ranges::end(std::declval<T&>()) )> {};
+    : begin_end_comparable<decltype( ranges::begin(std::declval<T&>()) ), decltype( ranges::end(std::declval<T&>()) )> {};
 
 template<typename T>
 struct is_empty_callable
@@ -108,20 +115,22 @@ class view_interface {
     return empty_impl(sized_range<const D>{});
   }
 
+  template<typename D = Derived, derived_is<D, input_range<D>> = 0>
   constexpr auto cbegin() {
     return ranges::cbegin(derived());
   }
 
-  template<typename D = Derived, derived_is<D, range<const D>> = 0>
+  template<typename D = Derived, derived_is<D, input_range<const D>> = 0>
   constexpr auto cbegin() const {
     return ranges::cbegin(derived());
   }
 
+  template<typename D = Derived, derived_is<D, input_range<D>> = 0>
   constexpr auto cend() {
     return ranges::cend(derived());
   }
 
-  template<typename D = Derived, derived_is<D, range<const D>> = 0>
+  template<typename D = Derived, derived_is<D, input_range<const D>> = 0>
   constexpr auto cend() const {
     return ranges::cend(derived());
   }

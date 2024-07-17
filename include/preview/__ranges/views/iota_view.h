@@ -15,6 +15,7 @@
 #include "preview/__concepts/requires_expression.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
+#include "preview/__concepts/integer_like.h"
 #include "preview/__concepts/totally_ordered.h"
 #include "preview/__concepts/weakly_equality_comparable_with.h"
 #include "preview/__core/inline_variable.h"
@@ -31,6 +32,7 @@
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/make_signed_like.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
@@ -42,22 +44,18 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-template<typename I>
-struct iota_diff
-    : std::conditional_t<
-        disjunction<
-          negation<std::is_integral<I>>,
-          conjunction<
-            std::is_integral<I>,
-            bool_constant<( sizeof(iter_difference_t<I>) > sizeof(I) )>
-          >
-        >::value,
-        type_identity<iter_difference_t<I>>,
-        type_identity<std::intmax_t>
-      > {};
-
-template<typename I>
-using iota_diff_t = typename iota_diff<I>::type;
+template<typename W>
+using iota_diff_t = std::conditional_t<
+    disjunction<
+        negation<std::is_integral<W>>,
+        conjunction<
+            std::is_integral<W>,
+            bool_constant<( sizeof(iter_difference_t<W>) > sizeof(W) )>
+        >
+    >::value,
+    iter_difference_t<W>,
+    make_signed_like_t<W>
+>;
 
 template<typename I, bool = incrementable<I>::value, typename = void, typename = void>
 struct iv_decrementable : std::false_type {};
@@ -92,7 +90,6 @@ struct iv_advanceable_explicit<
 template<typename I, bool = conjunction<iv_decrementable<I>, totally_ordered<I>>::value>
 struct iv_advanceable : std::false_type {};
 
-// TODO: Implement
 template<typename I>
 struct iv_advanceable<I, true>
     : conjunction<
@@ -205,36 +202,18 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     }
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      is_unsigned_integer_like<W>
+      detail::iv_advanceable<W>
     >::value, int> = 0>
     constexpr iterator& operator+=(difference_type n) {
-      n < 0 ? (void)(value_ += static_cast<W>(n)) : (void)(value_ -= static_cast<W>(-n));
-      return *this;
-    }
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      negation<is_unsigned_integer_like<W>>
-    >::value, int> = 0>
-    constexpr iterator& operator+=(difference_type n) {
-      value_ += static_cast<W>(n);
+      in_place_add(std::move(n), unsigned_integer_like<W>{});
       return *this;
     }
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      is_unsigned_integer_like<W>
+      detail::iv_advanceable<W>
     >::value, int> = 0>
     constexpr iterator& operator-=(difference_type n) {
-      n < 0 ? (void)(value_ -= static_cast<W>(n)) : (void)(value_ += static_cast<W>(-n));
-      return *this;
-    }
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      negation<is_unsigned_integer_like<W>>
-    >::value, int> = 0>
-    constexpr iterator& operator-=(difference_type n) {
-      value_ -= n;
+      in_place_sub(std::move(n), unsigned_integer_like<W>{});
       return *this;
     }
 
@@ -287,35 +266,49 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
       return i;
     }
 
-
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      is_signed_integer_like<W>
+      detail::iv_advanceable<W>
     >::value, int> = 0>
-    friend constexpr difference_type operator-(iterator x, iterator y) {
-      return difference_type(difference_type(x.value_) - difference_type(y.value_));
-    }
-
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      negation<is_signed_integer_like<W>>,
-      is_unsigned_integer_like<W>
-    >::value, int> = 0>
-    friend constexpr difference_type operator-(iterator x, iterator y) {
-      using D = difference_type;
-      return y.value_ > x.value_ ? D(-D(y.value_ - x.value_)) : D(x.value_ - y.value_);
-    }
-
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      detail::iv_advanceable<W>,
-      negation<is_signed_integer_like<W>>,
-      negation<is_unsigned_integer_like<W>>
-    >::value, int> = 0>
-    friend constexpr difference_type operator-(iterator x, iterator y) {
-      return x.value_ - y.value_;
+    friend constexpr difference_type operator-(const iterator& x, const iterator& y) {
+      return x.subtract(y, integer_like<W>{}, signed_integer_like<W>{});
     }
 
    private:
+    constexpr void in_place_add(difference_type n, std::true_type) {
+      if (n >= difference_type(0))
+        value_ += static_cast<W>(n);
+      else
+        value_ -= static_cast<W>(-n);
+    }
+    constexpr void in_place_add(difference_type n, std::false_type) {
+      value_ += n;
+    }
+
+    constexpr void in_place_sub(difference_type n, std::true_type) {
+      if (n >= difference_type(0))
+        value_ -= static_cast<W>(n);
+      else
+        value_ += static_cast<W>(-n);
+    }
+    constexpr void in_place_sub(difference_type n, std::false_type) {
+      value_ -= n;
+    }
+
+    constexpr difference_type subtract(const iterator& i, std::true_type /* integer_like<W> */, std::true_type /* signed_integer_like */) const {
+      return difference_type(difference_type(value_) - difference_type(i.value_));
+    }
+
+    constexpr difference_type subtract(const iterator& i, std::true_type, std::false_type) const {
+      return (i.value_ > value_)
+             ? difference_type(-difference_type(i.value_ - value_))
+             : difference_type(value_ - i.value_);
+    }
+
+    template<typename Any>
+    constexpr difference_type subtract(const iterator& i, std::false_type, Any) const {
+      return value_ - i.value_;
+    }
+
     friend class iota_view;
     friend class sentinel;
 
@@ -402,12 +395,12 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
     disjunction<
       conjunction<same_as<W, Bound>, detail::iv_advanceable<W>>,
-      conjunction<is_integer_like<W>, is_integer_like<Bound>>,
+      conjunction<integer_like<W>, integer_like<Bound>>,
       sized_sentinel_for<Bound, W>
     >
   >::value, int> = 0>
   constexpr auto size() const {
-    return size_impl(conjunction<is_integer_like<W>, is_integer_like<Bound>>{});
+    return size_impl(conjunction<integer_like<W>, integer_like<Bound>>{});
   }
 
  private:
@@ -415,12 +408,11 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     return (value_ < 0)
         ? ((bound_ < 0)
             ? preview::to_unsigned_like(-value_) - preview::to_unsigned_like(-bound_)
-            : preview::to_unsigned_like(bound_) + preview::to_unsigned_like(-value_)
-          )
+            : preview::to_unsigned_like(bound_) + preview::to_unsigned_like(-value_))
         : preview::to_unsigned_like(bound_) - preview::to_unsigned_like(value_);
   }
   constexpr auto size_impl(std::false_type) const {
-    return static_cast<std::size_t>(bound_ - value_);
+    return to_unsigned_like(bound_ - value_);
   }
 
   static constexpr W get_value(const iterator& i) {
@@ -444,9 +436,9 @@ iota_view(W, Bound)
     -> iota_view<
         std::enable_if_t<
         disjunction<
-            negation<is_integer_like<W>>,
-            negation<is_integer_like<Bound>>,
-            bool_constant<is_signed_integer_like<W>::value == is_signed_integer_like<Bound>::value>
+            negation<integer_like<W>>,
+            negation<integer_like<Bound>>,
+            bool_constant<signed_integer_like<W>::value == signed_integer_like<Bound>::value>
         >::value, W>,
         Bound>;
 
@@ -463,9 +455,9 @@ struct iota_niebloid {
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
     disjunction<
-      negation<is_integer_like<std::remove_reference_t<W>>>,
-      negation<is_integer_like<std::remove_reference_t<Bound>>>,
-      bool_constant<is_signed_integer_like<std::remove_reference_t<W>>::value == is_signed_integer_like<std::remove_reference_t<Bound>>::value>
+      negation<integer_like<std::remove_reference_t<W>>>,
+      negation<integer_like<std::remove_reference_t<Bound>>>,
+      bool_constant<signed_integer_like<std::remove_reference_t<W>>::value == signed_integer_like<std::remove_reference_t<Bound>>::value>
     >
   >::value, int> = 0>
   constexpr auto operator()(W&& value, Bound&& bound) const {

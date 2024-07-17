@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "preview/__concepts/constructible_from.h"
+#include "preview/__concepts/integer_like.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
@@ -23,10 +24,20 @@
 #include "preview/__ranges/views/iota_view.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
-#include "preview/__type_traits/is_integer_like.h"
 
 namespace preview {
 namespace ranges {
+namespace detail {
+template<class T>
+using integer_like_with_usable_difference_type = disjunction<
+    signed_integer_like<T>,
+    conjunction<
+        integer_like<T>,
+        weakly_incrementable<T>
+    >
+>;
+
+} // namespace detail
 
 template<typename W, typename Bound = unreachable_sentinel_t>
 class repeat_view : public view_interface<repeat_view<W, Bound>> {
@@ -35,8 +46,10 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
   static_assert(semiregular<Bound>::value, "Constraints not satisfied");
   static_assert(std::is_object<W>::value, "Constraints not satisfied");
   static_assert(same_as<W, std::remove_cv_t<W>>::value, "Constraints not satisfied");
-  static_assert(disjunction<is_integer_like<Bound>,
-    same_as<Bound, unreachable_sentinel_t>>::value, "Constraints not satisfied");
+  static_assert(disjunction<
+                    detail::integer_like_with_usable_difference_type<Bound>,
+                    same_as<Bound, unreachable_sentinel_t>
+                >::value, "Constraints not satisfied");
 
   class iterator {
     friend class repeat_view;
@@ -47,7 +60,7 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
     using iterator_category = random_access_iterator_tag;
     using value_type = W;
     using difference_type = std::conditional_t<
-        is_signed_integer_like<index_type>::value, index_type, detail::iota_diff_t<index_type>>;
+        signed_integer_like<index_type>::value, index_type, detail::iota_diff_t<index_type>>;
 #if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
     using reference =  const W&;
@@ -150,7 +163,7 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
   };
 
   repeat_view()
-      : value_(W()), bound_(Bound()) {}
+      : value_(W()), bound_() {}
 
   constexpr explicit repeat_view(const W& value, Bound bound = Bound())
       : value_(value), bound_(bound){}
@@ -188,8 +201,7 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
       negation< same_as<B, unreachable_sentinel_t> >
   ::value, int> = 0>
   constexpr auto size() const {
-    using R = std::make_unsigned_t<Bound>;
-    return static_cast<R>(bound_);
+    return preview::to_unsigned_like(bound_);
   }
 
  private:

@@ -38,41 +38,34 @@
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
-#include "preview/__type_traits/is_integer_like.h"
+#include "preview/__type_traits/make_unsigned_like.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 #include "preview/__utility/in_place.h"
+#include "preview/__utility/to_unsigned_like.h"
 
 namespace preview {
 namespace ranges {
 namespace detail {
 
+template<class From, class To>
+struct uses_nonqualification_pointer_conversion
+    : conjunction<
+        std::is_pointer<From>,
+        std::is_pointer<To>,
+        negation<convertible_to<std::remove_pointer_t<From>(*)[], std::remove_pointer_t<To>(*)[]>>
+    > {};
+
 template<typename From, typename To>
 struct convertible_to_non_slicing
     : conjunction<
           convertible_to<From, To>,
-          disjunction<
-              disjunction<
-                  negation< std::is_pointer<From> >,
-                  negation< std::is_pointer<To>   >
-              >,
-              std::is_convertible<std::remove_pointer_t<From>(*)[], std::remove_pointer_t<To>(*)[]>
-          >
+          negation<uses_nonqualification_pointer_conversion<From, To>>
       > {};
 
-template<typename T, bool = is_integer_like<T>::value /* false */>
-struct make_unsigned_like {};
-template<typename T>
-struct make_unsigned_like<T, true> {
-  using type = std::make_unsigned_t<T>;
-};
-template<typename T>
-using make_unsigned_like_t = typename make_unsigned_like<T>::type;
-
 template<typename T, typename U, typename V, bool = pair_like<T>::value /* false */>
-struct pair_like_convertible_from
-    : std::false_type {};
+struct pair_like_convertible_from : std::false_type {};
 
 template<typename T, typename U, typename V>
 struct pair_like_convertible_from<T, U, V, true>
@@ -97,7 +90,7 @@ struct subrange_size<I, S, true> {
   template<typename U>
   constexpr subrange_size(in_place_t, U n) : size_(n) {}
 
-  std::make_unsigned_t<iter_difference_t<I>> size_ = 0;
+  make_unsigned_like_t<iter_difference_t<I>> size_ = 0;
 };
 
 } // namespace detail
@@ -111,8 +104,8 @@ class subrange
     : public view_interface<subrange<I, S, K>>
     , detail::subrange_size<I, S, (K == subrange_kind::sized && sized_sentinel_for<S, I>::value == false)>
 {
-  using store_size = bool_constant<(K == subrange_kind::sized && sized_sentinel_for<S, I>::value == false)>;
-  using size_base = detail::subrange_size<I, S, store_size::value>;
+  using StoreSize = bool_constant<(K == subrange_kind::sized && sized_sentinel_for<S, I>::value == false)>;
+  using size_base = detail::subrange_size<I, S, StoreSize::value>;
  public:
   static_assert(input_or_output_iterator<I>::value, "Constraints not satisfied");
   static_assert(sentinel_for<S, I>::value, "Constraints not satisfied");
@@ -122,7 +115,7 @@ class subrange
 
   template<typename I2, std::enable_if_t<conjunction<
       detail::convertible_to_non_slicing<I2, I>,
-      negation<store_size>
+      negation<StoreSize>
   >::value, int> = 0>
   constexpr subrange(I2 i, S s)
       : iterator_(std::move(i)), sentinel_(std::move(s)) {}
@@ -131,7 +124,7 @@ class subrange
       detail::convertible_to_non_slicing<I2, I>,
       bool_constant< K == subrange_kind::sized >
   >::value, int> = 0>
-  constexpr subrange(I2 i, S s, detail::make_unsigned_like_t<iter_difference_t<I>> n)
+  constexpr subrange(I2 i, S s, make_unsigned_like_t<iter_difference_t<I>> n)
       : size_base(in_place, n), iterator_(std::move(i)), sentinel_(std::move(s)) {}
 
   template<typename R, std::enable_if_t<conjunction<
@@ -140,12 +133,12 @@ class subrange
       detail::convertible_to_non_slicing<iterator_t<R>, I>,
       convertible_to<sentinel_t<R>, S>,
       disjunction<
-          negation<store_size>,
+          negation<StoreSize>,
           sized_range<R>
       >
   >::value, int> = 0>
   constexpr subrange(R&& r)
-      : subrange(r, static_cast<detail::make_unsigned_like_t<iter_difference_t<I>>>(ranges::size(r))) {}
+      : subrange(r, static_cast<make_unsigned_like_t<iter_difference_t<I>>>(ranges::size(r))) {}
 
   template<typename R, std::enable_if_t<conjunction<
       borrowed_range<R>,
@@ -153,7 +146,7 @@ class subrange
       convertible_to<sentinel_t<R>, S>,
       bool_constant< K == subrange_kind::sized >
   >::value, int> = 0>
-  constexpr subrange(R&& r, detail::make_unsigned_like_t<iter_difference_t<I>> n)
+  constexpr subrange(R&& r, make_unsigned_like_t<iter_difference_t<I>> n)
       : subrange(ranges::begin(r), ranges::end(r), n) {}
 
 
@@ -186,23 +179,14 @@ class subrange
   }
 
   template<subrange_kind K2 = K, std::enable_if_t<conjunction<
-      bool_constant<K2 == subrange_kind::sized>,
-      sized_sentinel_for<S, I>
+      bool_constant<K2 == subrange_kind::sized>
   >::value, int> = 0>
-  constexpr detail::make_unsigned_like_t<iter_difference_t<I>> size() const {
-    return static_cast<detail::make_unsigned_like_t<iter_difference_t<I>>>(sentinel_ - iterator_);
-  }
-
-  template<subrange_kind K2 = K, std::enable_if_t<conjunction<
-      bool_constant<K2 == subrange_kind::sized>,
-      negation< sized_sentinel_for<S, I> >
-  >::value, int> = 0>
-  constexpr detail::make_unsigned_like_t<iter_difference_t<I>> size() const {
-    return size_base::size_;
+  constexpr make_unsigned_like_t<iter_difference_t<I>> size() const {
+    return size_impl(StoreSize{});
   }
 
   constexpr subrange& advance(iter_difference_t<I> n) {
-    ranges::advance(iterator_, n, sentinel_);
+    advance_impl(std::move(n), bidirectional_iterator<I>{}, StoreSize{});
     return *this;
   }
 
@@ -227,6 +211,35 @@ class subrange
   }
 
  private:
+  constexpr auto size_impl(std::true_type) const {
+    return size_base::size_;
+  }
+
+  constexpr auto size_impl(std::false_type) const {
+    return preview::to_unsigned_like(sentinel_ - iterator_);
+  }
+
+  constexpr void advance_impl(iter_difference_t<I> n, std::true_type /* bidirectional_iterator<I>{} */, std::true_type /* StoreSize */) {
+    if (n < 0) {
+      ranges::advance(iterator_, n);
+      size_base::size_ += preview::to_unsigned_like(-n);
+    }
+  }
+
+  constexpr void advance_impl(iter_difference_t<I> n, std::true_type, std::false_type) {
+    if (n < 0)
+      ranges::advance(iterator_, n);
+  }
+
+  constexpr void advance_impl(iter_difference_t<I> n, std::false_type, std::true_type) {
+    auto d = n - ranges::advance(iterator_, n, sentinel_);
+    size_base::size_ -= preview::to_unsigned_like(d);
+  }
+
+  constexpr void advance_impl(iter_difference_t<I> n, std::false_type, std::false_type) {
+    ranges::advance(iterator_, n, sentinel_);
+  }
+
   I iterator_;
   S sentinel_;
 };
@@ -247,7 +260,7 @@ template<typename I, typename S, std::enable_if_t<conjunction<
     sentinel_for<S, I>
 >::value, int> = 0>
 constexpr subrange<I, S, subrange_kind::sized>
-make_subrange(I i, S s, detail::make_unsigned_like_t<iter_difference_t<I>> n) {
+make_subrange(I i, S s, make_unsigned_like_t<iter_difference_t<I>> n) {
   return subrange<I, S, subrange_kind::sized>(std::move(i), std::move(s), n);
 }
 
@@ -262,7 +275,7 @@ make_subrange(R&& r) {
 
 template<typename R, std::enable_if_t<borrowed_range<R>::value, int> = 0>
 constexpr subrange<iterator_t<R>, sentinel_t<R>, subrange_kind::sized>
-make_subrange(R&& r, detail::make_unsigned_like_t<range_difference_t<R>> n) {
+make_subrange(R&& r, make_unsigned_like_t<range_difference_t<R>> n) {
   return {std::forward<R>(r), n};
 }
 
@@ -271,7 +284,7 @@ make_subrange(R&& r, detail::make_unsigned_like_t<range_difference_t<R>> n) {
 // These two are ambiguous without constraints
 // vvvvvvvvvvvvvvvvvvvv
 template<typename R>
-subrange(R&&, detail::make_unsigned_like_t<range_difference_t<R>>) ->
+subrange(R&&, make_unsigned_like_t<range_difference_t<R>>) ->
     subrange<
             std::enable_if_t<borrowed_range<R>::value,
         ranges::iterator_t<R>>,
@@ -292,7 +305,7 @@ subrange(I, S)
 // ^^^^^^^^^^^^^^^^^^^^
 
 template<typename I, typename S>
-subrange(I, S, detail::make_unsigned_like_t<iter_difference_t<I>>) ->
+subrange(I, S, make_unsigned_like_t<iter_difference_t<I>>) ->
     subrange<I, S, ranges::subrange_kind::sized>;
 
 template<typename R>

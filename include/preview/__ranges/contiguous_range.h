@@ -30,22 +30,11 @@ template<
         >::value /* true */
 >
 struct contiguous_range_impl_2
-    : same_as<
-          decltype( ranges::data(std::declval<T&>()) ),
-          std::add_pointer_t<range_reference_t<T>>
-      > {};
+    : same_as<decltype( ranges::data(std::declval<T&>()) ), std::add_pointer_t<range_reference_t<T>>> {};
 template<typename T>
 struct contiguous_range_impl_2<T, false> : std::false_type {};
 
-template<
-    typename T,
-    bool =
-        conjunction<
-            random_access_range<T>,
-            has_typename_type< iterator<T> >,
-            has_typename_type< range_reference<T> >
-        >::value /* true */
->
+template<typename T, bool = /* true */ random_access_range<T>::value>
 struct contiguous_range_impl_1 : contiguous_range_impl_2<T> {};
 template<typename T>
 struct contiguous_range_impl_1<T, false> : std::false_type {};
