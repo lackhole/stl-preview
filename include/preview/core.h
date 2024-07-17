@@ -3,6 +3,7 @@
 
 #include "preview/__core/android_version.h"
 #include "preview/__core/assert.h"
+#include "preview/__core/consteval.h"
 #include "preview/__core/constexpr.h"
 #include "preview/__core/decay_copy.h"
 #include "preview/__core/inline_variable.h"
