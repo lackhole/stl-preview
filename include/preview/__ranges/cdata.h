@@ -25,7 +25,7 @@ struct cdata_niebloid {
       std::is_lvalue_reference<T>,
       enable_borrowed_range_t<std::remove_cv_t<T>>
   >::value, int> = 0>
-  constexpr std::remove_reference_t<range_const_reference_t<T>>* operator()(T&& t) const {
+  constexpr auto* operator()(T&& t) const {
     return preview::ranges::as_const_pointer(ranges::data(possibly_const_range(t)));
   }
 };

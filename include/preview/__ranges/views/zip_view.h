@@ -502,7 +502,7 @@ class zip_view : public view_interface<zip_view<Views...>> {
   constexpr auto size() {
     return preview::apply(
         [](auto... sizes) {
-          using CT = std::make_unsigned_t<common_type_t<decltype(sizes)...>>;
+          using CT = make_unsigned_like_t<common_type_t<decltype(sizes)...>>;
           return (ranges::min)({CT(sizes)...});
         },
         preview::tuple_transform(views_, ranges::size)
@@ -515,7 +515,7 @@ class zip_view : public view_interface<zip_view<Views...>> {
   constexpr auto size() const {
     return preview::apply(
         [](auto... sizes) {
-          using CT = std::make_unsigned_t<common_type_t<decltype(sizes)...>>;
+          using CT = make_unsigned_like_t<common_type_t<decltype(sizes)...>>;
           return (ranges::min)({CT(sizes)...});
         },
         preview::tuple_transform(views_, ranges::size)

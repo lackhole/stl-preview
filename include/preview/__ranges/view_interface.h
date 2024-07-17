@@ -108,20 +108,22 @@ class view_interface {
     return empty_impl(sized_range<const D>{});
   }
 
+  template<typename D = Derived, derived_is<D, input_range<D>> = 0>
   constexpr auto cbegin() {
     return ranges::cbegin(derived());
   }
 
-  template<typename D = Derived, derived_is<D, range<const D>> = 0>
+  template<typename D = Derived, derived_is<D, input_range<const D>> = 0>
   constexpr auto cbegin() const {
     return ranges::cbegin(derived());
   }
 
+  template<typename D = Derived, derived_is<D, input_range<D>> = 0>
   constexpr auto cend() {
     return ranges::cend(derived());
   }
 
-  template<typename D = Derived, derived_is<D, range<const D>> = 0>
+  template<typename D = Derived, derived_is<D, input_range<const D>> = 0>
   constexpr auto cend() const {
     return ranges::cend(derived());
   }

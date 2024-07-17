@@ -7,9 +7,9 @@
 
 #include <type_traits>
 
+#include "preview/__concepts/integral.h"
 #include "preview/__concepts/invocable.h"
 #include "preview/__concepts/same_as.h"
-#include "preview/__concepts/unsigned_integral.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
