@@ -27,7 +27,7 @@ template<typename I, typename D,
          typename Ptr = std::add_pointer_t<std::remove_reference_t<decltype(*std::declval<I&>())>>, // std::addressof(*I)
          bool = /* false */ conjunction<
              iter_addable_dereferenceable<I, D>,
-             iter_addable_dereferenceable<Ptr, D>
+             iter_addable_dereferenceable<Ptr, std::ptrdiff_t>
          >::value>
 struct LegacyContiguousIteratorImpl_ForDiff : std::false_type {};
 
@@ -35,7 +35,7 @@ template<typename I, typename D, typename Ptr>
 struct LegacyContiguousIteratorImpl_ForDiff<I, D, Ptr, true>
     : std::is_same<
         decltype( *(std::declval<I&>()  + std::declval<D>()) ),
-        decltype( *(std::declval<Ptr>() + std::declval<D>()) )
+        decltype( *(std::declval<Ptr>() + std::declval<std::ptrdiff_t>()) )
     > {};
 
 // std::addressof must be callable
@@ -44,11 +44,7 @@ struct LegacyContiguousIteratorImpl_2 : std::false_type {};
 
 template<typename I>
 struct LegacyContiguousIteratorImpl_2<I, false>
-    : disjunction<
-        LegacyContiguousIteratorImpl_ForDiff<I, int>,
-        LegacyContiguousIteratorImpl_ForDiff<I, std::size_t>,
-        LegacyContiguousIteratorImpl_ForDiff<I, std::ptrdiff_t>
-    > {};
+    : LegacyContiguousIteratorImpl_ForDiff<I, iter_difference_t<I>> {};
 
 template<typename I, bool = /* false */ LegacyIterator<I>::value>
 struct LegacyContiguousIteratorImpl_1 : std::false_type {};
