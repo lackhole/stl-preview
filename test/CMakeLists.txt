@@ -3,6 +3,8 @@ include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
 include(ExternalProject)
 
+message("Configuring tests...")
+
 if (MSVC)
     set(_PREVIEW_CXX_STD_FLAG /std:c++)
 else()
@@ -112,6 +114,7 @@ foreach(CACHE_VAR ${CACHE_VARS})
         list(APPEND PREVIEW_DEFAULT_TEST_CMAKE_ARGS "-D${CACHE_VAR}${CACHE_VAR_TYPE}=${${CACHE_VAR}}")
     endif()
 endforeach()
+message("PREVIEW_DEFAULT_TEST_CMAKE_ARGS: ${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
 
 # Create test targets per supported C++ version
 function(preview_add_multi_version_test name_prefix test_src)
