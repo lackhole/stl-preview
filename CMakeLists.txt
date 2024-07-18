@@ -1,4 +1,10 @@
 cmake_minimum_required(VERSION 3.11)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+set(PREVIEW_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR "generated/include")
+set(PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}")
+
 project(preview CXX)
 
 option(PREVIEW_TEST "Build test" OFF)
@@ -20,8 +26,26 @@ if (MSVC)
     target_compile_options(preview INTERFACE /permissive-)
 endif ()
 
+include(RunConfiguration)
 if (PREVIEW_TEST)
     include(CTest)
     enable_testing()
+
+    # Test will re-configure preview via ExternalProject to execute different RunConfiguration() for every tests
     add_subdirectory(test)
+else ()
+    set(flags)
+
+    if ("${CMAKE_CXX_STANDARD}" STREQUAL "")
+        message(WARNING "CMAKE_CXX_STANDARD is not defined. Configuration may not behave correctly")
+    else ()
+        if (MSVC)
+            set(flags "${flags} /std:c++${CMAKE_CXX_STANDARD}")
+        else()
+            set(flags "${flags} -std=c++${CMAKE_CXX_STANDARD}")
+        endif ()
+    endif ()
+
+    RunConfiguration("${PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR}/preview/config.h" "${flags}")
+    target_include_directories(preview INTERFACE "${PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR}")
 endif ()
