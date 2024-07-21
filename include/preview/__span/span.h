@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "preview/__iterator/basic_const_iterator.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
 #include "preview/__iterator/sized_sentinel_for.h"
@@ -110,7 +111,9 @@ class span : private detail::span_storage_t<T, Extent> {
   using reference = T&;
   using const_reference = const T&;
   using iterator = pointer;
+  using const_iterator = preview::const_iterator<iterator>;
   using reverse_iterator = std::reverse_iterator<iterator>;
+  using const_reverse_iterator = preview::const_iterator<reverse_iterator>;
 
  private:
   using base = detail::span_storage_t<T, Extent>;
@@ -269,8 +272,15 @@ class span : private detail::span_storage_t<T, Extent> {
 
   constexpr iterator begin() const noexcept { return iterator(data()); }
   constexpr iterator end() const noexcept { return iterator(data() + size()); }
+
+  constexpr const_iterator cbegin() const noexcept { return const_iterator{begin()}; }
+  constexpr const_iterator cend() const noexcept { return const_iterator{end()}; }
+
   constexpr reverse_iterator rbegin() const noexcept { return reverse_iterator(data() + size()); }
   constexpr reverse_iterator rend() const noexcept { return reverse_iterator(data()); }
+
+  constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator{rbegin()}; }
+  constexpr const_reverse_iterator crend() const noexcept { return const_reverse_iterator{rend()}; }
 
   constexpr reference front() const { return *begin(); }
   constexpr reference back() const { return *(end() - 1); }

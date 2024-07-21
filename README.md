@@ -88,60 +88,66 @@ int main() {
 
 ## Implementation Status
 
-| Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                 |
-|-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|-------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/281/589-grey)![][p048] |   | ![](https://img.shields.io/badge/38/106-grey)![][p036] | ![](https://img.shields.io/badge/206/407-grey)![][p051] | ![](https://img.shields.io/badge/53/119-grey)![][p045] | ![](https://img.shields.io/badge/12/58-grey)![][p021] |
-|                                     |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/47/115-grey)![][p041]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/39/96-grey)![][p041]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/4/23-grey)![][p017]  |
-| [any](#any)                         | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/0-grey)![][p000]    |                                                         |                                                        |                                                       |
-| [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                       |
-| [atomic](#atomic)                   | ![](https://img.shields.io/badge/0/17-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/4-grey)![][p000]   |
-| [barrier](#barrier)                 | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                       |
-| [bit](#bit)                         | ![](https://img.shields.io/badge/0/14-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                       |
-| [charconv](#charconv)               | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/14-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                       |
-| [chrono](#chrono)                   | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/2-grey)![][p000]    | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]   |
-| [cmath](#cmath)                     | ![](https://img.shields.io/badge/0/22-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/22-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/22-grey)![][p000]   |                                                       |
-| [compare](#compare)                 |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                       |
-| [coroutine](#coroutine)             |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                       |
-| [exception](#exception)             | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                         |                                                        |                                                       |
-| [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                       |
-| [execution](#execution)             |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [flat_map](#flat_map)               | ![](https://img.shields.io/badge/0/4-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |                                                       |
-| [flat_set](#flat_set)               | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                       |
-| [format](#format)                   |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [filesystem](#filesystem)           |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/3/5-grey)![][p060]    | ![](https://img.shields.io/badge/6/7-grey)![][p086]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/3/5-grey)![][p060]   |
-| [hazard_pointer](#hazard_pointer)   | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]   |
-| [iterator](#iterator)               | ![](https://img.shields.io/badge/56/58-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/50/51-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]   |
-| [latch](#latch)                     | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |                                                        |                                                       |
-| [linalg](#linalg)                   |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [mdspan](#mdspan)                   | ![](https://img.shields.io/badge/0/11-grey)![][p000]    |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/6-grey)![][p000]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]   |
-| [memory](#memory)                   | ![](https://img.shields.io/badge/5/40-grey)![][p013]    |   | ![](https://img.shields.io/badge/2/11-grey)![][p018]   | ![](https://img.shields.io/badge/5/32-grey)![][p016]    | ![](https://img.shields.io/badge/0/3-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]   |
-| [memory_resource](#memory_resource) |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [mutex](#mutex)                     |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [new](#new)                         | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/3-grey)![][p000]    |                                                         |                                                        |                                                       |
-| [numbers](#numbers)                 | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        |                                                       |
-| [numeric](#numeric)                 | ![](https://img.shields.io/badge/0/15-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/9-grey)![][p000]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/0/1-grey)![][p000]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]   |
-| [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]   |
-| [random](#random)                   | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                       |
-| [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/29/36-grey)![][p081]  | ![](https://img.shields.io/badge/1/1-grey)![][p100]   |
-| [semaphore](#semaphore)             | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        |                                                       |
-| [stop_token](#stop_token)           | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                       |
-| [string](#string)                   | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]   |
-| [string_view](#string_view)         | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                       |
-| [source_location](#source_location) |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-| [syncstream](#syncstream)           | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |                                                        |                                                       |
-| [span](#span)                       | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]   |
-| [spanstream](#spanstream)           | ![](https://img.shields.io/badge/0/4-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |                                                       |
-| [thread](#thread)                   | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |                                                        |                                                       |
-| [tuple](#tuple)                     | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                       |
-| [type_traits](#type_traits)         | ![](https://img.shields.io/badge/17/25-grey)![][p068]   |   | ![](https://img.shields.io/badge/8/10-grey)![][p080]   | ![](https://img.shields.io/badge/7/13-grey)![][p054]    | ![](https://img.shields.io/badge/1/2-grey)![][p050]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]   |
-| [utility](#utility)                 | ![](https://img.shields.io/badge/6/8-grey)![][p075]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/2/4-grey)![][p050]    |                                                       |
-| [variant](#variant)                 | ![](https://img.shields.io/badge/9/9-grey)![][p100]     |   | ![](https://img.shields.io/badge/9/9-grey)![][p100]    |                                                         |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]   |
-| [version](#version)                 |                                                         |   |                                                        |                                                         |                                                        |                                                       |
-|                                     |                                                         |   |                                                        |                                                         |                                                        |                                                       |
+| Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
+|-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
+|                                     | ![](https://img.shields.io/badge/281/690-grey)![][p041] |   | ![](https://img.shields.io/badge/42/113-grey)![][p037] | ![](https://img.shields.io/badge/206/428-grey)![][p048] | ![](https://img.shields.io/badge/56/143-grey)![][p039] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
+|                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/47/115-grey)![][p041]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/39/96-grey)![][p041]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/4/23-grey)![][p017]   |
+| [any](#any)                         | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/0-grey)![][p000]    |                                                         |                                                        |                                                        |
+| [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
+| [atomic](#atomic)                   | ![](https://img.shields.io/badge/0/17-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |
+| [barrier](#barrier)                 | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
+| [bit](#bit)                         | ![](https://img.shields.io/badge/0/14-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
+| [charconv](#charconv)               | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/14-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                        |
+| [chrono](#chrono)                   | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/2-grey)![][p000]    | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [cmath](#cmath)                     | ![](https://img.shields.io/badge/0/22-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/22-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/22-grey)![][p000]   |                                                        |
+| [compare](#compare)                 |                                                         |   |                                                        |                                                         |                                                        |                                                        |
+| [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
+| [coroutine](#coroutine)             | N/A                                                     |   |                                                        |                                                         |                                                        |                                                        |
+| [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
+| [debugging](#debugging)             | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]    |
+| [exception](#exception)             | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                         |                                                        |                                                        |
+| [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                        |
+| [execution](#execution)             |                                                         |   |                                                        |                                                         |                                                        |                                                        |
+| [flat_map](#flat_map)               | ![](https://img.shields.io/badge/0/4-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |                                                        |
+| [flat_set](#flat_set)               | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                        |
+| [format](#format)                   | ![](https://img.shields.io/badge/0/24-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/16-grey)![][p000]    | ![](https://img.shields.io/badge/0/15-grey)![][p000]   | ![](https://img.shields.io/badge/0/10-grey)![][p000]   |
+| [filesystem](#filesystem)           | N/A                                                     |   |                                                        |                                                         |                                                        |                                                        |
+| [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/3/5-grey)![][p060]    | ![](https://img.shields.io/badge/6/7-grey)![][p086]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/3/5-grey)![][p060]    |
+| [hazard_pointer](#hazard_pointer)   | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]    |
+| [inplace_vector](#inplace_vector)   | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
+| [iterator](#iterator)               | ![](https://img.shields.io/badge/56/58-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/50/51-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
+| [latch](#latch)                     | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |                                                        |                                                        |
+| [linalg](#linalg)                   | ![](https://img.shields.io/badge/0/51-grey)![][p000]    |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/51-grey)![][p000]   |
+| [mdspan](#mdspan)                   | ![](https://img.shields.io/badge/0/11-grey)![][p000]    |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/6-grey)![][p000]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
+| [memory](#memory)                   | ![](https://img.shields.io/badge/5/44-grey)![][p011]    |   | ![](https://img.shields.io/badge/2/11-grey)![][p018]   | ![](https://img.shields.io/badge/5/36-grey)![][p014]    | ![](https://img.shields.io/badge/0/3-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [memory_resource](#memory_resource) |                                                         |   |                                                        |                                                         |                                                        |                                                        |
+| [mutex](#mutex)                     | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                         |                                                        |                                                        |
+| [new](#new)                         | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/4-grey)![][p000]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |                                                        |                                                        |
+| [numbers](#numbers)                 | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        |                                                        |
+| [numeric](#numeric)                 | ![](https://img.shields.io/badge/0/15-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/9-grey)![][p000]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/0/1-grey)![][p000]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
+| [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
+| [print](#print)                     | ![](https://img.shields.io/badge/0/6-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/6-grey)![][p000]    |                                                        |
+| [random](#random)                   | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
+| [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/29/36-grey)![][p081]  | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
+| [rcu](#rcu)                         | ![](https://img.shields.io/badge/0/6-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/6-grey)![][p000]    |
+| [semaphore](#semaphore)             | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        |                                                        |
+| [shared_mutex](#shared_mutex)       | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                         |                                                        |                                                        |
+| [stop_token](#stop_token)           | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
+| [string](#string)                   | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [string_view](#string_view)         | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
+| [source_location](#source_location) | N/A                                                     |   |                                                        |                                                         |                                                        |                                                        |
+| [syncstream](#syncstream)           | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |                                                        |                                                        |
+| [span](#span)                       | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
+| [spanstream](#spanstream)           | ![](https://img.shields.io/badge/0/4-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |                                                        |
+| [stacktrace](#stacktrace)           | N/A                                                     |   |                                                        |                                                         |                                                        |                                                        |
+| [text_encoding](#text_encoding)     | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        |                                                         |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
+| [thread](#thread)                   | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |                                                        |                                                        |
+| [tuple](#tuple)                     | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                        |
+| [type_traits](#type_traits)         | ![](https://img.shields.io/badge/17/26-grey)![][p065]   |   | ![](https://img.shields.io/badge/8/10-grey)![][p080]   | ![](https://img.shields.io/badge/7/13-grey)![][p054]    | ![](https://img.shields.io/badge/1/2-grey)![][p050]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [utility](#utility)                 | ![](https://img.shields.io/badge/6/8-grey)![][p075]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
+| [variant](#variant)                 | ![](https://img.shields.io/badge/9/9-grey)![][p100]     |   | ![](https://img.shields.io/badge/9/9-grey)![][p100]    |                                                         |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
+| [version](#version)                 |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 
 -----
 
@@ -478,6 +484,14 @@ Description
   | `byte`       | ![][c17ok] |          |
   | `to_integer` | ![][c17ok] |          |
 
+#### `<debugging>`
+
+  |                           | Introduced | Revision |
+  |---------------------------|------------|----------|
+  | `breakpoint`              | ![][c26no] |          |
+  | `breakpoint_if_debugging` | ![][c26no] |          |
+  | `is_debugger_present`     | ![][c26no] |          |
+
 #### `<exception>`
 
   |                       | Introduced       | Revision |
@@ -514,9 +528,32 @@ Description
  
 #### `<format>`
 
-  |                      | Introduced | Revision |
-  |----------------------|------------|----------|
-  |                      |            |          |
+  |                                            | Introduced | Revision              |
+  |--------------------------------------------|------------|-----------------------|
+  | `formatter`                                | ![][c20no] | ![][c23no]            |
+  | `basic_format_parse_context`               | ![][c20no] | ![][c26no]            |
+  | `basic_format_context`                     | ![][c20no] |                       |
+  | `basic_format_arg`                         | ![][c20no] | ![][c26no]            |
+  | `basic_format_args`                        | ![][c20no] |                       |
+  | `basic_format_string`                      | ![][c20no] | ![][c23no] ![][c26no] |
+  | `format_error`                             | ![][c20no] |                       |
+  | `format`                                   | ![][c20no] | ![][c23no] ![][c26no] |
+  | `format_to`                                | ![][c20no] | ![][c23no] ![][c26no] |
+  | `format_to_n`                              | ![][c20no] | ![][c23no] ![][c26no] |
+  | `formatted_size`                           | ![][c20no] | ![][c23no] ![][c26no] |
+  | `vformat`                                  | ![][c20no] | ![][c23no] ![][c26no] |
+  | `vformat_to`                               | ![][c20no] | ![][c23no] ![][c26no] |
+  | ~~`visit_format_arg`~~                     | ![][c20no] | deprecated in C++26   |
+  | `make_format_args`                         | ![][c20no] |                       |
+  | `make_wformat_args`                        | ![][c20no] |                       |
+  | `formattable`                              | ![][c23no] |                       |
+  | `range_format`                             | ![][c23no] |                       |
+  | `range_formatter`                          | ![][c23no] |                       |
+  | `formatter<pair-or-tuple>`                 | ![][c23no] |                       |
+  | `formatter<range>`                         | ![][c23no] |                       |
+  | `format_kind`                              | ![][c23no] |                       |
+  | `enable_nonlocking_formatter_optimization` | ![][c23no] |                       |
+  | `runtime_format`                           | ![][c26no] |                       |
 
 #### `<filesystem>`
   N/A
@@ -549,6 +586,12 @@ Description
   | `hazard_pointer_obj_base` | ![][c26no] |          |
   | `hazard_pointer`          | ![][c26no] |          |
   | `make_hazard_pointer`     | ![][c26no] |          |
+
+#### `<inplace_vector>`
+
+  |                       | Introduced | Revision |
+  |-----------------------|------------|----------|
+  | `inplace_vector`      | ![][c26no] |          |
 
 #### `<iterator>`
 
@@ -665,7 +708,27 @@ Description
   | `matrix_inf_norm`                                       | ![][c26no] |          |
   | `matrix_vector_product`                                 | ![][c26no] |          |
   | `symmetric_matrix_vector_product`                       | ![][c26no] |          |
-  | ...                                                     | ![][c26no] |          |
+  | `hermitian_matrix_vector_product`                       | ![][c26no] |          |
+  | `triangular_matrix_vector_product`                      | ![][c26no] |          |
+  | `triangular_matrix_vector_solve`                        | ![][c26no] |          |
+  | `matrix_rank_1_update`                                  | ![][c26no] |          |
+  | `matrix_rank_1_update_c`                                | ![][c26no] |          |
+  | `symmetric_matrix_rank_1_update`                        | ![][c26no] |          |
+  | `hermitian_matrix_rank_1_update`                        | ![][c26no] |          |
+  | `symmetric_matrix_rank_2_update`                        | ![][c26no] |          |
+  | `hermitian_matrix_rank_2_update`                        | ![][c26no] |          |
+  | `matrix_product`                                        | ![][c26no] |          |
+  | `symmetric_matrix_product`                              | ![][c26no] |          |
+  | `hermitian_matrix_product`                              | ![][c26no] |          |
+  | `triangular_matrix_product`                             | ![][c26no] |          |
+  | `triangular_matrix_left_product`                        | ![][c26no] |          |
+  | `triangular_matrix_right_product`                       | ![][c26no] |          |
+  | `symmetric_matrix_rank_k_update`                        | ![][c26no] |          |
+  | `hermitian_matrix_rank_k_update`                        | ![][c26no] |          |
+  | `symmetric_matrix_rank_2k_update`                       | ![][c26no] |          |
+  | `hermitian_matrix_rank_2k_update`                       | ![][c26no] |          |
+  | `triangular_matrix_matrix_left_solve`                   | ![][c26no] |          |
+  | `triangular_matrix_matrix_right_solve`                  | ![][c26no] |          |
 
 #### `<mdspan>`
 
@@ -687,9 +750,8 @@ Description
 
   |                                                   | Introduced | Revision   |
   |---------------------------------------------------|------------|------------|
+  | `pointer_traits`                                  | ![][c11]   | ![][c20ok] |
   | `aligned_alloc`                                   | ![][c17no] |            |
-  | `assume_aligned`                                  | ![][c20no] |            |
-  | `construct_at`                                    | ![][c20ok] |            |
   | `destroy_at`                                      | ![][c17ok] | ![][c20ok] |
   | `destroy`                                         | ![][c17ok] | ![][c20ok] |
   | `destroy_n`                                       | ![][c17no] | ![][c20no] |
@@ -700,14 +762,18 @@ Description
   | `uninitialized_move_n`                            | ![][c17no] | ![][c20no] |
   | `uninitialized_value_construct`                   | ![][c17no] |            |
   | `uninitialized_value_construct_n`                 | ![][c17no] |            |
-  | `make_obj_using_allocator`                        | ![][c20no] |            |
+  | `atomic<shared_ptr>`                              | ![][c20no] |            |
+  | `atomic<unique_ptr>`                              | ![][c20no] |            |
+  | `assume_aligned`                                  | ![][c20no] |            |
+  | `construct_at`                                    | ![][c20ok] |            |
   | `make_shared_for_overwrite`                       | ![][c20no] |            |
   | `make_unique_for_overwrite`                       | ![][c20no] |            |
+  | `allocate_shared_for_overwrite`                   | ![][c20no] |            |
   | `to_address`                                      | ![][c20ok] |            |
-  | `uninitialized_construct_using_allocator`         | ![][c20no] |            |
   | `uses_allocator_construction_args`                | ![][c20no] |            |
+  | `make_obj_using_allocator`                        | ![][c20no] |            |
+  | `uninitialized_construct_using_allocator`         | ![][c20no] |            |
   | `operator<<(std::unique_ptr)`                     | ![][c20no] |            |
-  | `pointer_traits`                                  | ![][c11]   | ![][c20ok] |
   | `ranges::construct_at`                            | ![][c20no] |            |
   | `ranges::destroy`                                 | ![][c20no] |            |
   | `ranges::destroy_n`                               | ![][c20no] |            |
@@ -722,6 +788,7 @@ Description
   | `ranges::uninitialized_default_construct_n`       | ![][c20no] |            |
   | `ranges::uninitialized_value_construct`           | ![][c20no] |            |
   | `ranges::uninitialized_value_construct_n`         | ![][c20no] |            |
+  | `allocation_result`                               | ![][c23no] |            |
   | `inout_ptr`<br/>`inout_ptr_t`                     | ![][c23no] |            |
   | `out_ptr`<br/>`out_ptr_t`                         | ![][c23no] |            |
   | `start_lifetime_as`<br/>`start_lifetime_as_array` | ![][c23no] |            |
@@ -739,11 +806,13 @@ Description
 
 #### `<new>`
 
-  |                                           | Introduced | Revision |
-  |-------------------------------------------|------------|----------|
-  | `hardware_destructive_interference_size`  | ![][c17no] |          |
-  | `hardware_constructive_interference_size` | ![][c17no] |          |
-  | `launder`                                 | ![][c17no] |          |
+  |                                              | Introduced | Revision |
+  |----------------------------------------------|------------|----------|
+  | `align_val_t`                                | ![][c17no] |          |
+  | `hardware_destructive_interference_size`     | ![][c17no] |          |
+  | `hardware_constructive_interference_size`    | ![][c17no] |          |
+  | `launder`                                    | ![][c17no] |          |
+  | `destroying_delete`<br>`destroying_delete_t` | ![][c20no] |          |
 
 #### `<numbers>`
 
@@ -783,17 +852,29 @@ Description
   | `div_sat`                  | ![][c26no] |            |
   | `saturate_cast`            | ![][c26no] |            |
 
+#### `<print>`
+
+  |                              | Introduced | Revision |
+  |------------------------------|------------|----------|
+  | `print`                      | ![][c23no] |          |
+  | `println`                    | ![][c23no] |          |
+  | `vprint_unicode`             | ![][c23no] |          |
+  | `vprint_unicode_buffered`    | ![][c23no] |          |
+  | `vprint_nonunicode`          | ![][c23no] |          |
+  | `vprint_nonunicode_buffered` | ![][c23no] |          |
+
+
 #### `<optional>`
 
-  |                       | Introduced | Revision   |
-  |-----------------------|------------|------------|
-  | `optional`            | ![][c17ok] | ![][c23ok] |
-  | `bad_optional_access` | ![][c17ok] |            |
-  | `std::hash<optional>` | ![][c17ok] |            |
-  | `nullopt`             | ![][c17ok] |            |
-  | `nullopt_t`           | ![][c17ok] |            |
-  | `swap(optional)`      | ![][c17ok] |            |
-  | `make_optional`       | ![][c17ok] |            |
+  |                       | Introduced | Revision              |
+  |-----------------------|------------|-----------------------|
+  | `optional`            | ![][c17ok] | ![][c23ok] ![][c26no] |
+  | `bad_optional_access` | ![][c17ok] |                       |
+  | `std::hash<optional>` | ![][c17ok] |                       |
+  | `nullopt`             | ![][c17ok] |                       |
+  | `nullopt_t`           | ![][c17ok] |                       |
+  | `swap(optional)`      | ![][c17ok] |                       |
+  | `make_optional`       | ![][c17ok] |                       |
 
 #### `<random>`
 
@@ -894,12 +975,29 @@ Description
       * Equipped with C++23 conversions(e.g., `pair-like` -> `std::pair`)
 
 
+#### `<rcu>`
+
+  |                      | Introduced | Revision |
+  |----------------------|------------|----------|
+  | `rcu_obj_base`       | ![][c26no] |          |
+  | `rcu_domain`         | ![][c26no] |          |
+  | `rcu_default_domain` | ![][c26no] |          |
+  | `rcu_synchronize`    | ![][c26no] |          |
+  | `rcu_barrier`        | ![][c26no] |          |
+  | `rcu_retire`         | ![][c26no] |          |
+
 #### `<semaphore>`
 
   |                      | Introduced | Revision |
   |----------------------|------------|----------|
   | `counting_semaphore` | ![][c20no] |          |
   | `binary_semaphore`   | ![][c20no] |          |
+
+#### `<shared_mutex>`
+
+  |                    | Introduced | Revision |
+  |--------------------|------------|----------|
+  | `shared_mutex`     | ![][c17no] |          |
 
 #### `<stop_token>`
 
@@ -920,15 +1018,19 @@ Description
 
 #### `<string_view>`
 
-  |                                | Introduced | Revision   |
-  |--------------------------------|------------|------------|
-  | `basic_string_view`            | ![][c17ok] | ![][c20ok] |
-  | `std::hash<basic_string_view>` | ![][c17ok] |            |
-  | `swap(optional)`               | ![][c17ok] |            |
-  | `operator""_sv`                | ![][c17ok] |            |
+  |                                | Introduced | Revision              |
+  |--------------------------------|------------|-----------------------|
+  | `basic_string_view`            | ![][c17ok] | ![][c20ok] ![][c23ok] |
+  | `std::hash<basic_string_view>` | ![][c17ok] |                       |
+  | `swap(optional)`               | ![][c17ok] |                       |
+  | `operator""_sv`                | ![][c17ok] |                       |
 
 #### `<source_location>`
   N/A
+
+  |                   | Introduced | Revision |
+  |-------------------|------------|----------|
+  | `source_location` | ![][c20no] |          |
 
 #### `<syncstream>`
 
@@ -940,12 +1042,12 @@ Description
 
 #### `<span>`
 
-  |                     | Introduced | Revision   |
-  |---------------------|------------|------------|
-  | `span`              | ![][c20ok] | ![][c26ok] |
-  | `dynamic_extent`    | ![][c20ok] |            |
-  | `as_bytes`          | ![][c20ok] |            |
-  | `as_writable_bytes` | ![][c20ok] |            |
+  |                     | Introduced | Revision              |
+  |---------------------|------------|-----------------------|
+  | `span`              | ![][c20ok] | ![][c23ok] ![][c26ok] |
+  | `dynamic_extent`    | ![][c20ok] |                       |
+  | `as_bytes`          | ![][c20ok] |                       |
+  | `as_writable_bytes` | ![][c20ok] |                       |
 
 #### `<spanstream>`
 
@@ -955,6 +1057,21 @@ Description
   | `basic_ispanstream` | ![][c23no] |          |
   | `basic_ospanstream` | ![][c23no] |          |
   | `basic_spanstream`  | ![][c23no] |          |
+
+#### `<stacktrace>`
+
+  |                           | Introduced | Revision |
+  |---------------------------|------------|----------|
+  | `stacktrace_entry`        | ![][c23no] |          |
+  | `basic_stacktrace`        | ![][c23no] |          |
+  | `hash<stracktrace_entry>` | ![][c23no] |          |
+  | `hash<basic_stacktrace>`  | ![][c23no] |          |
+
+#### `<text_encoding>`
+
+  |                 | Introduced | Revision |
+  |-----------------|------------|----------|
+  | `text_encoding` | ![][c26no] |          |
 
 #### `<thread>`
 
@@ -974,30 +1091,31 @@ Description
   |                                                 | Introduced     | Revision              |
   |-------------------------------------------------|----------------|-----------------------|
   | `common_type`                                   | ![][c14]       | ![][c20ok] ![][c23ok] |
-  | `conjunction`                                   | ![][c17ok]     |                       |
   | `bool_constant`                                 | ![][c17ok]     |                       |
-  | `disjunction`                                   | ![][c17ok]     |                       |
   | `has_unique_object_representations`             | ![][c17no] N/A |                       |
   | `is_aggregate`                                  | ![][c17no] N/A |                       |
-  | `is_swappable`                                  | ![][c17ok]     |                       |
+  | `is_swappable_with`<br/>`is_swappable`...       | ![][c17ok]     |                       |
   | `is_invocable`                                  | ![][c17ok]     |                       |
   | `invoke_result`                                 | ![][c17ok]     |                       |
-  | `negation`                                      | ![][c17ok]     |                       |
   | `void_t`                                        | ![][c17ok]     |                       |
+  | `conjunction`                                   | ![][c17ok]     |                       |
+  | `disjunction`                                   | ![][c17ok]     |                       |
+  | `negation`                                      | ![][c17ok]     |                       |
   | `common_reference`<br/>`basic_common_reference` | ![][c20ok]     |                       |
   | `is_bounded_array`                              | ![][c20ok]     |                       |
+  | `is_unbounded_array`                            | ![][c20ok]     |                       |
+  | `is_scoped_enum`                                | ![][c20no] N/A |                       |
   | `is_constant_evaluated`                         | ![][c20no] N/A |                       |
   | `is_corresponding_member`                       | ![][c20no] N/A |                       |
   | `is_layout_compatible`                          | ![][c20no] N/A |                       |
   | `is_nothrow_convertible`                        | ![][c20ok]     |                       |
   | `is_pointer_interconvertible_base_of`           | ![][c20no] N/A |                       |
   | `is_pointer_interconvertible_with_class`        | ![][c20no] N/A |                       |
-  | `is_scoped_enum`                                | ![][c20no] N/A |                       |
-  | `is_unbounded_array`                            | ![][c20ok]     |                       |
   | `remove_cvref`                                  | ![][c20ok]     |                       |
   | `type_identity`                                 | ![][c20ok]     |                       |
   | `is_implicit_lifetime`                          | ![][c23no] N/A |                       |
   | `is_within_lifetime`                            | ![][c26no] N/A |                       |
+  | `is_virtual_base_of`                            | ![][c26no]     |                       |
 
 #### `<utility>`
 
@@ -1005,12 +1123,12 @@ Description
   |-----------------------------|----------------|----------|
   | `as_const`                  | ![][c17ok]     |          |
   | `in_place`<br/>`in_place_t` | ![][c17ok]     |          |
-  | `cmp_equal`                 | ![][c20ok]     |          |
+  | `cmp_equal`...              | ![][c20ok]     |          |
   | `in_range`                  | ![][c20ok]     |          |
   | `forward_like`              | ![][c23no]     |          |
   | `to_underlying`             | ![][c23ok]     |          |
-  | `nontype`<br/>`nontype_t`   | ![][c23ok]     |          |
   | `unreachable`               | ![][c23no] N/A |          |
+  | `nontype`<br/>`nontype_t`   | ![][c26ok]     |          |
 
 #### `<variant>`
 
