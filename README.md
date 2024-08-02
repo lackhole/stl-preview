@@ -86,6 +86,17 @@ int main() {
 | Android NDK | r18 (clang 7.0)                       | r26 (clang 17.0.2)                    |
 | Emscripten  | 3.1.20 (clang 16.0.0)                 | latest(3.1.61) (clang 19.0.0)         |
 
+## Build & Install
+### CMake
+Copy this repository under your project and use `add_subdirectory`
+
+### Non-CMake
+Although it is not recommended, you can just copy & paste files under `include/` into your project.  
+* Note: Without CMake configuration, heuristic compiler/STL checks will be performed. 
+
+### Installation
+With the reason stated in [Non-CMake](#non-cmake), installation is possible but not recommended.
+
 ## Implementation Status
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                 |

@@ -1,0 +1,18 @@
+//
+// Created by yonggyulee on 2024. 7. 19.
+//
+
+
+#ifdef PREVIEW_CMAKE_CONFIG
+
+#cmakedefine01 PREVIEW_HAVE_STRING_VIEW
+#cmakedefine01 PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG
+
+#else
+
+#include "preview/core.h"
+
+#define PREVIEW_HAVE_STRING_VIEW             (PREVIEW_CXX_VERSION >= 17)
+#define PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG (PREVIEW_CXX_VERSION >= 20)
+
+#endif

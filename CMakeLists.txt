@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.11)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 set(PREVIEW_BASE_DIR "${CMAKE_CURRENT_LIST_DIR}")
+set(PREVIEW_INCLUDE_DIR "${PREVIEW_BASE_DIR}/include")
 set(PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR "generated/include")
 set(PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}")
 
@@ -10,7 +11,8 @@ project(preview CXX)
 option(PREVIEW_TEST "Build test" OFF)
 
 add_library(preview INTERFACE)
-target_include_directories(preview INTERFACE "${CMAKE_CURRENT_LIST_DIR}/include")
+target_include_directories(preview INTERFACE "${PREVIEW_INCLUDE_DIR}")
+target_compile_definitions(preview INTERFACE PREVIEW_CMAKE_CONFIG)
 
 message("CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
 message("CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
@@ -46,6 +48,6 @@ else ()
         endif ()
     endif ()
 
-    RunConfiguration("${PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR}/preview/config.h" "${flags}")
+    RunConfiguration("${PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR}/preview/cmake_config.h" "${flags}")
     target_include_directories(preview INTERFACE "${PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR}")
 endif ()

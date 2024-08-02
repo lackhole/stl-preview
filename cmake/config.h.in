@@ -1,6 +1,0 @@
-//
-// Created by yonggyulee on 2024. 7. 19.
-//
-
-#cmakedefine01 PREVIEW_HAVE_STRING_VIEW
-#cmakedefine01 PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG
