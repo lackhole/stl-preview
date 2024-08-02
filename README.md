@@ -89,6 +89,10 @@ int main() {
 ## Build & Install
 ### CMake
 Copy this repository under your project and use `add_subdirectory`
+```cmake
+add_subdirectory(path/to/preview)
+target_link_libraries(your-project INTERFACE preview)
+```
 
 ### Non-CMake
 Although it is not recommended, you can just copy & paste files under `include/` into your project.  
