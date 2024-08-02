@@ -24,6 +24,7 @@
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
+#include "preview/__memory/addressof.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/forward_range.h"
@@ -31,7 +32,6 @@
 #include "preview/__ranges/iterator_t.h"
 #include "preview/__ranges/non_propagating_cache.h"
 #include "preview/__ranges/range_difference_t.h"
-//#include "preview/__ranges/range_reference_t.h"
 #include "preview/__ranges/range_value_t.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/sized_range.h"
@@ -136,13 +136,13 @@ class lazy_split_view
         negation<forward_range<Base>>
     >::value, int> = 0>
     PREVIEW_CONSTEXPR_AFTER_CXX17 explicit outer_iterator(Parent& parent)
-        : parent_(std::addressof(parent)) {}
+        : parent_(preview::addressof(parent)) {}
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
         forward_range<Base>
     >::value, int> = 0>
     PREVIEW_CONSTEXPR_AFTER_CXX17 explicit outer_iterator(Parent& parent, iterator_t<Base> current)
-        : parent_(std::addressof(parent))
+        : parent_(preview::addressof(parent))
         , current_(std::move(current)) {}
 
     template<bool AntiConst, std::enable_if_t<conjunction<
