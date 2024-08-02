@@ -107,7 +107,7 @@ class basic_istream_view : public view_interface<basic_istream_view<Val, CharT, 
 
 
   PREVIEW_CONSTEXPR_AFTER_CXX17 explicit basic_istream_view(std::basic_istream<CharT, Traits>& stream)
-      : stream_(std::addressof(stream)), value_() {}
+      : stream_(preview::addressof(stream)), value_() {}
 
   constexpr auto begin() {
     read();

@@ -21,6 +21,7 @@
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/sized_sentinel_for.h"
+#include "preview/__memory/addressof.h"
 #include "preview/__ranges/bidirectional_range.h"
 #include "preview/__ranges/forward_range.h"
 #include "preview/__ranges/input_range.h"
@@ -286,7 +287,7 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
 
    private:
     PREVIEW_CONSTEXPR_AFTER_CXX17 iterator(Parent& parent, ziperator<Const> inner)
-        : parent_(std::addressof(parent)), inner_(std::move(inner)) {}
+        : parent_(preview::addressof(parent)), inner_(std::move(inner)) {}
 
     Parent* parent_{};
     ziperator<Const> inner_{};

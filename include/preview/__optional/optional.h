@@ -14,6 +14,7 @@
 # include "preview/__concepts/invocable.h"
 # include "preview/__concepts/move_constructible.h"
 # include "preview/__functional/invoke.h"
+# include "preview/__memory/addressof.h"
 # include "preview/__memory/construct_at.h"
 # include "preview/__memory/destroy_at.h"
 # include "preview/__optional/bad_optional_access.h"
@@ -84,13 +85,13 @@ struct optional_base {
 
   void reset() {
     if (storage_.has_value) {
-      preview::destroy_at(std::addressof(storage_.value));
+      preview::destroy_at(preview::addressof(storage_.value));
       storage_.has_value = false;
     }
   }
 
-  PREVIEW_CONSTEXPR_AFTER_CXX17 const value_type* operator->() const noexcept { return std::addressof(storage_.value); }
-  PREVIEW_CONSTEXPR_AFTER_CXX17       value_type* operator->()       noexcept { return std::addressof(storage_.value); }
+  PREVIEW_CONSTEXPR_AFTER_CXX17 const value_type* operator->() const noexcept { return preview::addressof(storage_.value); }
+  PREVIEW_CONSTEXPR_AFTER_CXX17       value_type* operator->()       noexcept { return preview::addressof(storage_.value); }
 
   constexpr const value_type&  operator*() const&  noexcept { return storage_.value;             }
   constexpr       value_type&  operator*()      &  noexcept { return storage_.value;             }
@@ -168,13 +169,13 @@ struct optional_base {
 
   template<typename ...Args>
   void construct_with(Args&&... args) {
-    preview::construct_at(std::addressof(storage_.value), std::forward<Args>(args)...);
+    preview::construct_at(preview::addressof(storage_.value), std::forward<Args>(args)...);
     storage_.has_value = true;
   }
 
   void destruct() {
     if (has_value())
-      preview::destroy_at(std::addressof(storage_.value));
+      preview::destroy_at(preview::addressof(storage_.value));
   }
 
  private:

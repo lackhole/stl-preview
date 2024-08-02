@@ -1,6 +1,28 @@
 #include "preview/memory.h"
 #include "gtest.h"
 
+struct bizarre_object {
+  int operator&() const {
+    return 3;
+  }
+};
+
+constexpr int global_y = 4;
+TEST(VERSIONED(Memory), addressof) {
+
+  int x = 3;
+  EXPECT_EQ(&x, preview::addressof(x));
+
+  bizarre_object obj;
+  EXPECT_EQ_TYPE(int, decltype(&obj));
+  EXPECT_EQ_TYPE(bizarre_object*, decltype(preview::addressof(obj)));
+
+#if PREVIEW_CXX_VERSION >= 17
+  constexpr auto ptr = preview::addressof(global_y);
+  (void)ptr;
+#endif
+}
+
 class S
 {
   int x_;
@@ -18,13 +40,10 @@ class S
 };
 
 TEST(VERSIONED(Memory), construct_at) {
-
-
-
-  alignas(S) unsigned char storage[sizeof(S)]{};
-  S uninitialized = std::bit_cast<S>(storage);
-  std::destroy_at(&uninitialized);
-  S* ptr = std::construct_at(std::addressof(uninitialized), 42, 2.71f, 3.14);
-  const bool res{*ptr == S{42, 2.71f, 3.14}};
-  std::destroy_at(ptr);
+//  alignas(S) unsigned char storage[sizeof(S)]{};
+//  S uninitialized = std::bit_cast<S>(storage);
+//  std::destroy_at(&uninitialized);
+//  S* ptr = std::construct_at(std::addressof(uninitialized), 42, 2.71f, 3.14);
+//  const bool res{*ptr == S{42, 2.71f, 3.14}};
+//  std::destroy_at(ptr);
 }

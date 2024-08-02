@@ -8,36 +8,71 @@
 #include <memory>
 #include <type_traits>
 
-namespace preview {
+#include "preview/core.h"
+#include "preview/config.h"
+#include "preview/__type_traits/void_t.h"
 
-# if __cplusplus < 201703L
-#  ifdef PREVIEW_CONSTEXPR_BUILTIN_ADDRESSOF_CXX14
+namespace preview {
+namespace detail {
+
+PREVIEW_INLINE_VARIABLE constexpr int builtin_addressof_tester{};
+
+template<typename = void>
+struct have_builtin_addressof : std::false_type {};
+
+template<>
+struct have_builtin_addressof<
+    void_t<
+        decltype(std::integral_constant<
+            bool,
+            (&builtin_addressof_tester == __builtin_addressof(builtin_addressof_tester))
+        >{})
+    >
+> : std::true_type {};
+
+template<typename T>
+constexpr T* addressof_object(T& t, std::true_type) noexcept {
+  return __builtin_addressof(t);
+}
+
+template<typename T>
+T* addressof_object(T& t, std::false_type) noexcept {
+  return reinterpret_cast<T*>(
+      &const_cast<char&>(
+          reinterpret_cast<const volatile char&>(t)
+      )
+  );
+}
+
+template<typename T>
+constexpr T* addressof_impl(T& t, std::true_type /* is_object */) noexcept {
+  return preview::detail::addressof_object(t, have_builtin_addressof<>{});
+}
+
+template<typename T>
+constexpr T* addressof_impl(T& t, std::false_type /* is_object */) noexcept {
+  return &t;
+}
+
+} // namespace detail
+
+# if PREVIEW_CXX_VERSION >= 17
+template<typename T>
+constexpr T* addressof(T& t) noexcept {
+  return std::addressof(t);
+}
+# else
+#  if PREVIEW_HAVE_CONSTEXPR_BUILTIN_ADDRESSOF
 template<typename T>
 constexpr T* addressof(T& t) noexcept {
   return __builtin_addressof(t);
 }
 #  else
 template<typename T>
-std::enable_if_t<std::is_object<T>::value, T*>
-addressof(T& t) noexcept {
-  return
-    reinterpret_cast<T*>(
-      &const_cast<char&>(
-        reinterpret_cast<const volatile char&>(t)
-      )
-    );
-}
-template<typename T>
-constexpr std::enable_if_t<std::is_object<T>::value == false, T*>
-addressof(T& t) noexcept {
-  return &t;
+constexpr T* addressof(T& t) noexcept {
+  return preview::detail::addressof_impl(t, std::is_object<T>{});
 }
 #  endif
-# else
-template<typename T>
-constexpr T* addressof(T& t) noexcept {
-  return std::addressof(t);
-}
 # endif
 
 template<typename T>
