@@ -1,6 +1,9 @@
 # Check maximum C++ version that compiler supports
 include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
+include(ExternalProject)
+
+message("Configuring tests...")
 
 if (MSVC)
     set(_PREVIEW_CXX_STD_FLAG /std:c++)
@@ -30,6 +33,7 @@ macro(preview_check_compiler_support_std version out)
 #endif
 int main() { return 0; }")
         check_cxx_source_compiles("${_source}" ${out})
+        set(CMAKE_REQUIRED_FLAGS)
     endif ()
 endmacro()
 
@@ -96,50 +100,97 @@ else()
     include(GoogleTest)
 endif()
 
+set(PREVIEW_DEFAULT_TEST_CMAKE_ARGS)
+get_cmake_property(CACHE_VARS CACHE_VARIABLES)
+foreach(CACHE_VAR ${CACHE_VARS})
+    get_property(CACHE_VAR_HELPSTRING CACHE ${CACHE_VAR} PROPERTY HELPSTRING)
+    if(CACHE_VAR_HELPSTRING STREQUAL "No help, variable specified on the command line.")
+        get_property(CACHE_VAR_TYPE CACHE ${CACHE_VAR} PROPERTY TYPE)
+        if(CACHE_VAR_TYPE STREQUAL "UNINITIALIZED")
+            set(CACHE_VAR_TYPE)
+        else()
+            set(CACHE_VAR_TYPE :${CACHE_VAR_TYPE})
+        endif()
+        list(APPEND PREVIEW_DEFAULT_TEST_CMAKE_ARGS "-D${CACHE_VAR}${CACHE_VAR_TYPE}=${${CACHE_VAR}}")
+    endif()
+endforeach()
+message("PREVIEW_DEFAULT_TEST_CMAKE_ARGS: ${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
 
 # Create test targets per supported C++ version
 function(preview_add_multi_version_test name_prefix test_src)
     add_custom_target(${name_prefix}_all)
     foreach(std ${std_list})
-        add_executable(${name_prefix}_${std} "${test_src}")
+        set(target_name ${name_prefix}_${std})
+
+        add_executable(${target_name} "${test_src}")
         set_property(TARGET ${name_prefix}_${std} PROPERTY CXX_STANDARD ${std})
-        target_link_libraries(
-            ${name_prefix}_${std}
+        target_link_libraries(${target_name}
             GTest::gtest_main
             preview
         )
-        add_dependencies(${name_prefix}_all ${name_prefix}_${std})
+        add_dependencies(${name_prefix}_all ${target_name})
 
         if (ANDROID)
-            #        add_custom_command(TARGET ${name_prefix}_${std} POST_BUILD
+            #        add_custom_command(TARGET ${target_name} POST_BUILD
             #            COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
-            #            COMMAND ${ADB} push $<TARGET_FILE:${name_prefix}_${std}> /data/local/tmp/${ANDROID_ABI}/
-            #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${name_prefix}_${std}\")
+            #            COMMAND ${ADB} push $<TARGET_FILE:${target_name}> /data/local/tmp/${ANDROID_ABI}/
+            #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${target_name}\")
         else()
             if (EMSCRIPTEN)
-                target_link_libraries(${name_prefix}_${std} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
+                target_link_libraries(${target_name} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
             endif()
-            gtest_discover_tests(${name_prefix}_${std} DISCOVERY_TIMEOUT 60)
+            gtest_discover_tests(${target_name} DISCOVERY_TIMEOUT 60)
         endif()
 
         if (EMSCRIPTEN)
-            target_compile_options(${name_prefix}_${std}
+            target_compile_options(${target_name}
                 PUBLIC "-fexceptions"
             )
         elseif (MSVC)
-            target_compile_options(${name_prefix}_${std}
+            target_compile_options(${target_name}
                 PRIVATE "/bigobj"
-                PRIVATE "/WX")
-            target_compile_definitions(${name_prefix}_${std}
+                PRIVATE "/WX"
+            )
+            target_compile_definitions(${target_name}
                 PRIVATE _CRT_SECURE_NO_WARNINGS)
         elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-            target_compile_options(${name_prefix}_${std}
+            target_compile_options(${target_name}
                 PRIVATE "-Wall"
                 PRIVATE "-Werror"
                 PRIVATE "-Wno-unused-local-typedef"
                 PRIVATE "-Wno-unused-variable"
             )
         endif ()
+
+        get_target_property(flag_list ${target_name} COMPILE_OPTIONS)
+        string (REPLACE ";" " " flags "${flag_list}")
+        get_target_property(THIS_BINARY_DIR ${target_name} BINARY_DIR)
+
+        set(cmake_args)
+        if (flags)
+            list(APPEND cmake_args "-DCMAKE_CXX_FLAGS=${flags}")
+        endif ()
+        list(APPEND cmake_args "${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
+        list(APPEND cmake_args "-DCMAKE_CXX_STANDARD=${std}")
+        list(APPEND cmake_args "-DPREVIEW_TEST=0")
+
+        # configure-only (to generate test-specific config.h)
+        ExternalProject_Add(preview-configure-${target_name}
+            SOURCE_DIR "${PREVIEW_BASE_DIR}"
+
+            CMAKE_ARGS "${cmake_args}"
+            DOWNLOAD_COMMAND ""
+            BUILD_COMMAND ""
+            INSTALL_COMMAND ""
+            BUILD_BYPRODUCTS
+                "<BINARY_DIR>/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}"
+                "<BINARY_DIR>/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}/preview/cmake_config.h"
+        )
+        add_dependencies(${target_name} preview-configure-${target_name})
+
+        ExternalProject_Get_Property(preview-configure-${target_name} BINARY_DIR)
+        target_include_directories(${target_name}
+            PRIVATE "${BINARY_DIR}/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}")
     endforeach ()
 endfunction()
 
