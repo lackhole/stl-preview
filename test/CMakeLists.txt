@@ -114,6 +114,15 @@ foreach(CACHE_VAR ${CACHE_VARS})
         list(APPEND PREVIEW_DEFAULT_TEST_CMAKE_ARGS "-D${CACHE_VAR}${CACHE_VAR_TYPE}=${${CACHE_VAR}}")
     endif()
 endforeach()
+
+# CMake somehow doesn't store CMAKE_TOOLCHAIN_FILE in cache for the first run
+if (NOT ("${CMAKE_TOOLCHAIN_FILE}" STREQUAL ""))
+    string(FIND "${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}" "CMAKE_TOOLCHAIN_FILE" index)
+    if (index EQUAL -1)
+        list(APPEND PREVIEW_DEFAULT_TEST_CMAKE_ARGS "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}")
+    endif ()
+endif ()
+
 message("PREVIEW_DEFAULT_TEST_CMAKE_ARGS: ${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
 
 # Create test targets per supported C++ version
