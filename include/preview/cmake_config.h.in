@@ -2,8 +2,17 @@
 // Created by yonggyulee on 2024. 7. 19.
 //
 
+# if PREVIEW_CXX_VERSION >= 20 && \
+         (!defined(__clang_major__) || (defined(__clang_major__) && __clang_major__ > 11)) && \
+         (!defined(PREVIEW_NDK_VERSION_MAJOR) || PREVIEW_NDK_VERSION_MAJOR >= 26)
+#   define PREVIEW_CONFORM_CXX20_STANDARD 1
+# else
+#   define PREVIEW_CONFORM_CXX20_STANDARD 0
+# endif
 
 #ifdef PREVIEW_CMAKE_CONFIG
+
+#cmakedefine01 PREVIEW_HAVE_BUILTIN_BIT_CAST
 
 #cmakedefine01 PREVIEW_HAVE_STRING_VIEW
 #cmakedefine01 PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG
@@ -12,12 +21,9 @@
 
 #include "preview/core.h"
 
-#define PREVIEW_HAVE_STRING_VIEW             (PREVIEW_CXX_VERSION >= 17)
+#define PREVIEW_HAVE_BUILTIN_BIT_CAST       PREVIEW_CONFORM_CXX20_STANDARD
 
-# if PREVIEW_CXX_VERSION >= 20 && (PREVIEW_ANDROID == 0 || (defined(PREVIEW_NDK_VERSION_MAJOR) && PREVIEW_NDK_VERSION_MAJOR >= 26))
-#   define PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG 1
-# else
-#   define PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG 0
-# endif
+#define PREVIEW_HAVE_STRING_VIEW             (PREVIEW_CXX_VERSION >= 17)
+#define PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG PREVIEW_CONFORM_CXX20_STANDARD
 
 #endif
