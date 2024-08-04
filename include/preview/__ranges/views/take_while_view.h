@@ -14,6 +14,7 @@
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
+#include "preview/__memory/addressof.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/input_range.h"
 #include "preview/__ranges/iterator_t.h"
@@ -157,7 +158,7 @@ class take_while_view : public view_interface<take_while_view<V, Pred>> {
       negation<simple_view<V>>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 auto end() {
-    return sentinel<false>{ranges::end(base_), std::addressof(*pred_)};
+    return sentinel<false>{ranges::end(base_), preview::addressof(*pred_)};
   }
 
   template<typename Dummy = void, std::enable_if_t<preview::conjunction<std::is_void<Dummy>,
@@ -165,7 +166,7 @@ class take_while_view : public view_interface<take_while_view<V, Pred>> {
       indirect_unary_predicate<const Pred, iterator_t<const V>>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 auto end() const {
-    return sentinel<true>{ranges::end(base_), std::addressof(*pred_)};
+    return sentinel<true>{ranges::end(base_), preview::addressof(*pred_)};
   }
 
  private:
