@@ -62,7 +62,7 @@ constexpr T* addressof(T& t) noexcept {
   return std::addressof(t);
 }
 # else
-#  if PREVIEW_HAVE_CONSTEXPR_BUILTIN_ADDRESSOF
+#  if PREVIEW_HAVE_BUILTIN_CONSTEXPR_ADDRESSOF
 template<typename T>
 constexpr T* addressof(T& t) noexcept {
   return __builtin_addressof(t);
