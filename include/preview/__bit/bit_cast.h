@@ -24,9 +24,13 @@ namespace preview {
 namespace detail {
 
 template<typename To>
-union bit_cast_helper {
-  char object_bytes[sizeof(To)];
-  To object;
+struct bit_cast_helper {
+  bit_cast_helper() {}
+
+  union {
+    char object_bytes[sizeof(To)];
+    To object;
+  };
 };
 
 template<typename To, typename From, std::enable_if_t<std::is_trivially_constructible<To>::value == false, int> = 0>
