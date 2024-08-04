@@ -5,14 +5,13 @@
 #ifndef PREVIEW_BIT_BIT_CAST_H_
 #define PREVIEW_BIT_BIT_CAST_H_
 
+#include <cstring>
 #include <type_traits>
 
 #include "preview/config.h"
 
 #if PREVIEW_CONFORM_CXX20_STANDARD
 #include <bit>
-#else
-#include <cstring>
 #endif
 
 #include "preview/__memory/addressof.h"
