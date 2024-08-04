@@ -264,7 +264,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: ubuntu-latest
+        os: [ubuntu-latest]
         build_type: [Debug, Release]
 #        compiler: [clang]
 #        include:
