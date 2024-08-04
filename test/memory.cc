@@ -71,7 +71,6 @@ TEST(VERSIONED(Memory), construct_at) {
     EXPECT_TRUE(ptr->size() > 10);
 
     preview::destroy_at(reinterpret_cast<std::string*>(storage));
-    EXPECT_TRUE(ptr->empty());
   }
 }
 
@@ -86,7 +85,7 @@ TEST(VERSIONED(Memory), destroy) {
   bool destroyed[8]{};
 
   for (int i = 0; i < 8; ++i)
-    new(buffer + sizeof(Tracer) * i) Tracer{i, [&](int x) { destroyed[i] = true; }}; //manually construct objects
+    new(buffer + sizeof(Tracer) * i) Tracer{i, [&destroyed](int x) { destroyed[x] = true; }}; //manually construct objects
 
   auto ptr = reinterpret_cast<Tracer*>(buffer);
 
@@ -100,7 +99,7 @@ TEST(VERSIONED(Memory), destroy_at) {
   bool destroyed[8]{};
 
   for (int i = 0; i < 8; ++i)
-    new(buffer + sizeof(Tracer) * i) Tracer{i, [&](int x) { destroyed[i] = true; }}; //manually construct objects
+    new(buffer + sizeof(Tracer) * i) Tracer{i, [&destroyed](int x) { destroyed[x] = true; }}; //manually construct objects
 
   auto ptr = reinterpret_cast<Tracer*>(buffer);
 
@@ -117,7 +116,7 @@ TEST(VERSIONED(Memory), destroy_n) {
   bool destroyed[8]{};
 
   for (int i = 0; i < 8; ++i)
-    new(buffer + sizeof(Tracer) * i) Tracer{i, [&](int x) { destroyed[i] = true; }}; //manually construct objects
+    new(buffer + sizeof(Tracer) * i) Tracer{i, [&destroyed](int x) { destroyed[x] = true; }}; //manually construct objects
 
   auto ptr = reinterpret_cast<Tracer*>(buffer);
 
