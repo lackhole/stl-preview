@@ -12,6 +12,9 @@
 #include "preview/bit.h"
 #include "preview/ranges.h"
 
+namespace ranges = preview::ranges;
+namespace views = preview::views;
+
 struct bizarre_object {
   int operator&() const {
     return 3;
@@ -107,6 +110,22 @@ TEST(VERSIONED(Memory), destroy_at) {
     preview::destroy_at(ptr + i);
     EXPECT_TRUE(destroyed[i]);
   }
+}
+
+TEST(VERSIONED(Memory), destroy_n) {
+  alignas(Tracer) unsigned char buffer[sizeof(Tracer) * 8];
+  bool destroyed[8]{};
+
+  for (int i = 0; i < 8; ++i)
+    new(buffer + sizeof(Tracer) * i) Tracer{i, [&](int x) { destroyed[i] = true; }}; //manually construct objects
+
+  auto ptr = reinterpret_cast<Tracer*>(buffer);
+
+  EXPECT_TRUE(ranges::equal(destroyed, views::repeat(false, 8)));
+  preview::destroy_n(ptr, 4);
+  EXPECT_TRUE(ranges::equal(destroyed, views::concat(views::repeat(true, 4), views::repeat(false, 4))));
+  preview::destroy_n(ptr + 4, 4);
+  EXPECT_TRUE(ranges::equal(destroyed, views::repeat(true, 8)));
 }
 
 template<class Ptr>
