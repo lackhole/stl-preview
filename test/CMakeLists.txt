@@ -138,7 +138,11 @@ function(preview_add_multi_version_test name_prefix test_src)
             preview
         )
         add_dependencies(${name_prefix}_all ${target_name})
-
+        
+        if (NOT ANDROID)
+            gtest_discover_tests(${target_name} DISCOVERY_TIMEOUT 60)
+        endif ()
+        
         if (ANDROID)
             #        add_custom_command(TARGET ${target_name} POST_BUILD
             #            COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
