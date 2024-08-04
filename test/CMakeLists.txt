@@ -132,7 +132,7 @@ function(preview_add_multi_version_test name_prefix test_src)
         set(target_name ${name_prefix}_${std})
 
         add_executable(${target_name} "${test_src}")
-        set_property(TARGET ${name_prefix}_${std} PROPERTY CXX_STANDARD ${std})
+        set_property(TARGET ${target_name} PROPERTY CXX_STANDARD ${std})
         target_link_libraries(${target_name}
             GTest::gtest_main
             preview
@@ -144,17 +144,12 @@ function(preview_add_multi_version_test name_prefix test_src)
             #            COMMAND ${ADB} shell mkdir -p /data/local/tmp/${ANDROID_ABI}
             #            COMMAND ${ADB} push $<TARGET_FILE:${target_name}> /data/local/tmp/${ANDROID_ABI}/
             #            COMMAND ${ADB} shell \"export LD_LIBRARY_PATH=/data/local/tmp/${ANDROID_ABI}\; /data/local/tmp/${ANDROID_ABI}/${target_name}\")
-        else()
-            if (EMSCRIPTEN)
-                target_link_libraries(${target_name} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
-            endif()
-            gtest_discover_tests(${target_name} DISCOVERY_TIMEOUT 60)
-        endif()
-
-        if (EMSCRIPTEN)
+        elseif (EMSCRIPTEN)
+            target_link_libraries(${target_name} "-sEXIT_RUNTIME=1 -sALLOW_MEMORY_GROWTH=1 -Wno-pthreads-mem-growth -fexceptions")
             target_compile_options(${target_name}
                 PUBLIC "-fexceptions"
             )
+            gtest_discover_tests(${target_name} DISCOVERY_TIMEOUT 60)
         elseif (MSVC)
             target_compile_options(${target_name}
                 PRIVATE "/bigobj"
@@ -179,7 +174,9 @@ function(preview_add_multi_version_test name_prefix test_src)
         if (flags)
             list(APPEND cmake_args "-DCMAKE_CXX_FLAGS=${flags}")
         endif ()
-        list(APPEND cmake_args "${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
+        if (NOT ("${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}" STREQUAL ""))
+            list(APPEND cmake_args "${PREVIEW_DEFAULT_TEST_CMAKE_ARGS}")
+        endif ()
         list(APPEND cmake_args "-DCMAKE_CXX_STANDARD=${std}")
         list(APPEND cmake_args "-DPREVIEW_TEST=0")
 
@@ -192,7 +189,6 @@ function(preview_add_multi_version_test name_prefix test_src)
             BUILD_COMMAND ""
             INSTALL_COMMAND ""
             BUILD_BYPRODUCTS
-                "<BINARY_DIR>/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}"
                 "<BINARY_DIR>/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}/preview/cmake_config.h"
         )
         add_dependencies(${target_name} preview-configure-${target_name})
