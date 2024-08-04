@@ -187,3 +187,31 @@ TEST(VERSIONED(Memory), to_address) {
   std::unique_ptr<int> p;
   EXPECT_EQ_TYPE(int*, decltype(preview::to_address(p)));
 }
+
+TEST(VERSIONED(Memory), pointer_cast) {
+  struct A { virtual ~A() = default; };
+  struct B : A {};
+  struct C : A {};
+
+  std::shared_ptr<A> p1 = std::make_shared<B>();
+
+  // Down casting
+  auto p2 = preview::dynamic_pointer_cast<B>(std::move(p1));
+  EXPECT_EQ(p1.get(), nullptr);
+  EXPECT_NE(p2.get(), nullptr);
+
+  // Casting to base
+  auto p3 = preview::static_pointer_cast<A>(std::move(p2));
+  EXPECT_EQ(p2.get(), nullptr);
+  EXPECT_NE(p3.get(), nullptr);
+
+  // Down casting fails
+  auto p4 = preview::dynamic_pointer_cast<C>(std::move(p3));
+  EXPECT_NE(p3, nullptr);
+  EXPECT_EQ(p4, nullptr);
+
+  // Force casting
+  auto p5 = preview::reinterpret_pointer_cast<int>(std::move(p3));
+  EXPECT_EQ(p3, nullptr);
+  EXPECT_NE(p5, nullptr);
+}
