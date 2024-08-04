@@ -266,10 +266,10 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         build_type: [Debug, Release]
-#        compiler: [clang]
-#        include:
-#          - cc_compiler: clang
-#          - cxx_compiler: clang++
+        compiler: [icc]
+        include:
+          - cc_compiler: icc
+          - cxx_compiler: icpc
 
     steps:
       - name: Intel Apt repository
@@ -289,12 +289,16 @@ jobs:
         run: |
           source /opt/intel/oneapi/setvars.sh
           printenv >> $GITHUB_ENV
-          cat /opt/intel/oneapi/setvars.sh
+          which icc
+          which icpc
 
       - name: checkout project code
         uses: actions/checkout@v4
 
       - name: CMake Configure
+        env:
+          CC: ${{ matrix.cc_compiler }}
+          CXX: ${{ matrix.cxx_compiler }}
         run: >
           cmake -B build
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
@@ -302,6 +306,9 @@ jobs:
           -S ${{ github.workspace }}
 
       - name: CMake build
+        env:
+          CC: ${{ matrix.cc_compiler }}
+          CXX: ${{ matrix.cxx_compiler }}
         run: cmake --build build --config ${{ matrix.build_type }} -j
 
       - name: CMake test
