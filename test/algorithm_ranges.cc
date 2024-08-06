@@ -389,3 +389,79 @@ TEST(VERSIONED(AlgorithmRanges), contains) {
   static_assert(preview::is_invocable<decltype(ranges::contains), void, int>::value == false, "");
   static_assert(preview::is_invocable<decltype(ranges::contains), int, int>::value == false, "");
 }
+
+TEST(VERSIONED(AlgorithmRanges), search_n) {
+  static PREVIEW_CONSTEXPR_AFTER_CXX17 std::array<int, 10> nums = {1, 2, 2, 3, 4, 1, 2, 2, 2, 1};
+  PREVIEW_CONSTEXPR_AFTER_CXX17 int count{3};
+  PREVIEW_CONSTEXPR_AFTER_CXX17 int value{2};
+  typedef int count_t, value_t;
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 auto result1 = ranges::search_n(nums.begin(), nums.end(), count, value);
+#if PREVIEW_CXX_VERSION >= 17
+  static_assert( // found
+      result1.size() == count &&
+      std::distance(nums.begin(), result1.begin()) == 6 &&
+      std::distance(nums.begin(), result1.end()) == 9
+  );
+#else
+  EXPECT_EQ(result1.size(), count);
+  EXPECT_EQ(std::distance(nums.begin(), result1.begin()), 6);
+  EXPECT_EQ(std::distance(nums.begin(), result1.end()), 9);
+#endif
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 auto result2 = ranges::search_n(nums, count, value);
+#if PREVIEW_CXX_VERSION >= 17
+  static_assert( // found
+      result2.size() == count &&
+      std::distance(nums.begin(), result2.begin()) == 6 &&
+      std::distance(nums.begin(), result2.end()) == 9
+  );
+#else
+  EXPECT_EQ(result2.size(), count);
+  EXPECT_EQ(std::distance(nums.begin(), result2.begin()), 6);
+  EXPECT_EQ(std::distance(nums.begin(), result2.end()), 9);
+#endif
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 auto result3 = ranges::search_n(nums, count, value_t{5});
+#if PREVIEW_CXX_VERSION >= 17
+  static_assert( // not found
+      result3.size() == 0 &&
+      result3.begin() == result3.end() &&
+      result3.end() == nums.end()
+  );
+#else
+  EXPECT_EQ(result3.size(), 0);
+  EXPECT_EQ(result3.begin(), result3.end());
+  EXPECT_EQ(result3.end(), nums.end());
+#endif
+
+  PREVIEW_CONSTEXPR_AFTER_CXX17 auto result4 = ranges::search_n(nums, count_t{0}, value_t{1});
+#if PREVIEW_CXX_VERSION >= 17
+  static_assert( // not found
+      result4.size() == 0 &&
+      result4.begin() == result4.end() &&
+      result4.end() == nums.begin()
+  );
+#else
+  EXPECT_EQ(result4.size(), 0);
+  EXPECT_EQ(result4.begin(), result4.end());
+  EXPECT_EQ(result4.end(), nums.begin());
+#endif
+
+  constexpr char symbol{'B'};
+  auto to_ascii = [](const int z) -> char { return 'A' + z - 1; };
+  auto is_equ = [](const char x, const char y) { return x == y; };
+
+//  TODO
+//  std::cout << "Find a sub-sequence " << std::string(count, symbol) << " in the ";
+//  ranges::transform(nums, std::ostream_iterator<char>(std::cout, ""), to_ascii);
+//  std::cout << '\n';
+
+  auto result5 = ranges::search_n(nums, count, symbol, is_equ, to_ascii);
+  EXPECT_FALSE(result5.empty());
+  EXPECT_EQ(ranges::distance(nums.begin(), result5.begin()), 6);
+
+  std::vector<std::complex<double>> nums2{{4, 2}, {4, 2}, {1, 3}};
+  auto it = ranges::search_n(nums2, 2, {4, 2});
+  EXPECT_EQ(it.size(), 2);
+}
