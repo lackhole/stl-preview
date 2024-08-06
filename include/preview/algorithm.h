@@ -46,6 +46,7 @@
 #include "preview/__algorithm/ranges/out_value_result.h"
 #include "preview/__algorithm/ranges/pop_heap.h"
 #include "preview/__algorithm/ranges/search.h"
+#include "preview/__algorithm/ranges/search_n.h"
 #include "preview/__algorithm/ranges/set_intersection.h"
 #include "preview/__algorithm/ranges/sort.h"
 #include "preview/__algorithm/ranges/sort_heap.h"
