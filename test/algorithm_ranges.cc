@@ -391,7 +391,7 @@ TEST(VERSIONED(AlgorithmRanges), contains) {
 }
 
 TEST(VERSIONED(AlgorithmRanges), search_n) {
-  static PREVIEW_CONSTEXPR_AFTER_CXX17 auto nums = {1, 2, 2, 3, 4, 1, 2, 2, 2, 1};
+  static PREVIEW_CONSTEXPR_AFTER_CXX17 std::array<int, 10> nums = {1, 2, 2, 3, 4, 1, 2, 2, 2, 1};
   PREVIEW_CONSTEXPR_AFTER_CXX17 int count{3};
   PREVIEW_CONSTEXPR_AFTER_CXX17 int value{2};
   typedef int count_t, value_t;
