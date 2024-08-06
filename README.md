@@ -106,9 +106,9 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/282/690-grey)![][p041] |   | ![](https://img.shields.io/badge/42/113-grey)![][p037] | ![](https://img.shields.io/badge/207/428-grey)![][p048] | ![](https://img.shields.io/badge/56/143-grey)![][p039] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
+|                                     | ![](https://img.shields.io/badge/283/690-grey)![][p041] |   | ![](https://img.shields.io/badge/42/113-grey)![][p037] | ![](https://img.shields.io/badge/208/428-grey)![][p049] | ![](https://img.shields.io/badge/56/143-grey)![][p039] | ![](https://img.shields.io/badge/14/132-grey)![][p011] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/47/115-grey)![][p041]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/39/96-grey)![][p041]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/4/23-grey)![][p017]   |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/48/115-grey)![][p042]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/40/96-grey)![][p042]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/1/14-grey)![][p007]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
@@ -218,7 +218,7 @@ Description
   | `ranges::find_first_of`             | ![][c20ok] |            |
   | `ranges::adjacent_find`             | ![][c20ok] |            |
   | `ranges::search`                    | ![][c20ok] |            |
-  | `ranges::search_n`                  | ![][c20no] | ![][c26no] |
+  | `ranges::search_n`                  | ![][c20ok] | ![][c26ok] |
   | `ranges::contains`                  | ![][c23ok] | ![][c26ok] |
   | `ranges::contains_subrange`         | ![][c23ok] |            |
   | `ranges::starts_with`               | ![][c23no] |            |
