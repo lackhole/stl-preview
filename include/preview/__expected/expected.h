@@ -1066,20 +1066,20 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
   template<typename Any>
   static PREVIEW_CONSTEXPR_AFTER_CXX17
   void swap_value_with_error(expected& thiz, expected& other, std::true_type /* void */, Any) noexcept(error_nothrow_swappable::value) {
-    preview::construct_at(std::addressof(thiz.error()), std::move(other.error()));
-    preview::destroy_at(std::addressof(other.error()));
+    preview::construct_at(preview::addressof(thiz.error()), std::move(other.error()));
+    preview::destroy_at(preview::addressof(other.error()));
   }
 
   static PREVIEW_CONSTEXPR_AFTER_CXX23
   void swap_value_with_error(expected& thiz, expected& other, std::false_type /* void */, std::true_type /* nothrow */) noexcept(nothrow_swappable::value) {
     E temp(std::move(other.error()));
-    preview::destroy_at(std::addressof(other.error()));
+    preview::destroy_at(preview::addressof(other.error()));
     try {
-      preview::construct_at(std::addressof(other.value()), std::move(thiz.value()));
-      preview::destroy_at(std::addressof(thiz.value()));
-      preview::construct_at(std::addressof(thiz.error()), std::move(temp));
+      preview::construct_at(preview::addressof(other.value()), std::move(thiz.value()));
+      preview::destroy_at(preview::addressof(thiz.value()));
+      preview::construct_at(preview::addressof(thiz.error()), std::move(temp));
     } catch (...) {
-      preview::construct_at(std::addressof(other.error()), std::move(temp));
+      preview::construct_at(preview::addressof(other.error()), std::move(temp));
       throw;
     }
   }
@@ -1087,13 +1087,13 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
   static PREVIEW_CONSTEXPR_AFTER_CXX23
   void swap_value_with_error(expected& thiz, expected& other, std::false_type /* void */, std::false_type /* nothrow */) noexcept(nothrow_swappable::value) {
     T temp(std::move(thiz.value()));
-    preview::destroy_at(std::addressof(thiz.value()));
+    preview::destroy_at(preview::addressof(thiz.value()));
     try {
-      preview::construct_at(std::addressof(thiz.error()), std::move(other.error()));
-      preview::destroy_at(std::addressof(other.error()));
-      preview::construct_at(std::addressof(other.value()), std::move(temp));
+      preview::construct_at(preview::addressof(thiz.error()), std::move(other.error()));
+      preview::destroy_at(preview::addressof(other.error()));
+      preview::construct_at(preview::addressof(other.value()), std::move(temp));
     } catch (...) {
-      preview::construct_at(std::addressof(thiz.value()), std::move(temp));
+      preview::construct_at(preview::addressof(thiz.value()), std::move(temp));
       throw;
     }
   }

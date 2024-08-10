@@ -194,6 +194,7 @@ function(preview_add_multi_version_test name_prefix test_src)
             INSTALL_COMMAND ""
             BUILD_BYPRODUCTS
                 "<BINARY_DIR>/${PREVIEW_RELATIVE_GENERATED_INCLUDE_DIR}/preview/cmake_config.h"
+                "<BINARY_DIR>/CMakeCache.txt"
         )
         add_dependencies(${target_name} preview-configure-${target_name})
 
