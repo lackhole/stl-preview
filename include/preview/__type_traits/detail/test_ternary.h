@@ -13,18 +13,28 @@ namespace preview {
 namespace detail {
 
 template<typename T1, typename T2, typename = void>
-struct test_ternary_impl {};
+struct test_ternary {};
 
 template<typename T1, typename T2>
-struct test_ternary_impl<T1, T2, void_t<decltype(false ? std::declval<T1>() : std::declval<T2>())>> {
+struct test_ternary<T1, T2, void_t<decltype(false ? std::declval<T1>() : std::declval<T2>())>> {
   using type = decltype(false ? std::declval<T1>() : std::declval<T2>());
 };
 
 template<typename T1, typename T2>
-struct test_ternary : test_ternary_impl<T1, T2> {};
+using test_ternary_t = typename test_ternary<T1, T2>::type;
+
+// COND-RES
+// https://eel.is/c++draft/meta.trans.other#3.4
+template<typename T1, typename T2, typename = void>
+struct test_ternary_invoke {};
 
 template<typename T1, typename T2>
-using test_ternary_t = typename test_ternary<T1, T2>::type;
+struct test_ternary_invoke<T1, T2, void_t<decltype(false ? std::declval<T1(&)()>()() : std::declval<T2(&)()>()())>> {
+  using type = decltype(false ? std::declval<T1(&)()>()() : std::declval<T2(&)()>()());
+};
+
+template<typename T1, typename T2>
+using test_ternary_invoke_t = typename test_ternary_invoke<T1, T2>::type;
 
 } // namespace detail
 } // namespace preview

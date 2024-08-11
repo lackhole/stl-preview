@@ -1118,7 +1118,7 @@ Description
   | `conjunction`                                   | ![][c17ok]     |                       |
   | `disjunction`                                   | ![][c17ok]     |                       |
   | `negation`                                      | ![][c17ok]     |                       |
-  | `common_reference`<br/>`basic_common_reference` | ![][c20ok]     |                       |
+  | `common_reference`<br/>`basic_common_reference` | ![][c20ok]     | ![][c23ok]            |
   | `is_bounded_array`                              | ![][c20ok]     |                       |
   | `is_unbounded_array`                            | ![][c20ok]     |                       |
   | `is_scoped_enum`                                | ![][c20no] N/A |                       |
@@ -1133,6 +1133,11 @@ Description
   | `is_implicit_lifetime`                          | ![][c23no] N/A |                       |
   | `is_within_lifetime`                            | ![][c26no] N/A |                       |
   | `is_virtual_base_of`                            | ![][c26no]     |                       |
+
+* Notes
+  * `common_type`
+    * If user specialization for `std::common_type` exists, it is used.
+  
 
 #### `<utility>`
 
