@@ -1136,8 +1136,31 @@ Description
 
 * Notes
   * `common_type`
-    * If user specialization for `std::common_type` exists, it is used.
-  
+    * If `common_type` fails to define member typedef `type`, it falls back to `std::common_type`
+    ```c++
+    struct common_a {};
+    struct common_b {};
+    struct common_c {};
+    
+    template<>
+    struct std::common_type<common_a, common_b> {
+      using type = common_c;
+    };
+    
+    // fallback to std::common_type for user specialization types
+    static_assert(std::is_same_v<preview::common_type_t<common_a, common_b>, common_c>);
+    
+    // MSVC and GCC (before C++23) does not satisfy C++23 standard for std::common_type<tuple-like>  
+    static_assert(std::is_same_v<
+        std::common_type_t<std::tuple<int, int>, std::pair<int, double>>, 
+        std::pair<int, int>>);
+    
+    // Since std::common_type does not satisfy C++23, preview::common_type does not fallback to std::common_type
+    static_assert(std::is_same_v<
+        preview::common_type_t< std::tuple<int, int>, std::pair<int, double>>, 
+        std::pair<int, double>>);
+    ```
+
 
 #### `<utility>`
 

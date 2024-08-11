@@ -50,20 +50,21 @@ struct common_type_satisfies_tuple_like_constraints<TTuple<T...>, UTuple<U...>, 
         has_typename_type<common_type<T, U>>...
     > {};
 
-template<typename CR1, typename CR2, bool = /* false */ has_typename_type<test_ternary<CR1, CR2>>::value>
-struct common_type_primary_cref_impl {};
-
-template<typename CR1, typename CR2>
-struct common_type_primary_cref_impl<CR1, CR2, true> {
-  using type = std::decay_t<test_ternary_t<CR1, CR2>>;
-};
+template<typename T1, typename T2>
+struct common_type_std_fallback : std::common_type<T1, T2> {};
 
 template<typename T1, typename T2, bool = /* false */ conjunction<is_referencable<T1>, is_referencable<T2>>::value>
-struct common_type_primary_cref {};
-
+struct common_type_satisfies_cref : std::false_type  {};
 template<typename T1, typename T2>
-struct common_type_primary_cref<T1, T2, true>
-    : common_type_primary_cref_impl<const std::remove_reference_t<T1>&, const std::remove_reference_t<T2>&> {};
+struct common_type_satisfies_cref<T1, T2, true>
+    : has_typename_type<test_ternary<const std::remove_reference_t<T1>&, const std::remove_reference_t<T2>&>> {};
+
+template<typename T1, typename T2, bool = /* false */ common_type_satisfies_cref<T1, T2>::value>
+struct common_type_primary_cref : common_type_std_fallback<T1, T2> {};
+template<typename T1, typename T2>
+struct common_type_primary_cref<T1, T2, true> {
+  using type = std::decay_t<test_ternary_t<const std::remove_reference_t<T1>&, const std::remove_reference_t<T2>&>>;
+};
 
 template<typename T1, typename T2, bool = /* false */ has_typename_type<test_ternary<T1, T2>>::value>
 struct common_type_primary : common_type_primary_cref<T1, T2> {};
@@ -73,17 +74,13 @@ struct common_type_primary<T1, T2, true> {
   using type = std::decay_t<test_ternary_t<T1, T2>>;
 };
 
-template<typename T1, typename T2, bool = /* false */ has_typename_type<std::common_type<T1, T2>>::value>
+template<typename T1, typename T2>
 struct common_type_two
     : std::conditional_t<
         common_type_satisfies_tuple_like_constraints<T1, T2>::value,
         common_type_template_class<std::tuple, T1, T2>,
         common_type_primary<T1, T2>
     > {};
-
-// User may specialize std::common_type for their own types
-template<typename T1, typename T2>
-struct common_type_two<T1, T2, true> : std::common_type<T1, T2> {};
 
 template<bool HasType /* false */, typename CommonType, typename... Ts>
 struct common_type_test_three_or_more {};

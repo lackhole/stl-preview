@@ -1,11 +1,21 @@
 #include "preview/type_traits.h"
 #include "gtest.h"
 
+struct common_a {};
+struct common_b {};
+struct common_c {};
+
+template<>
+struct std::common_type<common_a, common_b> {
+  using type = common_c;
+};
+
 TEST(VERSIONED(type_traits), common_type) {
   EXPECT_TRUE ((std::is_same<preview::common_type_t<int, int>, int>::value));
   EXPECT_TRUE ((std::is_same<preview::common_type_t<int, double>, double>::value));
   EXPECT_TRUE ((std::is_same<preview::common_type_t<double, int>, double>::value));
   EXPECT_TRUE ((std::is_same<preview::common_type_t<double, double>, double>::value));
+  static_assert(std::is_same<preview::common_type_t<common_a, common_b>, common_c>::value, "");
 
   EXPECT_TRUE ((std::is_same<preview::common_type_t<std::pair<int, int>, std::pair<int, double>>, std::pair<int, double>>::value));
   EXPECT_TRUE ((std::is_same<preview::common_type_t<std::pair<int, int>, std::tuple<int, double>>, std::tuple<int, double>>::value));
