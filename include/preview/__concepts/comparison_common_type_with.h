@@ -9,6 +9,7 @@
 #include "preview/__concepts/same_as.h"
 #include "preview/__type_traits/common_reference.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
 #include "preview/__type_traits/is_referenceable.h"
 #include "preview/__type_traits/remove_cvref.h"

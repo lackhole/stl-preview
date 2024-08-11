@@ -1,6 +1,18 @@
 #include "preview/type_traits.h"
 #include "gtest.h"
 
+TEST(VERSIONED(type_traits), common_type) {
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<int, int>, int>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<int, double>, double>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<double, int>, double>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<double, double>, double>::value));
+
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<std::pair<int, int>, std::pair<int, double>>, std::pair<int, double>>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<std::pair<int, int>, std::tuple<int, double>>, std::tuple<int, double>>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<std::tuple<int, int>, std::pair<int, double>>, std::tuple<int, double>>::value));
+  EXPECT_TRUE ((std::is_same<preview::common_type_t<std::tuple<int, int>, std::tuple<int, double>>, std::tuple<int, double>>::value));
+}
+
 TEST(VERSIONED(type_traits), type_identity) {
   EXPECT_TRUE  ((std::is_same<preview::type_identity<int>::type, preview::type_identity_t<int>>::value));
   EXPECT_TRUE  ((std::is_same<preview::type_identity_t<int>, int>::value));
@@ -32,7 +44,7 @@ TEST(VERSIONED(type_traits), is_nothrow_swappable) {
   EXPECT_FALSE (preview::is_nothrow_swappable_v<e2>);
 }
 
-TEST(VERSIONED(type_traits), i) {
+TEST(VERSIONED(type_traits), invoke_result) {
   using x = preview::invoke_result<int>;
   using y = preview::invoke_result<void()&&, std::nullptr_t, void()>;
 

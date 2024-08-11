@@ -11,12 +11,18 @@
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
+namespace detail {
 
 template<typename T, typename = void>
-struct has_typename_type : std::false_type {};
+struct has_typename_type_impl : std::false_type {};
 
 template<typename T>
-struct has_typename_type<T, void_t<typename T::type>> : std::true_type {};
+struct has_typename_type_impl<T, void_t<typename T::type>> : std::true_type {};
+
+} // namespace detail
+
+template<typename T>
+struct has_typename_type : detail::has_typename_type_impl<T> {};
 
 template<typename... B>
 PREVIEW_INLINE_VARIABLE constexpr bool has_typename_type_v = has_typename_type<B...>::value;
