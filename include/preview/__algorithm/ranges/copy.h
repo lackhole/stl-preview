@@ -26,7 +26,6 @@ namespace preview {
 namespace ranges {
 
 template<typename I, typename O> using copy_result = in_out_result<I, O>;
-template<typename I, typename O> using copy_if_result = in_out_result<I, O>;
 
 namespace detail {
 
