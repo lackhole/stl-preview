@@ -13,6 +13,7 @@
 # include "preview/__functional/greater_equal.h"
 # include "preview/__functional/hash_array.h"
 # include "preview/__functional/identity.h"
+# include "preview/__functional/indirect.h"
 # include "preview/__functional/invoke.h"
 # include "preview/__functional/less.h"
 # include "preview/__functional/less_equal.h"
