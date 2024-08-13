@@ -10,7 +10,7 @@
 #include "preview/__functional/invoke.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
-#include "preview/__type_traits/copy_cvref.h"
+#include "preview/__utility/forward_like.h"
 
 namespace preview {
 namespace detail {
@@ -22,11 +22,11 @@ class bind_partial_front : bind_partial<bind_partial_front<FD, BoundArgs...>, FD
 
   template<typename Self, typename... CallArgs>
   struct bind_invocable
-      : is_invocable<copy_cvref_t<Self, FD>, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
+      : is_invocable<forward_like_t<Self, FD>, forward_like_t<Self, BoundArgs>..., CallArgs...> {};
 
   template<typename Self, typename... CallArgs>
   struct bind_nothrow_invocable
-      : is_nothrow_invocable<copy_cvref_t<Self, FD>, copy_cvref_t<Self, BoundArgs>..., CallArgs...> {};
+      : is_nothrow_invocable<forward_like_t<Self, FD>, forward_like_t<Self, BoundArgs>..., CallArgs...> {};
 
   template<typename F, typename BoundArgsTuple, std::size_t...I, typename... CallArgs>
   static constexpr decltype(auto) call(F&& f, BoundArgsTuple&& tup, std::index_sequence<I...>, CallArgs&&... call_args)

@@ -81,7 +81,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
   ubuntu-clang:
     runs-on: ${{ matrix.os }}
@@ -126,7 +126,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
   android-ndk:
     runs-on: ${{ matrix.os }}
@@ -217,7 +217,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
   macos-appleclang:
     runs-on: ${{ matrix.os }}
@@ -256,4 +256,4 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }}
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure

@@ -394,8 +394,8 @@ struct basic_const_iterator_common_type
     : std::conditional_t<
           input_iterator<common_type_t<T, U>>::value,
           type_identity< basic_const_iterator<common_type_t<T, U>> >,
-          no_common_type
-      > {};
+          no_traits
+    > {};
 template<typename T, typename U>
 struct basic_const_iterator_common_type<T, U, false> {};
 
@@ -412,9 +412,6 @@ struct common_type<T, basic_const_iterator<U>>
 template<typename T, typename U>
 struct common_type<basic_const_iterator<T>, basic_const_iterator<U>>
     : detail::basic_const_iterator_common_type<T, U> {};
-
-
-
 
 } // namespace preview
 
