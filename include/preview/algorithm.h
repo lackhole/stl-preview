@@ -8,6 +8,7 @@
 #include "preview/__algorithm/clamp.h"
 #include "preview/__algorithm/for_each_n.h"
 #include "preview/__algorithm/shift.h"
+
 #include "preview/__algorithm/ranges/adjacent_find.h"
 #include "preview/__algorithm/ranges/all_of.h"
 #include "preview/__algorithm/ranges/any_of.h"
@@ -15,6 +16,8 @@
 #include "preview/__algorithm/ranges/contains.h"
 #include "preview/__algorithm/ranges/contains_subrange.h"
 #include "preview/__algorithm/ranges/copy.h"
+#include "preview/__algorithm/ranges/copy_if.h"
+#include "preview/__algorithm/ranges/copy_n.h"
 #include "preview/__algorithm/ranges/count.h"
 #include "preview/__algorithm/ranges/count_if.h"
 #include "preview/__algorithm/ranges/equal.h"

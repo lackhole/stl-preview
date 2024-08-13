@@ -390,6 +390,54 @@ TEST(VERSIONED(AlgorithmRanges), contains) {
   static_assert(preview::is_invocable<decltype(ranges::contains), int, int>::value == false, "");
 }
 
+TEST(VERSIONED(AlgorithmRanges), copy) {
+  const auto source = views::iota(0, 10) | ranges::to<std::vector>();
+  {
+    std::vector<int> destination;
+    ranges::copy(source.begin(), source.end(), std::back_inserter(destination));
+    EXPECT_PRED2(ranges::equal, source, destination);
+  }
+
+  {
+    std::vector<int> destination(source.size());
+    ranges::copy(source.begin(), source.end(), destination.begin());
+    EXPECT_PRED2(ranges::equal, source, destination);
+  }
+
+  {
+    std::stringstream ss;
+    ranges::copy(source, std::ostream_iterator<int>(ss, " "));
+    EXPECT_EQ(ss.str(), "0 1 2 3 4 5 6 7 8 9 ");
+  }
+
+  {
+    std::stringstream ss;
+    ranges::copy_if(source, std::ostream_iterator<int>(ss, " "),
+                    [](int x) { return (x % 2) == 1; });
+    EXPECT_EQ(ss.str(), "1 3 5 7 9 ");
+  }
+}
+
+TEST(VERSIONED(AlgorithmRanges), copy_n) {
+  const preview::string_view in {"ABCDEFGH"};
+  std::string out;
+
+  ranges::copy_n(in.begin(), 4, std::back_inserter(out));
+  EXPECT_EQ(out, "ABCD");
+
+  out = "abcdefgh";
+  const auto res = ranges::copy_n(in.begin(), 5, out.begin());
+  EXPECT_EQ(*res.in, 'F');
+  EXPECT_EQ(std::distance(std::begin(in), res.in), 5);
+  EXPECT_EQ(*res.out, 'f');
+  EXPECT_EQ(std::distance(std::begin(out), res.out), 5);
+  EXPECT_EQ(out, "ABCDEfgh");
+
+  std::vector<char> out_v(10, '0');
+  ranges::copy_n(in.begin(), in.size(), out_v.begin());
+  EXPECT_PRED2(ranges::equal, in, out_v | views::take(in.size()));
+}
+
 TEST(VERSIONED(AlgorithmRanges), search_n) {
   static PREVIEW_CONSTEXPR_AFTER_CXX17 std::array<int, 10> nums = {1, 2, 2, 3, 4, 1, 2, 2, 2, 1};
   PREVIEW_CONSTEXPR_AFTER_CXX17 int count{3};
