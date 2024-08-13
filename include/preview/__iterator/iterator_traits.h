@@ -40,11 +40,6 @@ template<typename T>
 struct has_typename_iterator_category<T, void_t<typename T::iterator_category>>
     : negation< std::is_same<iterator_ignore, typename T::iterator_category> > {};
 
-template<typename T, typename = void>
-struct has_typename_iterator_concept : std::false_type {};
-template<typename T>
-struct has_typename_iterator_concept<T, void_t<typename T::iterator_concept>> : std::true_type {};
-
 template<typename Iter, bool = has_typename_iterator_category<Iter>::value /* false */>
 struct iterator_traits_typename_iterator_category {
   using type = conditional_t<

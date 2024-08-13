@@ -106,16 +106,16 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/301/690-grey)![][p044] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/225/428-grey)![][p053] | ![](https://img.shields.io/badge/58/144-grey)![][p040] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
+|                                     | ![](https://img.shields.io/badge/305/691-grey)![][p044] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/229/429-grey)![][p053] | ![](https://img.shields.io/badge/58/144-grey)![][p040] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/48/115-grey)![][p042]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/40/96-grey)![][p042]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/51/115-grey)![][p044]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/43/96-grey)![][p045]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/1/14-grey)![][p007]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                        |
 | [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/3/5-grey)![][p060]    | ![](https://img.shields.io/badge/6/7-grey)![][p086]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/3/5-grey)![][p060]    |
-| [iterator](#iterator)               | ![](https://img.shields.io/badge/56/58-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/50/51-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
+| [iterator](#iterator)               | ![](https://img.shields.io/badge/57/59-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/51/52-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
 | [memory](#memory)                   | ![](https://img.shields.io/badge/9/44-grey)![][p020]    |   | ![](https://img.shields.io/badge/4/11-grey)![][p036]   | ![](https://img.shields.io/badge/9/36-grey)![][p025]    | ![](https://img.shields.io/badge/0/3-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [numbers](#numbers)                 | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |                                                        |                                                        |
 | [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
@@ -230,9 +230,9 @@ Description
   | `ranges::fold_left_with_iter`       | ![][c23no] | ![][c26no] |
   | `ranges::fold_left_first_with_iter` | ![][c23no] |            |
   | `ranges::copy`                      | ![][c20ok] |            |
-  | `ranges::copy_if`                   | ![][c20no] |            |
-  | `ranges::copy_n`                    | ![][c20no] |            |
-  | `ranges::copy_backward`             | ![][c20no] |            |
+  | `ranges::copy_if`                   | ![][c20ok] |            |
+  | `ranges::copy_n`                    | ![][c20ok] |            |
+  | `ranges::copy_backward`             | ![][c20ok] |            |
   | `ranges::move`                      | ![][c20no] |            |
   | `ranges::move_backward`             | ![][c20no] |            |
   | `ranges::fill`                      | ![][c20no] | ![][c26no] |
@@ -614,6 +614,7 @@ Description
 
   |                                                     | Introduced   | Revision    |
   |-----------------------------------------------------|--------------|-------------|
+  | `contiguous_iterator_tag`                           | ![][c20ok] * |             |
   | `indirectly_readable`                               | ![][c20ok]   |             |
   | `indirectly_writable`                               | ![][c20ok]   |             |
   | `weakly_incrementable`                              | ![][c20ok]   |             |
@@ -674,15 +675,19 @@ Description
   | `data(C)`                                           | ![][c17no]   |             |
 
   * Notes
+    * `contiguous_iterator_tag`
+      * Alias to `std::contiguous_iterator_tag` if defined, `preview::detail::pseudo_contiguous_iterator_tag` otherwise.
+    <br/><br/>
     * `contiguous_iterator<I>` 
       * May incorrectly evaluates to `true` for some `random_access_iterator` if 
         `I::iterator_category` does not satisfy `derived_from<contiguous_iterator_tag>`(typically before C++20)
       * Following pre-C++20 iterators explicitly evaluates to `false`
         * `std::vector<bool>::xxx_iterator`
         * `std::deque<T>::xxx_iterator`
+      <br/><br/>
     * `projected`
       * Indirect layer doesn't work without using concepts. 
-        Check `projectable` before using `projected` directly.
+        Check `preview::projectable` before using `preview::projected` directly.
 
 
 #### `<latch>`
