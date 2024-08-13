@@ -5,6 +5,7 @@
 #ifndef PREVIEW_ITERATOR_DETAIL_ITER_CONCEPT_H_
 #define PREVIEW_ITERATOR_DETAIL_ITER_CONCEPT_H_
 
+#include "preview/__iterator/detail/contiguous_iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/iterator_tag.h"
 

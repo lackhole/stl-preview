@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "preview/__concepts/same_as.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/no_traits.h"
 #include "preview/__type_traits/has_typename_element_type.h"
@@ -15,6 +16,13 @@
 
 namespace preview {
 namespace detail {
+
+template<typename T, bool = /* false */ std::is_object<T>::value>
+struct value_type_if_obj {};
+template<typename T>
+struct value_type_if_obj<T, true> {
+  using value_type = std::remove_cv_t<T>;
+};
 
 template<typename T>
 struct value_typer {
@@ -30,30 +38,20 @@ struct indirectly_readable_traits_impl {};
 
 template<typename T>
 struct indirectly_readable_traits_impl<T, true, false>
-    : std::conditional_t<
-        std::is_object<typename T::value_type>::value,
-        value_typer<std::remove_cv_t<typename T::value_type>>,
-        no_traits
-      > {};
+    : value_type_if_obj<typename T::value_type> {};
 
 template<typename T>
 struct indirectly_readable_traits_impl<T, false, true>
-    : std::conditional_t<
-        std::is_object<typename T::element_type>::value,
-        value_typer<std::remove_cv_t<typename T::element_type>>,
-        no_traits
-      > {};
+    : value_type_if_obj<typename T::element_type> {};
 
 template<typename T>
 struct indirectly_readable_traits_impl<T, true, true>
     : std::conditional_t<
-        conjunction<
-          std::is_object<typename T::value_type>, std::is_object<typename T::element_type>,
-          std::is_same<std::remove_cv_t<typename T::value_type>, std::remove_cv_t<typename T::element_type>>
-        >::value,
-        value_typer<std::remove_cv_t<typename T::value_type>>,
+        same_as<std::remove_cv_t<typename T::value_type>,
+                std::remove_cv_t<typename T::element_type>>::value,
+        value_type_if_obj<typename T::value_type>,
         no_traits
-      > {};
+    > {};
 
 } // namespace detail
 
