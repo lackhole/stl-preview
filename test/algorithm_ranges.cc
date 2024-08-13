@@ -395,13 +395,13 @@ TEST(VERSIONED(AlgorithmRanges), copy) {
   {
     std::vector<int> destination;
     ranges::copy(source.begin(), source.end(), std::back_inserter(destination));
-    EXPECT_PRED2(ranges::equal, source, destination);
+    EXPECT_TRUE(ranges::equal(source, destination));
   }
 
   {
     std::vector<int> destination(source.size());
     ranges::copy(source.begin(), source.end(), destination.begin());
-    EXPECT_PRED2(ranges::equal, source, destination);
+    EXPECT_TRUE(ranges::equal(source, destination));
   }
 
   {
@@ -435,7 +435,20 @@ TEST(VERSIONED(AlgorithmRanges), copy_n) {
 
   std::vector<char> out_v(10, '0');
   ranges::copy_n(in.begin(), in.size(), out_v.begin());
-  EXPECT_PRED2(ranges::equal, in, out_v | views::take(in.size()));
+  EXPECT_TRUE(ranges::equal(in, out_v | views::take(in.size())));
+}
+
+TEST(VERSIONED(AlgorithmRanges), copy_backward) {
+  const auto src = {1, 2, 3, 4};
+  std::vector<int> dst(src.size() + 2);
+  ranges::copy_backward(src, dst.end());
+  EXPECT_TRUE(ranges::equal(dst, {0, 0, 1, 2, 3, 4}));
+
+  std::fill(dst.begin(), dst.end(), 0);
+  const auto result = ranges::copy_backward(src.begin(), src.end() - 2, dst.end());
+  EXPECT_TRUE(ranges::equal(dst, {0, 0, 0, 0, 1, 2}));
+  EXPECT_EQ(std::distance(src.begin(), result.in), 2);
+  EXPECT_EQ(std::distance(dst.begin(), result.out), 4);
 }
 
 TEST(VERSIONED(AlgorithmRanges), search_n) {

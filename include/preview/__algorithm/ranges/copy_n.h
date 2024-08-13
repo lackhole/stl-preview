@@ -60,22 +60,22 @@ struct copy_n_niebloid {
       indirectly_copyable<I, O>
   >::value, int> = 0>
   constexpr copy_n_result<I, O> operator()(I first, iter_difference_t<I> n, O result) const {
-    return call(std::move(first), std::move(n), std::move(result),
-                disjunction<
-                    conjunction<
-                        is_pointer_to_trivial<I>,
-                        is_pointer_to_trivial<O>
-                    >,
-                    conjunction<
-                        // Must check if `std::contiguous_iterator_tag` is defined since
-                        // `preview::contiguous_iterator` may false positive without `std::contiguous_iterator_tag`.
-                        have_std_contiguous_iterator_tag,
-                        contiguous_iterator<I>,
-                        contiguous_iterator<O>,
-                        std::is_trivial<std::remove_reference_t<iter_reference_t<I>>>,
-                        std::is_trivial<std::remove_reference_t<iter_reference_t<O>>>
-                    >
-                >{});
+    using pointer_to_trivial = conjunction<
+        is_pointer_to_trivial<I>,
+        is_pointer_to_trivial<O>
+    >;
+    using contiguous_iterator_to_trivial = conjunction<
+        // Must check if `std::contiguous_iterator_tag` is defined since
+        // `preview::contiguous_iterator` may yield false positive result without `std::contiguous_iterator_tag`.
+        have_std_contiguous_iterator_tag,
+        contiguous_iterator<I>,
+        contiguous_iterator<O>,
+        std::is_trivial<std::remove_reference_t<iter_reference_t<I>>>,
+        std::is_trivial<std::remove_reference_t<iter_reference_t<O>>>
+    >;
+    using use_memmove = disjunction<pointer_to_trivial, contiguous_iterator_to_trivial>;
+
+    return call(std::move(first), std::move(n), std::move(result), use_memmove{});
   }
 };
 

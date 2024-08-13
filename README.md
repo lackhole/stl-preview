@@ -106,9 +106,9 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/304/691-grey)![][p044] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/228/429-grey)![][p053] | ![](https://img.shields.io/badge/58/144-grey)![][p040] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
+|                                     | ![](https://img.shields.io/badge/305/691-grey)![][p044] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/229/429-grey)![][p053] | ![](https://img.shields.io/badge/58/144-grey)![][p040] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/50/115-grey)![][p042]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/42/96-grey)![][p044]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/51/115-grey)![][p044]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/43/96-grey)![][p045]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/1/14-grey)![][p007]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
@@ -231,8 +231,8 @@ Description
   | `ranges::fold_left_first_with_iter` | ![][c23no] |            |
   | `ranges::copy`                      | ![][c20ok] |            |
   | `ranges::copy_if`                   | ![][c20ok] |            |
-  | `ranges::copy_n`                    | ![][c20no] |            |
-  | `ranges::copy_backward`             | ![][c20no] |            |
+  | `ranges::copy_n`                    | ![][c20ok] |            |
+  | `ranges::copy_backward`             | ![][c20ok] |            |
   | `ranges::move`                      | ![][c20no] |            |
   | `ranges::move_backward`             | ![][c20no] |            |
   | `ranges::fill`                      | ![][c20no] | ![][c26no] |
