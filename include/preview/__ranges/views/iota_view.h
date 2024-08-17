@@ -286,7 +286,7 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
         value_ -= static_cast<W>(-n);
     }
     constexpr void in_place_add(difference_type n, std::false_type) {
-      value_ += n;
+      value_ = static_cast<W>(value_ + n);
     }
 
     constexpr void in_place_sub(difference_type n, std::true_type) {
