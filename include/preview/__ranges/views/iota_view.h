@@ -45,17 +45,22 @@ namespace ranges {
 namespace detail {
 
 template<typename W>
-using iota_diff_t = std::conditional_t<
-    disjunction<
-        negation<std::is_integral<W>>,
-        conjunction<
-            std::is_integral<W>,
-            bool_constant<( sizeof(iter_difference_t<W>) > sizeof(W) )>
-        >
-    >::value,
-    iter_difference_t<W>,
-    make_signed_like_t<W>
->;
+using iota_diff_t =
+    conditional_t<
+        disjunction<
+            negation<std::is_integral<W>>,
+            conjunction<
+                std::is_integral<W>,
+                bool_constant<( sizeof(iter_difference_t<W>) > sizeof(W) )>
+            >
+        >, iter_difference_t<W>,
+
+        bool_constant<(sizeof(W) < sizeof(int))>, int,
+        bool_constant<(sizeof(W) < sizeof(long))>, long,
+        bool_constant<(sizeof(W) < sizeof(long long))>, long long,
+        bool_constant<(sizeof(W) < sizeof(std::intmax_t))>, std::intmax_t,
+        make_signed_like_t<W>
+    >;
 
 template<typename I, bool = incrementable<I>::value, typename = void, typename = void>
 struct iv_decrementable : std::false_type {};
@@ -455,9 +460,9 @@ struct iota_niebloid {
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
     disjunction<
-      negation<integer_like<std::remove_reference_t<W>>>,
-      negation<integer_like<std::remove_reference_t<Bound>>>,
-      bool_constant<signed_integer_like<std::remove_reference_t<W>>::value == signed_integer_like<std::remove_reference_t<Bound>>::value>
+      negation<integer_like<std::decay_t<W>>>,
+      negation<integer_like<std::decay_t<Bound>>>,
+      bool_constant<signed_integer_like<std::decay_t<W>>::value == signed_integer_like<std::decay_t<Bound>>::value>
     >
   >::value, int> = 0>
   constexpr auto operator()(W&& value, Bound&& bound) const {
