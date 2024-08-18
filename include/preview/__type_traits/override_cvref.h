@@ -30,7 +30,16 @@ template<typename From, typename To>
 using override_reference_t = typename override_reference<From, To>::type;
 
 template<typename From, typename To>
-using override_cvref_t = override_reference_t<From, copy_cv_t<From, To>>;
+using override_const_t = copy_const_t<From, std::remove_const_t<To>>;
+
+template<typename From, typename To>
+using override_volatile_t = copy_volatile_t<From, std::remove_volatile_t<To>>;
+
+template<typename From, typename To>
+using override_cv_t = override_const_t<From, override_volatile_t<From, To>>;
+
+template<typename From, typename To>
+using override_cvref_t = override_reference_t<From, override_cv_t<From, To>>;
 
 } // namespace preview
 
