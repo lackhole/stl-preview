@@ -137,7 +137,7 @@ class drop_view : public detail::drop_view_cached_begin<drop_view<V>, V> {
   }
 
  private:
-  V base_;
+  V base_{};
   range_difference_t<V> count_ = 0;
 };
 
