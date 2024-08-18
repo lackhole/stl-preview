@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/invocable.h"
 #include "preview/__core/decay_copy.h"
 #include "preview/__core/inline_variable.h"
@@ -25,26 +26,25 @@ namespace views {
 namespace detail {
 
 struct zip_transform_niebloid {
- private:
-  template<typename FD, bool = conjunction<copy_constructible<FD>, is_referencable<FD>>::value /* false */>
-  struct check : std::false_type {};
-
-  template<typename FD>
-  struct check<FD, true>
-      : conjunction<
-          regular_invocable<FD&>,
-          std::is_object<invoke_result_t<FD&>>
-      > {};
-
- public:
-  template<typename F, std::enable_if_t<check<std::decay_t<F&&>>::value, int> = 0>
+  template<typename F, std::enable_if_t<conjunction<
+      move_constructible  < std::decay_t<F&&>  >,
+      regular_invocable   < std::decay_t<F&&>& >,
+      std::is_object      < invoke_result_t<std::decay_t<F&&>&> >
+  >::value, int> = 0>
   constexpr auto operator()(F&& f) const {
-    using FD = std::decay_t<decltype(f)>;
+    using FD = std::decay_t<decltype((f))>;
 
     return ((void)f, preview_decay_copy(views::empty<std::decay_t<invoke_result_t<FD&>>>));
   }
 
-  template<typename F, typename... Rs>
+  template<typename F, typename... Rs, std::enable_if_t<conjunction<
+      move_constructible< std::decay_t<F&&>  >,
+      input_range       < views::all_t<Rs>   >...,
+      view              < views::all_t<Rs>   >...,
+      std::is_object    < std::decay_t<F&&>  >,
+      regular_invocable < std::decay_t<F&&>&, range_reference_t<views::all_t<Rs>>... >,
+      is_referencable   < invoke_result_t<F&, range_reference_t<views::all_t<Rs>>...> >
+  >::value, int> = 0>
   constexpr auto operator()(F&& f, Rs&&... rs) const {
     return zip_transform_view<std::decay_t<F>, views::all_t<Rs>...>(std::forward<F>(f), std::forward<Rs>(rs)...);
   }
