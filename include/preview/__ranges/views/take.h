@@ -33,6 +33,7 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
+#include "preview/__utility/forward_like.h"
 
 #if PREVIEW_CXX_VERSION >= 17
 #include <string_view>
@@ -50,30 +51,23 @@ using preview::detail::return_category;
 
 struct take_niebloid {
  private:
-  template<typename R, typename T, typename D, bool = is_specialization<T, empty_view>::value /* true */>
-  struct return_category_empty_view : std::true_type {
-    using category = return_category<1, decltype(preview_decay_copy(std::declval<R>()))>;
-  };
-  template<typename R, typename T, typename D>
-  struct return_category_empty_view<R, T, D, false> : std::false_type {
-    using category = return_category<0>;
-  };
-  template<typename R, typename RT>
-  constexpr RT operator()(R&& r, range_difference_t<R> count, return_category<1, RT>) const {
+  // (1) empty_view
+  template<typename R>
+  constexpr auto call(R&& r, range_difference_t<R> count, return_category<1>) const {
     return ((void)count, preview_decay_copy(std::forward<R>(r)));
   }
 
-  template<typename T, typename D>
+  template<typename T>
   struct return_category_span : std::false_type {
     using category = return_category<0>;
   };
-  template<typename U, std::size_t Extent, typename D>
-  struct return_category_span<span<U, Extent>, D> : std::true_type {
+  template<typename U, std::size_t Extent>
+  struct return_category_span<span<U, Extent>> : std::true_type {
     using category = return_category<2, span<U>>;
   };
 #if PREVIEW_CXX_VERSION >= 20
-  template<typename U, std::size_t Extent, typename D>
-  struct return_category_span<std::span<U, Extent>, D> : std::true_type {
+  template<typename U, std::size_t Extent>
+  struct return_category_span<std::span<U, Extent>> : std::true_type {
     using category = return_category<2, std::span<U>>;
   };
 #endif
@@ -101,81 +95,75 @@ struct take_niebloid {
     using category = return_category<0>;
   };
 
+  // (2) span, string_view, subrange
   template<typename R, typename U>
-  constexpr U operator()(R&& e, range_difference_t<R> f, return_category<2, U>) const {
+  constexpr U call(R&& e, range_difference_t<R> f, return_category<2, U>) const {
     using D = range_difference_t<decltype((e))>;
-    return U(
-        ranges::begin(e),
-        ranges::begin(e) + (std::min<D>)(ranges::distance(e), f)
+    auto size = (std::min<D>)(ranges::distance(e), f);
+    auto first = ranges::begin(e);
+    return U(first, first + size);
+  }
+
+  // (3) iota_view
+  template<typename R>
+  constexpr auto call(R&& e, ranges::range_difference_t<R> f, return_category<3>) const {
+    using D = ranges::range_difference_t<decltype((e))>;
+    auto size = (std::min<D>)(ranges::distance(e), f);
+    auto first = ranges::begin(e);
+    return views::iota(*first, *(first + size));
+  }
+
+  // (4) repeat_view
+  template<typename R>
+  constexpr auto call(R&& e, ranges::range_difference_t<R> f, return_category<4, std::true_type /* sized_range */>) const {
+    using D = ranges::range_difference_t<decltype((e))>;
+    return views::repeat(
+        preview::force_forward_like<R>(*e.begin()), // *e.value_
+        (std::min<D>)(ranges::distance(e), f)
+    );
+  }
+  template<typename R>
+  constexpr auto call(R&& e, ranges::range_difference_t<R> f, return_category<4, std::false_type /* sized_range */>) const {
+    using D = ranges::range_difference_t<decltype((e))>;
+    return views::repeat(
+        preview::force_forward_like<R>(*e.begin()), // *e.value_
+        static_cast<D>(f)
     );
   }
 
-  template<typename T, bool = conjunction<is_specialization<T, iota_view>, random_access_range<T>, sized_range<T>>::value /* true */>
-  struct return_category_iota_view : std::true_type {
-    using category = return_category<3, T>;
-  };
-  template<typename T>
-  struct return_category_iota_view<T, false> : std::false_type {
-    using category = return_category<0>;
-  };
-  template<typename R, typename T>
-  constexpr auto operator()(R&& e, ranges::range_difference_t<R> f, return_category<3, T /* unused */>) const {
-    using D = ranges::range_difference_t<decltype((e))>;
-    return views::iota(
-        *ranges::begin(e),
-        *(ranges::begin(e) + (std::min<D>)(ranges::distance(e), f))
-    );
-  }
-
-  template<typename T, bool = is_specialization<T, repeat_view>::value /* true */ >
-  struct return_category_repeat_view : std::true_type {
-    using category = return_category<4, bool_constant<sized_range<T>::value>>;
-  };
-  template<typename T>
-  struct return_category_repeat_view<T, false> : std::false_type {
-    using category = return_category<0>;
-  };
+  // (5) others
   template<typename R>
-  constexpr auto operator()(R&& e, ranges::range_difference_t<R> f, return_category<4, std::true_type /* sized_range */>) const {
-    using D = ranges::range_difference_t<decltype((e))>;
-    return views::repeat(*(e.begin()), (std::min<D>)(ranges::distance(e), f));
-  }
-  template<typename R>
-  constexpr auto operator()(R&& e, ranges::range_difference_t<R> f, return_category<4, std::false_type /* sized_range */>) const {
-    using D = ranges::range_difference_t<decltype((e))>;
-    return views::repeat(*(e.begin()), static_cast<D>(f));
+  constexpr auto call(R&& r, ranges::range_difference_t<R> f, return_category<5>) const {
+      return take_view<views::all_t<R>>(std::forward<R>(r), f);
   }
 
-  template<typename R, typename TakeView>
-  constexpr TakeView operator()(R&& r, ranges::range_difference_t<R> f, return_category<5, TakeView>) const {
-      return TakeView(std::forward<R>(r), f);
-  }
-
-  template<typename R, typename T, typename D>
+  // TODO: Check std::ranges too
+  template<typename T>
   using category =
       conditional_t<
-          return_category_empty_view<R, T, D>, typename return_category_empty_view<R, T, D>::category, // 1
-          return_category_span<T, D>, typename return_category_span<T, D>::category, // 2
-          return_category_string_view<T>, typename return_category_string_view<T>::category, // 2
-          return_category_subrange<T>, typename return_category_subrange<T>::category, // 2
-          return_category_iota_view<T>, typename return_category_iota_view<T>::category, // 3
-          return_category_repeat_view<T>, typename return_category_repeat_view<T>::category, // 4
-          return_category<5, take_view<views::all_t<R>>> // 5
+          is_specialization<T, empty_view>,     return_category<1>, // 1
+          return_category_span<T>,              typename return_category_span<T>       ::category, // 2
+          return_category_string_view<T>,       typename return_category_string_view<T>::category, // 2
+          return_category_subrange<T>,          typename return_category_subrange<T>   ::category, // 2
+          conjunction<
+              is_specialization<T, iota_view>,
+              random_access_range<T>,
+              sized_range<T>
+          >,                                    return_category<3>, // 3
+          is_specialization<T, repeat_view>,    return_category<4, bool_constant<sized_range<T>::value>>, // 4
+          return_category<5> // 5
       >;
 
  public:
   template<typename R, std::enable_if_t<ranges::viewable_range<R>::value, int> = 0>
-  constexpr auto
-  operator()(R&& r, ranges::range_difference_t<R> count) const {
+  constexpr auto operator()(R&& r, ranges::range_difference_t<R> count) const {
     using T = remove_cvref_t<decltype((r))>;
-    using D = ranges::range_difference_t<decltype((r))>;
-    static_assert(convertible_to<decltype((count)), D>::value, "Constraints not satisfied");
-    return (*this)(std::forward<R>(r), count, category<R&&, T, D>{});
+    return call(std::forward<R>(r), std::move(count), category<T>{});
   }
 
   template<typename DifferenceType>
   constexpr auto operator()(DifferenceType&& count) const {
-    return range_adaptor<take_niebloid, std::remove_reference_t<DifferenceType>>(std::forward<DifferenceType>(count));
+    return range_adaptor<take_niebloid, std::decay_t<DifferenceType>>(std::forward<DifferenceType>(count));
   }
 };
 } // namespace detail
