@@ -11,8 +11,10 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__concepts/constructible_from.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/move_constructible.h"
 #include "preview/__ranges/movable_box.h"
 #include "preview/__ranges/view_interface.h"
+#include "preview/__type_traits/conjunction.h"
 #include "preview/__utility/in_place.h"
 
 namespace preview {
@@ -21,11 +23,14 @@ namespace ranges {
 template<typename T>
 class single_view : public ranges::view_interface<single_view<T>> {
  public:
-  static_assert(copy_constructible<T>::value, "Constraints not satisfied");
+  static_assert(move_constructible<T>::value, "Constraints not satisfied");
   static_assert(std::is_object<T>::value, "Constraints not satisfied");
 
   constexpr single_view() = default;
 
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<T>
+  >::value, int> = 0>
   constexpr explicit single_view(const T& t)
       : value_(t) {}
 
