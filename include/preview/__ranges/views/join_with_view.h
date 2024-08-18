@@ -602,7 +602,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
     return sentinel<true>{*this};
   }
 
-  V base_;
+  V base_{};
   Pattern pattern_;
 };
 
