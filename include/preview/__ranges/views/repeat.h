@@ -13,6 +13,7 @@
 #include "preview/__concepts/same_as.h"
 #include "preview/__concepts/semiregular.h"
 #include "preview/__core/inline_variable.h"
+#include "preview/__ranges/range_adaptor.h"
 #include "preview/__ranges/views/repeat_view.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
@@ -25,19 +26,25 @@ namespace detail {
 
 struct repeat_niebloid {
   template<typename W, std::enable_if_t<conjunction<
-      move_constructible< remove_cvref_t<W> >,
-      std::is_object< remove_cvref_t<W> >
+      move_constructible< std::decay_t<W> >,
+      std::is_object    < std::decay_t<W> >,
+      same_as           < std::decay_t<W>,
+                          std::remove_cv_t<std::decay_t<W>> >
   >::value, int> = 0>
   constexpr auto operator()(W&& value) const {
     return repeat_view<std::decay_t<W>>{std::forward<W>(value)};
   }
 
   template<typename W, typename Bound, std::enable_if_t<conjunction<
-      move_constructible< remove_cvref_t<W> >,
-      std::is_object< remove_cvref_t<W> >,
+      move_constructible< std::decay_t<W>     >,
+      semiregular       < std::decay_t<Bound> >,
+
+      std::is_object    < std::decay_t<W> >,
+      same_as           < std::decay_t<W>,
+                          std::remove_cv_t<std::decay_t<W>> >,
       disjunction<
-          integer_like< remove_cvref_t<Bound> >,
-          same_as< remove_cvref_t<Bound>, unreachable_sentinel_t >
+          ranges::detail::integer_like_with_usable_difference_type< std::decay_t<Bound> >,
+          same_as< std::decay_t<Bound>, unreachable_sentinel_t >
       >
   >::value, int> = 0>
   constexpr auto operator()(W&& value, Bound&& bound) const {
