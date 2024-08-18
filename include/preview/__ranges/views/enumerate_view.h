@@ -364,7 +364,7 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
     return sentinel<true>(ranges::end(base_));
   }
 
-  V base_;
+  V base_{};
 };
 
 #if __cplusplus >= 201703L
