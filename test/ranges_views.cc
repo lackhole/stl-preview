@@ -623,6 +623,14 @@ TEST(VERSIONED(RangesViews), drop_view) {
 #endif
   }
 
+  { // repeat_view
+    auto d = views::repeat(std::string("hello"), 10) | views::drop(8);
+    auto it = d.begin();
+    EXPECT_EQ(*it++, "hello"s);
+    EXPECT_EQ(*it++, "hello"s);
+    EXPECT_EQ(it, d.end());
+  }
+
   auto ints = views::iota(0) | views::take(10);
 #if PREVIEW_CXX_VERSION >= 17
   for (auto i : ints | views::drop(5)) { (void)i; }

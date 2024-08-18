@@ -134,7 +134,9 @@ class take_view : public view_interface<take_view<V>> {
       : base_(std::move(base)), count_(count) {}
 
 
-  template<typename T = V, std::enable_if_t<copy_constructible<T>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<V>
+  >::value, int> = 0>
   constexpr V base() const& {
     return base_;
   }
@@ -144,129 +146,133 @@ class take_view : public view_interface<take_view<V>> {
   }
 
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      sized_range<T>,
-      random_access_range<T>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      sized_range<V>,
+      random_access_range<V>
   >::value, int> = 0>
   constexpr auto begin() {
     return ranges::begin(base_);
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      sized_range<T>,
-      negation< random_access_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      sized_range<V>,
+      negation< random_access_range<V> >
   >::value, int> = 0>
   constexpr auto begin() {
-    using I = remove_cvref_t<iterator_t<T>>;
-    return counted_iterator<I>(ranges::begin(base_), ranges::range_difference_t<T>(this->size()));
+    using I = remove_cvref_t<iterator_t<V>>;
+    return counted_iterator<I>(ranges::begin(base_), ranges::range_difference_t<V>(this->size()));
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      negation< sized_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      negation< sized_range<V> >
   >::value, int> = 0>
   constexpr auto begin() {
-    using I = remove_cvref_t<iterator_t<T>>;
+    using I = remove_cvref_t<iterator_t<V>>;
     return counted_iterator<I>(ranges::begin(base_), count_);
   }
 
-  template<typename T = const V, std::enable_if_t<conjunction<
-      range<T>,
-      sized_range<T>,
-      random_access_range<T>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<const V>,
+      sized_range<const V>,
+      random_access_range<const V>
   >::value, int> = 0>
   constexpr auto begin() const {
     return ranges::begin(base_);
   }
 
-  template<typename T = const V, std::enable_if_t<conjunction<
-      range<T>,
-      sized_range<T>,
-      negation< random_access_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<const V>,
+      sized_range<const V>,
+      negation< random_access_range<const V> >
   >::value, int> = 0>
   constexpr auto begin() const {
-    using I = remove_cvref_t<iterator_t<T>>;
-    return counted_iterator<I>(ranges::begin(base_), ranges::range_difference_t<T>(this->size()));
+    using I = remove_cvref_t<iterator_t<const V>>;
+    return counted_iterator<I>(ranges::begin(base_), ranges::range_difference_t<const V>(this->size()));
   }
 
-  template<typename T = const V, std::enable_if_t<conjunction<
-      range<T>,
-      negation< sized_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<const V>,
+      negation< sized_range<const V> >
   >::value, int> = 0>
   constexpr auto begin() const {
-    using I = remove_cvref_t<iterator_t<T>>;
+    using I = remove_cvref_t<iterator_t<const V>>;
     return counted_iterator<I>(ranges::begin(base_), count_);
   }
 
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      sized_range<T>,
-      random_access_range<T>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      sized_range<V>,
+      random_access_range<V>
   >::value, int> = 0>
   constexpr auto end() {
-    return ranges::begin(base_) + ranges::range_difference_t<T>(this->size());
+    return ranges::begin(base_) + ranges::range_difference_t<V>(this->size());
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      sized_range<T>,
-      negation< random_access_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      sized_range<V>,
+      negation< random_access_range<V> >
   >::value, int> = 0>
   constexpr default_sentinel_t end() {
     return default_sentinel;
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      negation< simple_view<T> >,
-      negation< sized_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      negation< simple_view<V> >,
+      negation< sized_range<V> >
   >::value, int> = 0>
   constexpr sentinel<false> end() {
     return sentinel<false>(ranges::end(base_));
   }
 
-  template<typename T = const V, std::enable_if_t<conjunction<
-      range<T>,
-      sized_range<T>,
-      random_access_range<T>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<const V>,
+      sized_range<const V>,
+      random_access_range<const V>
   >::value, int> = 0>
   constexpr auto end() const {
-    return ranges::begin(base_) + ranges::range_difference_t<T>(this->size());
+    return ranges::begin(base_) + ranges::range_difference_t<const V>(this->size());
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      range<T>,
-      sized_range<T>,
-      negation< random_access_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<V>,
+      sized_range<V>,
+      negation< random_access_range<V> >
   >::value, int> = 0>
   constexpr default_sentinel_t end() const {
     return default_sentinel;
   }
 
-  template<typename T = V, std::enable_if_t<conjunction<
-      range<T>,
-      negation< sized_range<T> >
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      range<V>,
+      negation< sized_range<V> >
   >::value, int> = 0>
   constexpr sentinel<true> end() const {
     return sentinel<true>(ranges::end(base_));
   }
 
-  template<typename T = V, std::enable_if_t<ranges::sized_range<T>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      ranges::sized_range<V>
+  >::value, int> = 0>
   constexpr auto size() {
     auto n = ranges::size(base_);
     return (std::min)(n, static_cast<decltype(n)>(count_));
   }
 
-  template<typename T = const V, std::enable_if_t<ranges::sized_range<T>::value, int> = 0>
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      ranges::sized_range<const V>
+  >::value, int> = 0>
   constexpr auto size() const {
     auto n = ranges::size(base_);
     return (std::min)(n, static_cast<decltype(n)>(count_));
   }
 
  private:
-  V base_;
+  V base_{};
   range_difference_t<V> count_ = 0;
 };
 
