@@ -14,6 +14,9 @@
 #if PREVIEW_CXX_VERSION >= 17
 #include <string_view>
 #endif
+#if PREVIEW_CXX_VERSION >= 20
+#include <span>
+#endif
 
 #include "preview/__concepts/different_from.h"
 #include "preview/__ranges/range.h"
@@ -31,6 +34,7 @@
 #include "preview/__type_traits/detail/return_category.h"
 #include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/remove_cvref.h"
+#include "preview/__utility/forward_like.h"
 #include "preview/__utility/to_unsigned_like.h"
 
 namespace preview {
@@ -42,26 +46,12 @@ using preview::detail::return_category;
 
 struct drop_niebloid {
  private:
-  // empty_view - 1
-  template<typename R, typename T, typename D, bool = is_specialization<T, empty_view>::value /* true */>
-  struct return_category_empty_view : std::true_type {
-    using category = return_category<1, decltype(preview_decay_copy(std::declval<R>()))>;
-  };
-  template<typename R, typename T, typename D>
-  struct return_category_empty_view<R, T, D, false> : std::false_type {
-    using category = return_category<0>;
-  };
-  template<typename R, typename D, typename RT>
-  constexpr RT operator()(R&& r, D, return_category<1, RT>) const {
-    return std::forward<R>(r);
-  }
-
-  // subrange - 2 / 3
+  // subrange
   template<typename T, bool = conjunction<ranges::detail::is_subrange<T>, random_access_range<T>, sized_range<T>>::value /* true */>
   struct return_category_subrange : std::true_type {
     using category = std::conditional_t<ranges::detail::is_size_storing_subrange<T>::value,
-        return_category<2, T>,
-        return_category<3, T>
+        return_category<3, T>,
+        return_category<2, T>
     >;
   };
   template<typename T>
@@ -69,8 +59,48 @@ struct drop_niebloid {
     using category = return_category<0>;
   };
 
+  // span
+  template<typename T>
+  struct return_category_span : std::false_type {
+    using category = return_category<0>;
+  };
+  template<typename T, std::size_t Extent>
+  struct return_category_span<span<T, Extent>> : std::true_type {
+    using category = return_category<2, span<T>>;
+  };
+#if PREVIEW_CXX_VERSION >= 20
+  template<typename T, std::size_t Extent>
+  struct return_category_span<std::span<T, Extent>> : std::true_type {
+    using category = return_category<2, std::span<T>>;
+  };
+#endif
+
+  template<typename T>
+  using is_basic_string_view = disjunction<
+      is_specialization<T, basic_string_view>
+#if PREVIEW_CXX_VERSION >= 17
+      , is_specialization<T, std::basic_string_view>
+#endif
+  >;
+
+  // 2.1 empty_view
+  template<typename R, typename D>
+  constexpr auto call(R&& r, D, return_category<1>) const {
+    return preview_decay_copy(std::forward<R>(r));
+  }
+
+  // 2.2 span, basic_string_view, iota_view, subrange (StoreSize == false)
+  template<typename R, typename D, typename U>
+  constexpr U call(R&& e, D f, return_category<2, U>) const {
+    return U(
+        ranges::begin(e) + (std::min<D>)(ranges::distance(e), f),
+        ranges::end(e)
+    );
+  }
+
+  // 2.3 subrange
   template<typename R, typename D, typename T>
-  constexpr T operator()(R&& e, D f, return_category<2, T>) const {
+  constexpr T call(R&& e, D f, return_category<3, T>) const {
     auto inc = (std::min<D>)(ranges::distance(e), f);
     return T(
         ranges::begin(e) + inc,
@@ -79,107 +109,50 @@ struct drop_niebloid {
     );
   }
 
-  // span - 3
-  template<typename T>
-  struct is_span : std::false_type {};
-  template<typename T, std::size_t Extent>
-  struct is_span<span<T, Extent>> : std::true_type {};
-
-  template<typename T, typename D, bool = is_span<T>::value /* true */>
-  struct return_category_span : std::true_type {
-    using category = return_category<3, span<typename T::element_type>>;
-  };
-  template<typename T, typename D>
-  struct return_category_span<T, D, false> : std::false_type {
-    using category = return_category<0>;
-  };
-
-  // basic_string_view - 3
-  template<typename T, bool = disjunction<
-      is_specialization<T, basic_string_view>
-#if PREVIEW_CXX_VERSION >= 17
-      , is_specialization<T, std::basic_string_view>
-#endif
-  >::value /* true */>
-  struct return_category_string_view : std::true_type {
-    using category = return_category<3, T>;
-  };
-  template<typename T>
-  struct return_category_string_view<T, false> : std::false_type {
-    using category = return_category<0>;
-  };
-
-  // iota_view - 3
-  template<typename T, bool = conjunction<
-      is_specialization<T, iota_view>,
-      sized_range<T>,
-      random_access_range<T>
-  >::value /* true */>
-  struct return_category_iota_view : std::true_type {
-    using category = return_category<3, T>;
-  };
-  template<typename T>
-  struct return_category_iota_view<T, false> : std::false_type {
-    using category = return_category<0>;
-  };
-
-  // TODO: Investigate for subrange fallback
-  template<typename R, typename D, typename U>
-  constexpr U operator()(R&& e, D f, return_category<3, U>) const {
-    return U(
-        ranges::begin(e) + (std::min<D>)(ranges::distance(e), f),
-        ranges::end(e)
+  // 2.4. repeat_view
+  template<typename R, typename D>
+  constexpr auto call(R&& e, D f, return_category<4, std::true_type /* sized_range */>) const {
+    return views::repeat(
+        preview::force_forward_like<R>(*e.begin()), // *e.value_
+        ranges::distance(e) - (std::min<D>)(ranges::distance(e), f)
     );
   }
-
-  // repeat_view - 4
-  template<typename T, bool = is_specialization<T, repeat_view>::value /* false */>
-  struct return_category_repeat_view : std::false_type {
-    using category = return_category<0>;
-  };
-  template<typename T>
-  struct return_category_repeat_view<T, true> : std::true_type {
-    using category = return_category<4, bool_constant<sized_range<T>::value>>;
-  };
   template<typename R, typename D>
-  constexpr auto operator()(R&& e, D f, return_category<4, std::true_type /* sized_range */>) const {
-    return views::repeat(*e, ranges::distance(e) - (std::min<D>)(ranges::distance(e), f));
-  }
-  template<typename R, typename D>
-  constexpr auto operator()(R&& e, D, return_category<4, std::false_type /* sized_range */>) const {
-    return preview_decay_copy(e);
+  constexpr auto call(R&& e, D f, return_category<4, std::false_type /* sized_range */>) const {
+    return ((void)f, preview_decay_copy(e));
   }
 
-  // drop_view - 0 (default)
+  // 2.5 drop_view
   template<typename R, typename D>
-  constexpr drop_view<all_t<R>> operator()(R&& r, D f, return_category<0>) const {
+  constexpr drop_view<all_t<R>> call(R&& r, D f, return_category<5>) const {
       return drop_view<all_t<R>>(std::forward<R>(r), f);
   }
 
-  template<typename R, typename T, typename D>
-  using category =
-      conditional_t<
-          return_category_empty_view<R, T, D>, typename return_category_empty_view<R, T, D>::category, // 1
-          return_category_span<T, D>, typename return_category_span<T, D>::category, // 3
-          return_category_string_view<T>, typename return_category_string_view<T>::category, // 3
-          return_category_subrange<T>, typename return_category_subrange<T>::category, // 2 or 3
-          return_category_iota_view<T>, typename return_category_iota_view<T>::category, // 3
-          return_category_repeat_view<T>, typename return_category_iota_view<T>::category, // 4
-          return_category<0>
-      >;
+  template<typename T>
+  using category = conditional_t<
+      is_specialization<T, empty_view>,  return_category<1>,
+      return_category_span<T>,           typename return_category_span<T>::category,        // 2
+      is_basic_string_view<T>,           return_category<2, T>,
+      conjunction<
+          is_specialization<T, iota_view>,
+          sized_range<T>,
+          random_access_range<T>
+      >,                                 return_category<2, T>,
+      return_category_subrange<T>,       typename return_category_subrange<T>::category,    // 2 or 3
+      is_specialization<T, repeat_view>, return_category<4, bool_constant<sized_range<T>::value>>,
+      return_category<5>
+  >;
 
  public:
   template<typename R, std::enable_if_t<viewable_range<R>::value, int> = 0>
-  constexpr auto
-  operator()(R&& r, range_difference_t<R> count) const {
+  constexpr auto operator()(R&& r, range_difference_t<R> count) const {
     using T = remove_cvref_t<decltype((r))>;
-    using D = range_difference_t<decltype((r))>;
-    return (*this)(std::forward<R>(r), count, category<R&&, T, D>{});
+    return call(std::forward<R>(r), std::move(count), category<T>{});
   }
 
   template<typename DifferenceType>
   constexpr auto operator()(DifferenceType&& count) const {
-    return range_adaptor<drop_niebloid, std::remove_reference_t<DifferenceType>>(std::forward<DifferenceType>(count));
+    return range_adaptor<drop_niebloid, std::decay_t<DifferenceType>>(std::forward<DifferenceType>(count));
   }
 };
 
