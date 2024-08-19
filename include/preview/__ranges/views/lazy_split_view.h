@@ -81,13 +81,52 @@ class lazy_split_view
   template<bool Const>
   struct inner_iterator;
 
+  template<typename Base, bool = forward_range<Base>::value>
+  struct outer_iterator_category {
+#if !PREVIEW_STD_HAVE_CXX20_ITERATOR
+    using iterator_category = iterator_ignore;
+#endif
+  };
+  template<typename Base>
+  struct outer_iterator_category<Base, true> {
+    iterator_t<Base> current_{};
+    using iterator_category = input_iterator_tag;
+  };
+
+  template<bool Const, bool VIsForwardRange>
+  struct outer_iterator_current {
+    outer_iterator_current() = default;
+    template<typename Unused>
+    outer_iterator_current(Unused&&) {}
+  };
   template<bool Const>
-  struct outer_iterator {
+  struct outer_iterator_current<Const, true> {
    private:
+    using Base = maybe_const<Const, V>;
+
+   public:
+    outer_iterator_current() = default;
+    explicit outer_iterator_current(iterator_t<Base> current)
+        : current_(std::move(current)) {}
+
+    template<bool AntiConst, std::enable_if_t<(AntiConst != Const) && Const, int> = 0>
+    outer_iterator_current(outer_iterator_current<AntiConst, true>& i)
+        : current_(std::move(i.current_)) {}
+
+    iterator_t<Base> current_{};
+  };
+
+  template<bool Const>
+  struct outer_iterator
+      : outer_iterator_category<maybe_const<Const, V>>
+      , outer_iterator_current<Const, forward_range<V>::value>
+  {
+   private:
+    using current_base = outer_iterator_current<Const, forward_range<V>::value>;
+
     using Parent = maybe_const<Const, lazy_split_view>;
     using Base = maybe_const<Const, V>;
     Parent* parent_ = nullptr;
-    iterator_t<Base> current_{};
     bool trailing_empty_ = false;
 
     friend struct outer_iterator<true>;
@@ -97,17 +136,34 @@ class lazy_split_view
     void increment_if_tiny(std::false_type, Last&&, Begin&&) noexcept {}
     template<typename Last, typename Begin>
     void increment_if_tiny(std::true_type, Last&& last, Begin&& begin) {
-      current_ = ranges::find(std::move(current_), last, *begin);
-      if (current_ != last) {
-        ++current_;
-        if (current_ == last)
+      current() = ranges::find(std::move(current()), last, *begin);
+      if (current() != last) {
+        ++current();
+        if (current() == last)
           trailing_empty_ = true;
       }
     }
+
+    constexpr outer_iterator post_increment(std::true_type) {
+      auto tmp = *this;
+      ++*this;
+      return tmp;
+    }
+
+    constexpr void post_increment(std::false_type) {
+      ++*this;
+    }
+
+          iterator_t<Base>& current_impl(std::true_type)        { return current_base::current_; }
+    const iterator_t<Base>& current_impl(std::true_type) const  { return current_base::current_; }
+          iterator_t<V>&    current_impl(std::false_type)       { return *parent_->current_;     }
+    const iterator_t<V>&    current_impl(std::false_type) const { return *parent_->current_;     }
+    decltype(auto) current()       { return current_impl(forward_range<Base>{}); }
+    decltype(auto) current() const { return current_impl(forward_range<Base>{}); }
+
    public:
-    using iterator_concept = std::conditional_t<
-        forward_range<Base>::value, forward_iterator_tag, input_iterator_tag>;
-    using iterator_category = input_iterator_tag;
+    using iterator_concept =
+        std::conditional_t<forward_range<Base>::value, forward_iterator_tag, input_iterator_tag>;
     struct value_type : view_interface<value_type> {
      private:
       friend struct outer_iterator;
@@ -141,17 +197,17 @@ class lazy_split_view
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
         forward_range<Base>
     >::value, int> = 0>
-    PREVIEW_CONSTEXPR_AFTER_CXX17 explicit outer_iterator(Parent& parent, iterator_t<Base> current)
-        : parent_(preview::addressof(parent))
-        , current_(std::move(current)) {}
+    PREVIEW_CONSTEXPR_AFTER_CXX17 outer_iterator(Parent& parent, iterator_t<Base> current)
+        : current_base(std::move(current))
+        , parent_(preview::addressof(parent)) {}
 
     template<bool AntiConst, std::enable_if_t<conjunction<
         bool_constant<(AntiConst != Const) && Const>,
         convertible_to<iterator_t<V>, iterator_t<Base>>
     >::value, int> = 0>
     constexpr outer_iterator(outer_iterator<AntiConst> i)
-        : parent_(i.parent_)
-        , current_(std::move(i.current_))
+        : current_base(i)
+        , parent_(i.parent_)
         , trailing_empty_(i.trailing_empty_) {}
 
     constexpr value_type operator*() const {
@@ -159,53 +215,41 @@ class lazy_split_view
     }
 
     constexpr outer_iterator& operator++() {
-      const auto last = ranges::end(parent_->base_);
-      if (current_ == last) {
+      const auto end = ranges::end(parent_->base_);
+      if (current() == end) {
         trailing_empty_ = false;
         return *this;
       }
 
-      auto s = make_subrange(parent_->pattern_);
-      if (s.begin() == s.end()) {
-        ++current_;
+      auto p = make_subrange(parent_->pattern_);
+      if (p.begin() == p.end()) {
+        ++current();
       } else if PREVIEW_CONSTEXPR_AFTER_CXX17 (detail::tiny_range<Pattern>::value) {
-        increment_if_tiny(detail::tiny_range<Pattern>{}, last, s.begin());
+        increment_if_tiny(detail::tiny_range<Pattern>{}, end, p.begin());
       } else {
         do {
-          auto b_p = ranges::mismatch(current_, last, s.begin(), s.end());
-          if (b_p.in2 == s.end()) {
-            current_ = b_p.in1;
-            if (current_ == last)
+          auto b_p = ranges::mismatch(current(), end, p.begin(), p.end());
+          if (b_p.in2 == p.end()) {
+            current() = b_p.in1;
+            if (current() == end)
               trailing_empty_ = true;
             break;
           }
-        } while (++current_ != last);
+        } while (++current() != end);
       }
 
       return *this;
     }
 
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-        forward_range<Base>
-    >::value, int> = 0>
-    constexpr outer_iterator operator++(int) {
-      auto tmp = *this;
-      ++*this;
-      return tmp;
-    }
-
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-        negation<forward_range<Base>>
-    >::value, int> = 0>
-    constexpr void operator++(int) {
-      ++*this;
+    constexpr decltype(auto) operator++(int) {
+      return post_increment(forward_range<Base>{});
     }
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
         forward_range<Base>
     >::value, int> = 0>
     friend constexpr bool operator==(const outer_iterator& x, const outer_iterator& y) {
-      return x.current_ == y.current_ && x.trailing_empty_ == y.trailing_empty_;
+      return x.current() == y.current() && x.trailing_empty_ == y.trailing_empty_;
     }
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
@@ -217,7 +261,7 @@ class lazy_split_view
 
     friend constexpr bool operator==(const outer_iterator& x, default_sentinel_t) {
       using namespace rel_ops;
-      return x.current_ == ranges::end(x.parent_->base_) && !x.trailing_empty_;
+      return x.current() == ranges::end(x.parent_->base_) && !x.trailing_empty_;
     }
 
     friend constexpr bool operator==(default_sentinel_t, const outer_iterator& x) {
@@ -259,7 +303,7 @@ class lazy_split_view
     bool incremented_ = false;
 
     constexpr bool equal_with(const inner_iterator& other) const {
-      return i_.current_ == other.i_.current_;
+      return i_.current() == other.i_.current();
     }
 
    public:
@@ -277,18 +321,18 @@ class lazy_split_view
         : i_(std::move(i)) {}
 
     constexpr const iterator_t<Base>& base() const & noexcept {
-      return i_.current_;
+      return i_.current();
     }
 
     template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
         forward_range<V>
     >::value, int> = 0>
     constexpr iterator_t<Base> base() && {
-      return std::move(i_.current_);
+      return std::move(i_.current());
     }
 
     constexpr decltype(auto) operator*() const {
-      return *i_.current_;
+      return *i_.current();
     }
 
     constexpr inner_iterator& operator++() {
@@ -336,14 +380,18 @@ class lazy_split_view
         indirectly_swappable<iterator_t<Base>>
     >::value, int> = 0>
     friend constexpr void iter_swap(const inner_iterator& x, const inner_iterator& y)
-        noexcept(noexcept(ranges::iter_swap(std::declval<iterator_t<Base>>(), std::declval<iterator_t<Base>>())))
+        noexcept(noexcept(x.iter_swap_impl(y)))
     {
       x.iter_swap_impl(y);
     }
 
+    friend constexpr decltype(auto) iter_move(const inner_iterator& i) noexcept(noexcept(i.iter_move_impl())) {
+      return i.iter_move_impl();
+    }
+
    private:
     constexpr inner_iterator& pre_increment(std::true_type /* forward_range<Base> */) {
-      ++i_.current_;
+      ++i_.current();
       return *this;
     }
     constexpr inner_iterator& pre_increment(std::false_type /* forward_range<Base> */) {
@@ -366,32 +414,42 @@ class lazy_split_view
     }
 
     constexpr bool compare_with_default_sentinel(std::true_type /* tiny_range<Pattern> */) const {
-      auto p = preview::ranges::make_subrange(i_.parent_->pattern_);
-      auto last = ranges::end(i_.parent_->base_);
+      using namespace preview::rel_ops;
 
-      const auto& cur = i_.current_;
-      if (cur == last) return true;
+      auto p = preview::ranges::make_subrange(i_.parent_->pattern_);
+      auto end = ranges::end(i_.parent_->base_);
+
+      const auto& cur = i_.current();
+      if (cur == end) return true;
       if (p.begin() == p.end()) return incremented_;
       return *cur == *p.begin();
     }
     constexpr bool compare_with_default_sentinel(std::false_type /* tiny_range<Pattern> */) const {
+      using namespace preview::rel_ops;
+
       auto p = preview::ranges::make_subrange(i_.parent_->pattern_);
       auto pcur = p.begin();
       auto pend = p.end();
-      auto last = ranges::end(i_.parent_->base_);
+      auto end = ranges::end(i_.parent_->base_);
 
-      auto cur = i_.current_;
-      if (cur == last) return true;
+      auto cur = i_.current();
+      if (cur == end) return true;
       if (pcur == pend) return incremented_;
       do {
         if (!(*cur == *pcur)) return false;
         if (++pcur == pend) return true;
-      } while (!(++cur == last));
+      } while (!(++cur == end));
       return false;
     }
 
-    constexpr void iter_swap_impl(const inner_iterator& y) const {
-      ranges::iter_swap(i_.current_, y.i_.current_);
+    constexpr void iter_swap_impl(const inner_iterator& y) const
+        noexcept(noexcept(ranges::iter_swap(i_.current(), y.i_.current())))
+    {
+      ranges::iter_swap(i_.current(), y.i_.current());
+    }
+
+    constexpr decltype(auto) iter_move_impl() const noexcept(noexcept(ranges::iter_move(i_.current()))) {
+      return ranges::iter_move(i_.current());
     }
   };
 
@@ -417,8 +475,6 @@ class lazy_split_view
   constexpr explicit lazy_split_view(R&& r, range_value_t<R> e)
       : base_(views::all(std::forward<R>(r)))
       , pattern_(views::single(std::move(e))) {}
-
-
 
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       copy_constructible<V>
@@ -499,6 +555,7 @@ lazy_split_view(R&&, range_value_t<R>)
         views::all_t<R>>,
         single_view<range_value_t<R>>
     >;
+
 #endif
 
 } // namespace ranges
