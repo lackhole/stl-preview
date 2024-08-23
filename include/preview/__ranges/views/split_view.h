@@ -137,8 +137,7 @@ class split_view : public view_interface<split_view<V, Pattern>> {
         : end_(ranges::end(parent.base_)) {}
 
     friend constexpr bool operator==(const iterator& x, const sentinel& y) {
-      using namespace preview::rel_ops;
-      return x.cur_ == y.end_ && !x.trailing_empty_;
+      return y.compare_with_iterator(x);
     }
 
     friend constexpr bool operator!=(const iterator& x, const sentinel& y) {
@@ -154,13 +153,18 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     }
 
    private:
+    constexpr bool compare_with_iterator(const iterator& x) const {
+      using namespace preview::rel_ops;
+      return x.cur_ == end_ && !x.trailing_empty_;
+    }
     sentinel_t<V> end_ = sentinel_t<V>();
   };
 
   split_view() = default;
 
   constexpr explicit split_view(V base, Pattern pattern)
-      : base_(std::move(base)), pattern_(std::move(pattern)) {}
+      : base_(std::move(base))
+      , pattern_(std::move(pattern)) {}
 
   template<typename R, std::enable_if_t<check_range<R>::value, int> = 0>
   constexpr explicit split_view(R&& r, range_value_t<R> e)
@@ -186,14 +190,14 @@ class split_view : public view_interface<split_view<V, Pattern>> {
   }
 
   constexpr auto end() {
-    return end(common_range<V>{});
+    return end_impl(common_range<V>{});
   }
 
  private:
-  constexpr iterator end(std::true_type /* common_range<V> */) {
+  constexpr iterator end_impl(std::true_type /* common_range<V> */) {
     return iterator{*this, ranges::end(base_), {}};
   }
-  constexpr sentinel end(std::false_type /* common_range<V> */) {
+  constexpr sentinel end_impl(std::false_type /* common_range<V> */) {
     return sentinel{*this};
   }
 
