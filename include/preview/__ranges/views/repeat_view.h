@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "preview/__concepts/constructible_from.h"
+#include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/integer_like.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
@@ -165,6 +166,9 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
   repeat_view()
       : value_(W()), bound_() {}
 
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
+      copy_constructible<W>
+  >::value, int> = 0>
   constexpr explicit repeat_view(const W& value, Bound bound = Bound())
       : value_(value), bound_(bound){}
 

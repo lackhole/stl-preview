@@ -34,28 +34,28 @@ class range_adaptor : public range_adaptor_closure<range_adaptor<Niebloid, Args.
 
   template<typename R, std::enable_if_t<is_invocable<Niebloid, R, Args&...>::value, int> = 0>
   constexpr decltype(auto) operator()(R&& r) & {
-    return call(*this, std::forward<R>(r), std::index_sequence_for<Args...>{});
+    return call(std::forward<R>(r), args_, std::index_sequence_for<Args...>{});
   }
 
   template<typename R, std::enable_if_t<is_invocable<Niebloid, R, const Args&...>::value, int> = 0>
   constexpr decltype(auto) operator()(R&& r) const & {
-    return call(*this, std::forward<R>(r), std::index_sequence_for<Args...>{});
+    return call(std::forward<R>(r), args_, std::index_sequence_for<Args...>{});
   }
 
   template<typename R, std::enable_if_t<is_invocable<Niebloid, R, Args&&...>::value, int> = 0>
   constexpr decltype(auto) operator()(R&& r) && {
-    return call(std::move(*this), std::forward<R>(r), std::index_sequence_for<Args...>{});
+    return call(std::forward<R>(r), std::move(args_), std::index_sequence_for<Args...>{});
   }
 
   template<typename R, std::enable_if_t<is_invocable<Niebloid, R, const Args&&...>::value, int> = 0>
   constexpr decltype(auto) operator()(R&& r) const && {
-    return call(std::move(*this), std::forward<R>(r), std::index_sequence_for<Args...>{});
+    return call(std::forward<R>(r), std::move(args_), std::index_sequence_for<Args...>{});
   }
 
  private:
-  template<typename This, typename R, std::size_t... I>
-  static constexpr decltype(auto) call(This&& thiz, R&& r, std::index_sequence<I...>) {
-    return Niebloid{}(std::forward<R>(r), std::get<I>(std::forward<This>(thiz).args_)...);
+  template<typename ArgTuple, typename R, std::size_t... I>
+  static constexpr decltype(auto) call(R&& r, ArgTuple&& tuple, std::index_sequence<I...>) {
+    return Niebloid{}(std::forward<R>(r), std::get<I>(std::forward<ArgTuple>(tuple))...);
   }
 
   std::tuple<Args...> args_;

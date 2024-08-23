@@ -26,16 +26,30 @@
 
 namespace preview {
 namespace ranges {
+namespace detail {
+namespace ref_view_fn {
+
+template<typename R> static void fun(R&);
+template<typename R> static void fun(R&&) = delete;
+
+template<typename R, typename T, typename = void>
+struct fallback_to_lref : std::false_type {};
+template<typename R, typename T>
+struct fallback_to_lref<R, T, void_t<decltype(fun<R>(std::declval<T>()))>> : std::true_type {};
+
+} // namespace ref_view_fn
+} // namespace detail
 
 template<typename R>
 class ref_view : public view_interface<ref_view<R>> {
  public:
+  static_assert(range<R>::value, "Constraints not satisfied");
   static_assert(std::is_object<R>::value, "Constraints not satisfied");
 
   template<typename T, std::enable_if_t<conjunction<
       different_from<T, ref_view>,
       convertible_to<T, R&>,
-      std::is_lvalue_reference<T&&>
+      detail::ref_view_fn::fallback_to_lref<R, T>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 ref_view(T&& t) noexcept
       : r_(preview::addressof(static_cast<R&>(std::forward<T>(t)))) {}

@@ -30,7 +30,7 @@ namespace detail {
 template<typename DropWhileView, typename V, bool Cached = forward_range<V>::value/* true */>
 struct drop_while_view_cached_begin : public view_interface<DropWhileView> {
   template<typename Base, typename Pred>
-  constexpr auto begin(Base& base, Pred& pred) {
+  constexpr auto begin_impl(Base& base, Pred& pred) {
     if (!cached_begin_.has_value()) {
       cached_begin_.emplace(ranges::find_if_not(base, std::cref(*pred)));
     }
@@ -44,7 +44,7 @@ struct drop_while_view_cached_begin : public view_interface<DropWhileView> {
 template<typename DropWhileView, typename V>
 struct drop_while_view_cached_begin<DropWhileView, V, false> : public view_interface<DropWhileView> {
   template<typename Base, typename Pred>
-  constexpr auto begin(Base& base, Pred& pred) {
+  constexpr auto begin_impl(Base& base, Pred& pred) {
     return ranges::find_if_not(base, std::cref(*pred));
   }
 };
@@ -56,6 +56,7 @@ class drop_while_view
     : public detail::drop_while_view_cached_begin<drop_while_view<V, Pred>, V>
 {
   using begin_base = detail::drop_while_view_cached_begin<drop_while_view<V, Pred>, V>;
+  using begin_base::begin_impl;
 
  public:
   static_assert(view<V>::value, "Constraints not satisfied");
@@ -84,7 +85,7 @@ class drop_while_view
   }
 
   constexpr auto begin() {
-    return begin_base::begin(base_, pred_);
+    return begin_base::begin_impl(base_, pred_);
   }
 
   constexpr auto end() {

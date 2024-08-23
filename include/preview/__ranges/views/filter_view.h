@@ -14,6 +14,7 @@
 #include "preview/__algorithm/ranges/find_if.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
+#include "preview/__core/std_version.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
@@ -109,7 +110,7 @@ struct has_arrow<I, true>
 
 template<typename V, typename Pred>
 class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_view_cache<V> {
-  V base_;
+  V base_{};
   movable_box<Pred> pred_;
   using cache_base = detail::filter_view_cache<V>;
 
@@ -279,7 +280,7 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
   }
 
   constexpr const Pred& pred() const {
-    assert(((void)"pred_ must contatin a value", pred_.has_value()));
+    assert(((void)"pred_ must contain a value", pred_.has_value()));
     return *pred_;
   }
 
@@ -288,20 +289,20 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
   }
 
   constexpr auto end() {
-    return end(common_range<V>{});
+    return end_impl(common_range<V>{});
   }
 
  private:
-  constexpr iterator end(std::true_type /* common_range */) {
+  constexpr iterator end_impl(std::true_type /* common_range */) {
     return {*this, ranges::end(base_)};
   }
-  constexpr sentinel end(std::false_type /* common_range */) {
+  constexpr sentinel end_impl(std::false_type /* common_range */) {
     return sentinel{*this};
   }
 };
 
 
-#if __cplusplus >= 201703L
+#if PREVIEW_CXX_VERSION >= 17
 
 template<typename R, typename Pred>
 filter_view(R&&, Pred) -> filter_view<views::all_t<R>, Pred>;

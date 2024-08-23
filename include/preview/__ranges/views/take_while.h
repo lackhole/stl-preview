@@ -27,17 +27,19 @@ namespace detail {
 
 struct take_while_niebloid {
   template<typename R, typename Pred, std::enable_if_t<conjunction<
-      has_typename_type<detail::all_t_impl<R>>,
-      view<all_t<R>>,
-      input_range<all_t<R>>,
-      std::is_object<remove_cvref_t<Pred>>,
-      indirect_unary_predicate<const remove_cvref_t<Pred>, iterator_t<all_t<R>>>
+      has_typename_type < detail::all_t_impl<R> >,
+      view              < all_t<R>              >,
+      input_range       < all_t<R>              >,
+      std::is_object    < std::decay_t<Pred>    >,
+      indirect_unary_predicate<const std::decay_t<Pred>, iterator_t<all_t<R>>>
   >::value, int> = 0>
   constexpr auto operator()(R&& r, Pred&& pred) const {
     return take_while_view<all_t<R>, std::decay_t<Pred>>(std::forward<R>(r), std::forward<Pred>(pred));
   }
 
-  template<typename Pred>
+  template<typename Pred, std::enable_if_t<
+      std::is_object<std::decay_t<Pred>>
+  ::value, int> = 0>
   constexpr auto operator()(Pred&& pred) const {
     return range_adaptor<take_while_niebloid, std::decay_t<Pred>>(std::forward<Pred>(pred));
   }

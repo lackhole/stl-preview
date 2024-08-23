@@ -325,9 +325,10 @@ class transform_view : public view_interface<transform_view<V, F>> {
     return iterator<false>{*this, ranges::begin(base_)};
   }
 
-  template<typename V2 = const V, typename F2 = const F, std::enable_if_t<conjunction<
-      range<V2>,
-      regular_invocable<F2&, ranges::range_reference_t<V2>>
+  template<typename V2 = V, typename F2 = F, std::enable_if_t<conjunction<
+      std::is_same<V2, V>, std::is_same<F2, F>,
+      range<const V2>,
+      regular_invocable<const F2&, ranges::range_reference_t<const V2>>
   >::value, int> = 0>
   constexpr iterator<true> begin() const {
     return iterator<true>{*this, ranges::begin(base_)};
@@ -347,18 +348,18 @@ class transform_view : public view_interface<transform_view<V, F>> {
     return iterator<false>{*this, ranges::end(base_)};
   }
 
-  template<typename V2 = const V, typename F2 = const F, std::enable_if_t<conjunction<
-      range<V2>,
-      negation<common_range<V2>>,
-      regular_invocable<F2&, range_reference_t<V2>>
+  template<typename V2 = V, typename F2 = F, std::enable_if_t<conjunction<std::is_same<V2, V>, std::is_same<F2, F>,
+      range<const V2>,
+      negation<common_range<const V2>>,
+      regular_invocable<const F2&, range_reference_t<const V2>>
   >::value, int> = 0>
   constexpr sentinel<true> end() const {
     return sentinel<true>{ranges::end(base_)};
   }
 
-  template<typename V2 = const V, typename F2 = const F, std::enable_if_t<conjunction<
-      common_range<V2>,
-      regular_invocable<F2&, range_reference_t<V2>>
+  template<typename V2 = V, typename F2 = F, std::enable_if_t<conjunction<std::is_same<V2, V>, std::is_same<F2, F>,
+      common_range<const V2>,
+      regular_invocable<const F2&, range_reference_t<const V2>>
   >::value, int> = 0>
   constexpr iterator<true> end() const {
     return iterator<true>{*this, ranges::end(base_)};

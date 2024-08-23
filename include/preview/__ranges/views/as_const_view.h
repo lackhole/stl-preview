@@ -70,7 +70,7 @@ class as_const_view : public view_interface<as_const_view<V>> {
   }
 
  private:
-  V base_;
+  V base_{};
 };
 
 #if __cplusplus >= 201703L

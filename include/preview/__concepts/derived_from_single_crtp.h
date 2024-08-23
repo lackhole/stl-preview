@@ -30,7 +30,7 @@ template<
     bool = is_referencable<Derived>::value /* true */
 >
 struct derived_from_single_crtp_impl
-#if defined(_MSC_VER) && _MSC_VER < 1930 // Ambigious casting is allowed until Visutal Studio 2022
+#if defined(_MSC_VER) && _MSC_VER < 1930 // Ambiguous casting is allowed until Visual Studio 2022
     : has_typename_preview_derived<Derived> {};
 #else
     : is_invocable_r<

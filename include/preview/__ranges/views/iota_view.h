@@ -378,18 +378,8 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     return iterator(value_);
   }
 
-
-  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-    negation<same_as<W, Bound>>
-  >::value, int> = 0>
-  constexpr sentinel end() const {
-    return sentinel(bound_);
-  }
-  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-    same_as<W, Bound>
-  >::value, int> = 0>
-  constexpr iterator end() const {
-    return iterator(bound_);
+  constexpr auto end() const {
+    return end_impl(same_as<W, Bound>{}, same_as<Bound, unreachable_sentinel_t>{});
   }
 
   constexpr bool empty() const {
@@ -409,6 +399,19 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
   }
 
  private:
+  template<typename Any>
+  constexpr iterator end_impl(std::true_type /* same_as<W, Bound> */, Any) const {
+    return iterator{bound_};
+  }
+  constexpr auto end_impl(std::false_type /* same_as<W, Bound> */,
+                          std::true_type /* same_as<Bound, unreachable_sentinel_t> */) const {
+    return unreachable_sentinel;
+  }
+  constexpr sentinel end_impl(std::false_type /* same_as<W, Bound> */,
+                              std::false_type /* same_as<Bound, unreachable_sentinel_t> */) const {
+    return sentinel{bound_};
+  }
+
   constexpr auto size_impl(std::true_type) const {
     return (value_ < 0)
         ? ((bound_ < 0)
