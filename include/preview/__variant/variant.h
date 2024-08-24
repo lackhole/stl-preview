@@ -31,6 +31,7 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
+#include "preview/__utility/forward_like.h"
 #include "preview/__utility/type_sequence.h"
 #include "preview/__utility/in_place.h"
 #include "preview/__variant/bad_variant_access.h"
@@ -117,30 +118,27 @@ struct union_wrapper_t<false, T, Types...> {
   };
 };
 
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<0>) noexcept { return std::forward<Union>(u).get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<1>) noexcept { return std::forward<Union>(u).tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<2>) noexcept { return std::forward<Union>(u).tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<3>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<4>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<5>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<6>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<7>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<8>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<9>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<10>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<11>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<12>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<13>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<14>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
-template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<15>) noexcept { return std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.get(); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<0>) noexcept { return preview::force_forward_like<Union>(u.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<1>) noexcept { return preview::force_forward_like<Union>(u.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<2>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<3>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<4>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<5>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<6>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<7>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<8>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<9>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<10>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<11>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<12>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<13>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<14>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
+template<typename Union> constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<15>) noexcept { return preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.head_); }
 
 template<typename Union, std::size_t I>
 constexpr decltype(auto) variant_raw_get(Union&& u, in_place_index_t<I>) {
   return variant_raw_get(
-      std::forward<decltype(
-          std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_)>(
-          std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_
-      ),
+      preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_),
       in_place_index<I - 16>
   );
 }
@@ -201,9 +199,7 @@ template<std::size_t Base, typename Union, typename F, typename... Args>
 constexpr decltype(auto) variant_raw_visit_recurse(std::size_t i, Union&& u, F&& func, in_place_index_t<Base>, std::true_type, Args&&... args) {
   return variant_raw_visit_impl<Base>(
       i - 16,
-      std::forward<decltype(
-          std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_)>(
-          std::forward<Union>(u).tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_),
+      preview::force_forward_like<Union>(u.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_.tail_),
       std::forward<F>(func),
       std::forward<Args>(args)...
   );
@@ -451,10 +447,10 @@ struct variant_base {
     index_ = variant_npos;
   }
 
-  union_wrapper<Types...>& storage() & { return union_; }
-  const union_wrapper<Types...>& storage() const & { return union_; }
-  union_wrapper<Types...>&& storage() && { return std::move(union_); }
-  const union_wrapper<Types...>&& storage() const && { return std::move(union_); }
+        union_wrapper<Types...> &  storage()       &  { return union_; }
+  const union_wrapper<Types...> &  storage() const &  { return union_; }
+        union_wrapper<Types...> && storage()       && { return std::move(union_); }
+  const union_wrapper<Types...> && storage() const && { return std::move(union_); }
 
   union_wrapper<Types...> union_;
   std::size_t index_;
@@ -712,10 +708,35 @@ class variant : private detail::variant_control_smf<Types...> {
     return detail::visit_single<R>(std::forward<Visitor>(vis), std::move(*this));
   }
 
-  detail::variant_base<Types...>& _base() & { return static_cast<detail::variant_base<Types...>&>(*this); }
-  detail::variant_base<Types...>&& _base() && { return static_cast<detail::variant_base<Types...>&&>(*this); }
-  const detail::variant_base<Types...>& _base() const & { return static_cast<const detail::variant_base<Types...>&>(*this); }
-  const detail::variant_base<Types...>&& _base() const && { return static_cast<const detail::variant_base<Types...>&&>(*this); }
+        detail::variant_base<Types...> &  _base()       &  { return static_cast<      detail::variant_base<Types...>& >(*this); }
+        detail::variant_base<Types...> && _base()       && { return static_cast<      detail::variant_base<Types...>&&>(*this); }
+  const detail::variant_base<Types...> &  _base() const &  { return static_cast<const detail::variant_base<Types...>& >(*this); }
+  const detail::variant_base<Types...> && _base() const && { return static_cast<const detail::variant_base<Types...>&&>(*this); }
+
+  template<typename Visitor, typename... Args>
+  constexpr auto _visit_indexed_args(Visitor&& vis, Args&&... args) &
+      -> decltype(detail::variant_raw_visit(base::index_, _base().storage(), std::declval<Visitor>(), std::declval<Args>()...))
+  {
+    return detail::variant_raw_visit(base::index_, _base().storage(), std::forward<Visitor>(vis), std::forward<Args>(args)...);
+  }
+  template<typename Visitor, typename... Args>
+  constexpr auto _visit_indexed_args(Visitor&& vis, Args&&... args) const &
+      -> decltype(detail::variant_raw_visit(base::index_, _base().storage(), std::declval<Visitor>(), std::declval<Args>()...))
+  {
+    return detail::variant_raw_visit(base::index_, _base().storage(), std::forward<Visitor>(vis), std::forward<Args>(args)...);
+  }
+  template<typename Visitor, typename... Args>
+  constexpr auto _visit_indexed_args(Visitor&& vis, Args&&... args) &&
+      -> decltype(detail::variant_raw_visit(base::index_, std::move(_base().storage()), std::declval<Visitor>(), std::declval<Args>()...))
+  {
+    return detail::variant_raw_visit(base::index_, std::move(_base().storage()), std::forward<Visitor>(vis), std::forward<Args>(args)...);
+  }
+  template<typename Visitor, typename... Args>
+  constexpr auto _visit_indexed_args(Visitor&& vis, Args&&... args) const &&
+      -> decltype(detail::variant_raw_visit(base::index_, std::move(_base().storage()), std::declval<Visitor>(), std::declval<Args>()...))
+  {
+    return detail::variant_raw_visit(base::index_, std::move(_base().storage()), std::forward<Visitor>(vis), std::forward<Args>(args)...);
+  }
 
  private:
   struct visitor_self {

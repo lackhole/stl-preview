@@ -1002,3 +1002,40 @@ TEST(VERSIONED(RangesViews), lazy_split_view) {
       ranges::equal
   ));
 }
+
+TEST(VERSIONED(RangesViews), concat_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  { // basics
+    std::vector<int> v1{1, 2, 3}, v2{4, 5}, v3{};
+    std::array<int, 3> a{6, 7, 8};
+    auto s = views::single(9);
+    for (auto&& i : views::concat(v1, v2, v3, a, s)) {
+      (void) i;
+    }
+    EXPECT_PRED2(ranges::equal, views::concat(v1, v2, v3, a, s), views::iota(1, 10));
+  }
+
+  {
+    std::vector<int> v0{1, 2, 3}, v1{4, 5};
+    int a[]{6, 7};
+    int i{8};
+    auto ie{views::single(i)};
+
+    auto con = views::concat(v0, v1, a, ie);
+    EXPECT_EQ(con.size(), v0.size() + v1.size() + std::size(a) + ie.size());
+    EXPECT_EQ(con.size(), 8);
+    EXPECT_PRED2(ranges::equal, con, views::iota(1, 9));
+
+    auto it = con.begin();
+    it + 4;
+
+//    con[6] = 42; // con is random_access_range, operator[] returns a reference
+    assert(a[1] == 42); // a[1] was modified via con[6]
+
+    std::list<int> l{7, 8}; // list is bidirectional range
+    auto cat = views::concat(v0, l);
+    // cat[0] = 13; // compile-time error: cat is bidirectional => no operator[]
+  }
+}

@@ -17,40 +17,29 @@
 namespace preview {
 namespace detail {
 
-template<std::size_t N, typename Tuple, typename T, typename F>
-constexpr auto tuple_fold_left_impl(Tuple&& tuple, T&& x, F&& f, std::integral_constant<std::size_t, N - 1>) {
-    return preview::invoke(
-        std::forward<F>(f),
-        std::forward<T>(x),
-        std::get<N - 1>(std::forward<Tuple>(tuple))
-    );
+template<std::size_t I, std::size_t S, typename Tuple, typename T, typename F, std::enable_if_t<(I == S), int> = 0>
+constexpr auto tuple_fold_left_impl(Tuple&&, T&& x, F&&) {
+  return std::forward<T>(x);
 }
 
-template<std::size_t N, typename Tuple, typename T, typename F, std::size_t I, std::enable_if_t<(I + 1) != N, int> = 0>
-constexpr auto tuple_fold_left_impl(Tuple&& tuple, T&& x, F&& f, std::integral_constant<std::size_t, I>) {
-  return tuple_fold_left_impl<N>(
+template<std::size_t I, std::size_t S, typename Tuple, typename T, typename F, std::enable_if_t<(I != S), int> = 0>
+constexpr auto tuple_fold_left_impl(Tuple&& tuple, T&& x, F&& f) {
+  auto&& r = preview::invoke(f, std::forward<T>(x), std::get<I>(std::forward<Tuple>(tuple)));
+  return tuple_fold_left_impl<I + 1, S>(
       std::forward<Tuple>(tuple),
-      preview::invoke(
-          std::forward<F>(f),
-          std::forward<T>(x),
-          std::get<I>(std::forward<Tuple>(tuple))
-      ),
-      std::forward<F>(f),
-      std::integral_constant<std::size_t, I + 1>{}
+      std::forward<decltype(r)>(r),
+      std::forward<F>(f)
   );
 }
 
 } // namespace detail
 
-template<typename Tuple, typename T, typename F, std::enable_if_t<conjunction<
-    tuple_like<Tuple>
->::value, int> = 0>
+template<typename Tuple, typename T, typename F, std::enable_if_t<tuple_like<Tuple>::value, int> = 0>
 constexpr auto tuple_fold_left(Tuple&& tuple, T&& init, F&& f) {
-  return detail::tuple_fold_left_impl<std::tuple_size<remove_cvref_t<Tuple>>::value>(
+  return detail::tuple_fold_left_impl<0, std::tuple_size<remove_cvref_t<Tuple>>::value>(
       std::forward<Tuple>(tuple),
       std::forward<T>(init),
-      std::forward<F>(f),
-      std::integral_constant<std::size_t, 0>{}
+      std::forward<F>(f)
   );
 }
 

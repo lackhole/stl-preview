@@ -40,9 +40,7 @@ struct distance_niebloid {
     return result;
   }
 
-  template<typename I, typename S, std::enable_if_t<
-      sized_sentinel_for<S, std::decay_t<I>>
-      ::value, int> = 0>
+  template<typename I, typename S, std::enable_if_t<sized_sentinel_for<S, std::decay_t<I>>::value, int> = 0>
   constexpr iter_difference_t<std::decay_t<I>> operator()(I&& first, S last) const {
     return last - static_cast<const std::decay_t<I>&>(first);
   }
