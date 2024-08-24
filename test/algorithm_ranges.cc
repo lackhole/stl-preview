@@ -100,7 +100,7 @@ TEST(VERSIONED(AlgorithmRanges), fill_n) {
 
   std::vector<std::string> v(n, "AB");
   ranges::fill_n(v.begin(), n, "BA");
-  EXPECT_PRED2(ranges::equal, v, views::repeat("BA"s, n));
+  EXPECT_TRUE(ranges::equal(v, views::repeat("BA"s, n)));
 
   std::vector<std::complex<double>> nums{{1, 3}, {2, 2}, {4, 8}};
   ranges::fill_n(nums.begin(), 2, {4, 2});
@@ -109,7 +109,7 @@ TEST(VERSIONED(AlgorithmRanges), fill_n) {
   std::vector<int> v2;
   ranges::fill_n(std::back_inserter(v2), n, 100);
   EXPECT_EQ(v2.size(), n);
-  EXPECT_PRED2(ranges::equal, v2, views::repeat(100, n));
+  EXPECT_TRUE(ranges::equal(v2, views::repeat(100, n)));
 }
 
 TEST(VERSIONED(AlgorithmRanges), for_each) {
