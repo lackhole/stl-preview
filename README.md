@@ -106,9 +106,9 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/306/691-grey)![][p044] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/229/429-grey)![][p053] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/13/132-grey)![][p010] |
+|                                     | ![](https://img.shields.io/badge/308/691-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/15/132-grey)![][p011] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/51/115-grey)![][p044]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/43/96-grey)![][p045]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/5/23-grey)![][p022]   |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/1/14-grey)![][p007]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
@@ -235,8 +235,8 @@ Description
   | `ranges::copy_backward`             | ![][c20ok] |            |
   | `ranges::move`                      | ![][c20no] |            |
   | `ranges::move_backward`             | ![][c20no] |            |
-  | `ranges::fill`                      | ![][c20no] | ![][c26no] |
-  | `ranges::fill_n`                    | ![][c20no] | ![][c26no] |
+  | `ranges::fill`                      | ![][c20ok] | ![][c26ok] |
+  | `ranges::fill_n`                    | ![][c20ok] | ![][c26ok] |
   | `ranges::transform`                 | ![][c20no] |            |
   | `ranges::generate`                  | ![][c20no] |            |
   | `ranges::generate_n`                | ![][c20no] |            |
