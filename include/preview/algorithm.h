@@ -22,6 +22,8 @@
 #include "preview/__algorithm/ranges/count.h"
 #include "preview/__algorithm/ranges/count_if.h"
 #include "preview/__algorithm/ranges/equal.h"
+#include "preview/__algorithm/ranges/fill.h"
+#include "preview/__algorithm/ranges/fill_n.h"
 #include "preview/__algorithm/ranges/find.h"
 #include "preview/__algorithm/ranges/find_end.h"
 #include "preview/__algorithm/ranges/find_first_of.h"

@@ -23,6 +23,7 @@
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/input_range.h"
 #include "preview/__ranges/iterator_t.h"
+#include "preview/__ranges/range_value_t.h"
 #include "preview/__type_traits/conjunction.h"
 
 namespace preview {
@@ -85,21 +86,21 @@ struct equal_niebloid {
   }
 
   template<
-      typename T,
       typename R2,
+      typename T = range_value_t<R2>,
       typename Pred = equal_to,
       typename Proj1 = identity, typename Proj2 = identity,
       std::enable_if_t<check_range<std::initializer_list<T>, R2, Pred, Proj1, Proj2>::value, int> = 0
   >
   PREVIEW_NODISCARD constexpr bool
-  operator()(std::initializer_list<T>&& il, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
+  operator()(std::initializer_list<T> il, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(il), ranges::end(il), ranges::begin(r2), ranges::end(r2),
                    std::ref(pred), std::ref(proj1), std::ref(proj2));
   }
 
   template<
       typename R1,
-      typename U,
+      typename U = range_value_t<R1>,
       typename Pred = equal_to,
       typename Proj1 = identity, typename Proj2 = identity,
       std::enable_if_t<check_range<R1, std::initializer_list<U>, Pred, Proj1, Proj2>::value, int> = 0

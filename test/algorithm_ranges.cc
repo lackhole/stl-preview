@@ -79,6 +79,39 @@ TEST(VERSIONED(AlgorithmRanges), any_of) {
   EXPECT_FALSE(ranges::any_of(v, DivisibleBy(11)));
 }
 
+TEST(VERSIONED(AlgorithmRanges), fill) {
+  std::vector<int> v{0, 1, 2, 3, 4, 5};
+
+  // set all elements to -1 using overload (1)
+  ranges::fill(v.begin(), v.end(), -1);
+  EXPECT_PRED2(ranges::equal, v, std::vector<int>(v.size(), -1));
+
+  // set all element to 10 using overload (2)
+  ranges::fill(v, 10);
+  EXPECT_PRED2(ranges::equal, v, views::repeat(10, v.size()));
+
+  std::vector<std::complex<double>> nums{{1, 3}, {2, 2}, {4, 8}};
+  ranges::fill(nums, {4, 2}); // T gets deduced
+  EXPECT_TRUE(ranges::equal(nums, {{4, 2}, {4, 2}, {4, 2}}));
+}
+
+TEST(VERSIONED(AlgorithmRanges), fill_n) {
+  constexpr auto n{8};
+
+  std::vector<std::string> v(n, "AB");
+  ranges::fill_n(v.begin(), n, "BA");
+  EXPECT_PRED2(ranges::equal, v, views::repeat("BA"s, n));
+
+  std::vector<std::complex<double>> nums{{1, 3}, {2, 2}, {4, 8}};
+  ranges::fill_n(nums.begin(), 2, {4, 2});
+  EXPECT_TRUE(ranges::equal(nums, {{4, 2}, {4, 2}, {4, 8}}));
+
+  std::vector<int> v2;
+  ranges::fill_n(std::back_inserter(v2), n, 100);
+  EXPECT_EQ(v2.size(), n);
+  EXPECT_PRED2(ranges::equal, v2, views::repeat(100, n));
+}
+
 TEST(VERSIONED(AlgorithmRanges), for_each) {
   std::vector<int> nums {3, 4, 2, 8, 15, 267};
   auto print = [](const auto& n) { std::cout << ' ' << n; };
