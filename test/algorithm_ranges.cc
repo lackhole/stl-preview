@@ -84,11 +84,11 @@ TEST(VERSIONED(AlgorithmRanges), fill) {
 
   // set all elements to -1 using overload (1)
   ranges::fill(v.begin(), v.end(), -1);
-  EXPECT_PRED2(ranges::equal, v, std::vector<int>(v.size(), -1));
+  EXPECT_TRUE(ranges::equal(v, std::vector<int>(v.size(), -1)));
 
   // set all element to 10 using overload (2)
   ranges::fill(v, 10);
-  EXPECT_PRED2(ranges::equal, v, views::repeat(10, v.size()));
+  EXPECT_TRUE(ranges::equal(v, views::repeat(10, v.size())));
 
   std::vector<std::complex<double>> nums{{1, 3}, {2, 2}, {4, 8}};
   ranges::fill(nums, {4, 2}); // T gets deduced
