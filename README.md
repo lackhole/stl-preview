@@ -770,52 +770,56 @@ Description
 
 #### `<memory>`
 
-  |                                                   | Introduced | Revision   |
-  |---------------------------------------------------|------------|------------|
-  | `pointer_traits`                                  | ![][c11]   | ![][c20ok] |
-  | `aligned_alloc`                                   | ![][c17no] |            |
-  | `destroy_at`                                      | ![][c17ok] | ![][c20ok] |
-  | `destroy`                                         | ![][c17ok] | ![][c20ok] |
-  | `destroy_n`                                       | ![][c17ok] | ![][c20ok] |
-  | `xxx_pointer_cast`                                | ![][c17ok] | ![][c20ok] |
-  | `uninitialized_default_construct`                 | ![][c17no] | ![][c20no] |
-  | `uninitialized_default_construct_n`               | ![][c17no] | ![][c20no] |
-  | `uninitialized_move`                              | ![][c17no] | ![][c20no] |
-  | `uninitialized_move_n`                            | ![][c17no] | ![][c20no] |
-  | `uninitialized_value_construct`                   | ![][c17no] |            |
-  | `uninitialized_value_construct_n`                 | ![][c17no] |            |
-  | `atomic<shared_ptr>`                              | ![][c20no] |            |
-  | `atomic<unique_ptr>`                              | ![][c20no] |            |
-  | `assume_aligned`                                  | ![][c20no] |            |
-  | `construct_at`                                    | ![][c20ok] |            |
-  | `make_shared_for_overwrite`                       | ![][c20no] |            |
-  | `make_unique_for_overwrite`                       | ![][c20no] |            |
-  | `allocate_shared_for_overwrite`                   | ![][c20no] |            |
-  | `to_address`                                      | ![][c20ok] |            |
-  | `uses_allocator_construction_args`                | ![][c20ok] |            |
-  | `make_obj_using_allocator`                        | ![][c20ok] |            |
-  | `uninitialized_construct_using_allocator`         | ![][c20no] |            |
-  | `operator<<(std::unique_ptr)`                     | ![][c20no] |            |
-  | `ranges::construct_at`                            | ![][c20no] |            |
-  | `ranges::destroy`                                 | ![][c20no] |            |
-  | `ranges::destroy_n`                               | ![][c20no] |            |
-  | `ranges::destroy_at`                              | ![][c20no] |            |
-  | `ranges::uninitialized_copy`                      | ![][c20no] |            |
-  | `ranges::uninitialized_copy_n`                    | ![][c20no] |            |
-  | `ranges::uninitialized_fill`                      | ![][c20no] |            |
-  | `ranges::uninitialized_fill_n`                    | ![][c20no] |            |
-  | `ranges::uninitialized_move`                      | ![][c20no] |            |
-  | `ranges::uninitialized_move_n`                    | ![][c20no] |            |
-  | `ranges::uninitialized_default_construct`         | ![][c20no] |            |
-  | `ranges::uninitialized_default_construct_n`       | ![][c20no] |            |
-  | `ranges::uninitialized_value_construct`           | ![][c20no] |            |
-  | `ranges::uninitialized_value_construct_n`         | ![][c20no] |            |
-  | `allocation_result`                               | ![][c23no] |            |
-  | `inout_ptr`<br/>`inout_ptr_t`                     | ![][c23no] |            |
-  | `out_ptr`<br/>`out_ptr_t`                         | ![][c23no] |            |
-  | `start_lifetime_as`<br/>`start_lifetime_as_array` | ![][c23no] |            |
-  | `owner_hash`                                      | ![][c26no] |            |
-  | `owner_equal`                                     | ![][c26no] |            |
+  |                                                   | Introduced  | Revision   |
+  |---------------------------------------------------|-------------|------------|
+  | `pointer_traits`                                  | ![][c11]    | ![][c20ok] |
+  | `aligned_alloc`                                   | ![][c17no]  |            |
+  | `destroy_at`                                      | ![][c17ok]  | ![][c20ok] |
+  | `destroy`                                         | ![][c17ok]  | ![][c20ok] |
+  | `destroy_n`                                       | ![][c17ok]  | ![][c20ok] |
+  | `xxx_pointer_cast`                                | ![][c17ok]  | ![][c20ok] |
+  | `uninitialized_default_construct`                 | ![][c17no]  | ![][c20no] |
+  | `uninitialized_default_construct_n`               | ![][c17no]  | ![][c20no] |
+  | `uninitialized_move`                              | ![][c17no]  | ![][c20no] |
+  | `uninitialized_move_n`                            | ![][c17no]  | ![][c20no] |
+  | `uninitialized_value_construct`                   | ![][c17no]  |            |
+  | `uninitialized_value_construct_n`                 | ![][c17no]  |            |
+  | `atomic<shared_ptr>`                              | ![][c20no]  |            |
+  | `atomic<unique_ptr>`                              | ![][c20no]  |            |
+  | `assume_aligned`                                  | ![][c20no]  |            |
+  | `construct_at`                                    | ![][c20ok]  |            |
+  | `make_shared_for_overwrite`                       | ![][c20no]  |            |
+  | `make_unique_for_overwrite`                       | ![][c20no]  |            |
+  | `allocate_shared_for_overwrite`                   | ![][c20no]  |            |
+  | `to_address`                                      | ![][c20ok]* |            |
+  | `uses_allocator_construction_args`                | ![][c20ok]  |            |
+  | `make_obj_using_allocator`                        | ![][c20ok]  |            |
+  | `uninitialized_construct_using_allocator`         | ![][c20no]  |            |
+  | `operator<<(std::unique_ptr)`                     | ![][c20no]  |            |
+  | `ranges::construct_at`                            | ![][c20no]  |            |
+  | `ranges::destroy`                                 | ![][c20no]  |            |
+  | `ranges::destroy_n`                               | ![][c20no]  |            |
+  | `ranges::destroy_at`                              | ![][c20no]  |            |
+  | `ranges::uninitialized_copy`                      | ![][c20no]  |            |
+  | `ranges::uninitialized_copy_n`                    | ![][c20no]  |            |
+  | `ranges::uninitialized_fill`                      | ![][c20no]  |            |
+  | `ranges::uninitialized_fill_n`                    | ![][c20no]  |            |
+  | `ranges::uninitialized_move`                      | ![][c20no]  |            |
+  | `ranges::uninitialized_move_n`                    | ![][c20no]  |            |
+  | `ranges::uninitialized_default_construct`         | ![][c20no]  |            |
+  | `ranges::uninitialized_default_construct_n`       | ![][c20no]  |            |
+  | `ranges::uninitialized_value_construct`           | ![][c20no]  |            |
+  | `ranges::uninitialized_value_construct_n`         | ![][c20no]  |            |
+  | `allocation_result`                               | ![][c23no]  |            |
+  | `inout_ptr`<br/>`inout_ptr_t`                     | ![][c23no]  |            |
+  | `out_ptr`<br/>`out_ptr_t`                         | ![][c23no]  |            |
+  | `start_lifetime_as`<br/>`start_lifetime_as_array` | ![][c23no]  |            |
+  | `owner_hash`                                      | ![][c26no]  |            |
+  | `owner_equal`                                     | ![][c26no]  |            |
+
+* Notes
+  * `to_address`
+    * If `std::pointer_traits::to_address` is available, it is used before `preview::pointer_traits::to_address`.
 
 #### `<memory_resource>`
   N/A
@@ -888,15 +892,19 @@ Description
 
 #### `<optional>`
 
-  |                       | Introduced | Revision              |
-  |-----------------------|------------|-----------------------|
-  | `optional`            | ![][c17ok] | ![][c23ok] ![][c26no] |
-  | `bad_optional_access` | ![][c17ok] |                       |
-  | `std::hash<optional>` | ![][c17ok] |                       |
-  | `nullopt`             | ![][c17ok] |                       |
-  | `nullopt_t`           | ![][c17ok] |                       |
-  | `swap(optional)`      | ![][c17ok] |                       |
-  | `make_optional`       | ![][c17ok] |                       |
+  |                       | Introduced  | Revision              |
+  |-----------------------|-------------|-----------------------|
+  | `optional`            | ![][c17ok]  | ![][c23ok] ![][c26no] |
+  | `bad_optional_access` | ![][c17ok]  |                       |
+  | `std::hash<optional>` | ![][c17ok]  |                       |
+  | `nullopt`             | ![][c17ok]* |                       |
+  | `nullopt_t`           | ![][c17ok]* |                       |
+  | `swap(optional)`      | ![][c17ok]  |                       |
+  | `make_optional`       | ![][c17ok]  |                       |
+
+* Notes
+  * `nullopt`, `nullopt_t`
+    * `std::nullopt` is used if available, `preview::nullopt` otherwise.
 
 #### `<random>`
 
