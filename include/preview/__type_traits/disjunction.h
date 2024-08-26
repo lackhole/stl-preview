@@ -6,6 +6,8 @@
 # define PREVIEW_TYPE_TRAITS_DISJUNCTION_H_
 #
 # include <type_traits>
+#
+# include "preview/__core/inline_variable.h"
 
 namespace preview {
 
