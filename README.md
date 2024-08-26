@@ -820,6 +820,7 @@ Description
 * Notes
   * `to_address`
     * If `std::pointer_traits::to_address` is available, it is used before `preview::pointer_traits::to_address`.
+      * ⚠️ `std::pointer_traits::to_address` is not sfinae-friendly until MSVC 2022, so not used.
 
 #### `<memory_resource>`
   N/A

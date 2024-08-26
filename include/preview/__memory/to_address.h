@@ -24,8 +24,12 @@ struct has_to_address<T, Traits, void_t<decltype(Traits<T>::to_address(std::decl
 
 template<typename T>
 using to_address_tag = conditional_tag<
+#if defined(_MSC_VER) && _MSC_VER < 1930 // std::pointer_traits is not sfinae-friendly before VS 2022
+    has_to_address<T, pointer_traits>
+#else
     has_to_address<T, std::pointer_traits>,
     has_to_address<T, pointer_traits>
+#endif
 >;
 
 template<typename T>
