@@ -19,7 +19,7 @@ constexpr inline auto size(const C& c) -> decltype(c.size())
 }
 
 template<typename T, std::size_t N>
-constexpr inline std::size_t size(const T (&array)[N]) noexcept
+constexpr inline std::size_t size(const T (&)[N]) noexcept
 {
   return N;
 }
@@ -33,7 +33,7 @@ constexpr inline auto ssize(const C& c)
 }
 
 template<typename T, std::size_t N>
-constexpr inline std::ptrdiff_t ssize(const T (&array)[N]) noexcept
+constexpr inline std::ptrdiff_t ssize(const T (&)[N]) noexcept
 {
   return static_cast<std::ptrdiff_t>(N);
 }

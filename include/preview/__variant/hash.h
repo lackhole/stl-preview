@@ -24,7 +24,7 @@ struct variant_hash_visitor {
   }
 
   template<typename T>
-  constexpr std::size_t operator()(const T& x, in_place_index_t<variant_npos>) const {
+  constexpr std::size_t operator()(const T&, in_place_index_t<variant_npos>) const {
     return 0;
   }
 };

@@ -16,7 +16,7 @@ template<typename T, typename = void>
 
 struct has_typename_preview_derived : std::false_type {};
 template<typename T>
-struct has_typename_preview_derived<T, void_t<typename T::_$preview_derived>> : std::true_type {};
+struct has_typename_preview_derived<T, void_t<typename T::_preview_derived>> : std::true_type {};
 
 template<template<typename> class Base>
 struct derived_from_single_crtp_tester {

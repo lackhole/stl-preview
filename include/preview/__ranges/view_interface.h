@@ -97,7 +97,7 @@ class view_interface {
   static_assert(std::is_class<Derived>::value, "Constraints not satisfied");
   static_assert(std::is_same<Derived, std::remove_cv_t<Derived>>::value, "Constraints not satisfied");
 
-  using _$preview_derived = Derived;
+  using _preview_derived = Derived;
 
   template<typename D = Derived, derived_is<D, disjunction<
       sized_range<D>,
