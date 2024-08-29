@@ -34,23 +34,69 @@
 namespace preview {
 namespace detail {
 
+struct static_constexpr_value_tester {
+  template<typename T>
+  static constexpr auto test(int)
+      -> decltype(std::integral_constant<decltype(T::value), T::value>{}, std::true_type{});
+  template<typename T>
+  static constexpr auto test(...) -> std::false_type;
+};
+
+struct static_constexpr_operator_tester {
+  template<typename T>
+  static constexpr auto test(int)
+      -> decltype(std::integral_constant<decltype(T::value), (T())>{}, std::true_type{});
+  template<typename T>
+  static constexpr auto test(...) -> std::false_type;
+};
+
+template<typename T>
+struct has_static_constexpr_value
+    : conjunction<
+        decltype(static_constexpr_value_tester::test<std::remove_reference_t<T>>(0)),
+        decltype(static_constexpr_operator_tester::test<std::remove_reference_t<T>>(0))
+    > {};
+
+template<typename T, bool /* false */ = has_static_constexpr_value<T>::value>
+struct integral_constant_like : std::false_type {};
+template<typename T>
+struct integral_constant_like<T, true>
+    : conjunction<
+        std::is_integral<decltype(T::value)>,
+        negation<std::is_same<bool, std::remove_const_t<decltype(T::value)>>>,
+        convertible_to<T, decltype(T::value)>,
+        equality_comparable_with<T, decltype(T::value)>,
+        bool_constant<(T() == T::value)>,
+        bool_constant<(static_cast<decltype(T::value)>(T()) == T::value)>
+    > {};
+
+template<typename T, bool = /* false */ integral_constant_like<T>::value>
+struct maybe_static_ext : std::integral_constant<std::size_t, dynamic_extent> {};
+
+template<typename T>
+struct maybe_static_ext<T, true> : std::integral_constant<std::size_t, T::value> {};
+
 template<typename T, std::size_t Extent>
 struct static_span_storage {
   constexpr static_span_storage() noexcept : ptr_(nullptr) {}
   constexpr static_span_storage(T* ptr, std::size_t) noexcept : ptr_(ptr) {}
 
   T* data() const noexcept { return ptr_; }
+
+  [[nodiscard]]
   std::size_t size() const noexcept { return Extent; }
 
   T* ptr_;
 };
 
-template<typename T, std::size_t>
+template<typename T>
 struct dynamic_span_storage {
   constexpr dynamic_span_storage() noexcept : ptr_(nullptr), size_(0) {}
   constexpr dynamic_span_storage(T* ptr, std::size_t size) noexcept : ptr_(ptr), size_(size) {}
 
   T* data() const noexcept { return ptr_; }
+
+  [[nodiscard]]
   std::size_t size() const noexcept { return size_; }
 
   T* ptr_;
@@ -59,7 +105,7 @@ struct dynamic_span_storage {
 
 template<typename T, std::size_t Extent>
 using span_storage_t = std::conditional_t<
-    Extent == dynamic_extent, dynamic_span_storage<T, Extent>,
+    Extent == dynamic_extent, dynamic_span_storage<T>,
     static_span_storage<T, Extent>>;
 
 template<typename T>
@@ -93,7 +139,7 @@ template<typename R, typename T, bool = conjunction<
       negation< is_array<remove_cvref_t<R>> >,
       negation< std::is_array<remove_cvref_t<R>> >
     >::value /* true */>
-struct span_ctor_range : std::is_convertible<ranges::range_reference_t<R>, T> {};
+struct span_ctor_range : std::is_convertible<std::remove_reference_t<ranges::range_reference_t<R>>(*)[], T(*)[]> {};
 template<typename R, typename T>
 struct span_ctor_range<R, T, false> : std::false_type {};
 
@@ -101,29 +147,24 @@ struct span_ctor_range<R, T, false> : std::false_type {};
 
 template<typename T, std::size_t Extent>
 class span : private detail::span_storage_t<T, Extent> {
+  using base = detail::span_storage_t<T, Extent>;
+
  public:
   using element_type = T;
   using value_type = std::remove_cv_t<T>;
   using size_type = std::size_t;
   using difference_type = std::ptrdiff_t;
-  using pointer = T*;
-  using const_pointer = const T*;
-  using reference = T&;
-  using const_reference = const T&;
+  using pointer = element_type*;
+  using const_pointer = const element_type*;
+  using reference = element_type&;
+  using const_reference = const element_type&;
+  // TODO: Custom iterator?
   using iterator = pointer;
   using const_iterator = preview::const_iterator<iterator>;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = preview::const_iterator<reverse_iterator>;
+  static constexpr size_type extent = Extent;
 
- private:
-  using base = detail::span_storage_t<T, Extent>;
-
-  template<std::size_t Offset, std::size_t Count>
-  using subspan_type = span<element_type,
-                            (Count != dynamic_extent ? Count :
-                             Extent != dynamic_extent ? Extent - Offset :
-                             dynamic_extent)>;
- public:
   // (1)
   // constexpr span() noexcept;
   constexpr span() noexcept : base() {}
@@ -132,19 +173,17 @@ class span : private detail::span_storage_t<T, Extent> {
   // template< class It >
   // explicit(extent != std::dynamic_extent)
   // constexpr span( It first, size_type count );
-  template<typename It, std::enable_if_t<
-    conjunction<
+  template<typename It, std::enable_if_t<conjunction<
       bool_constant<(Extent == dynamic_extent)>,
       detail::span_ctor_first_count<It, element_type>
-    >::value, int> = 0>
+  >::value, int> = 0>
   constexpr span(It first, size_type size)
       : base(preview::to_address(first), size) {}
 
-  template<typename It, std::enable_if_t<
-    conjunction<
+  template<typename It, std::enable_if_t<conjunction<
       bool_constant<(Extent != dynamic_extent)>,
       detail::span_ctor_first_count<It, element_type>
-    >::value, int> = 0>
+  >::value, int> = 0>
   constexpr explicit span(It first, size_type size)
       : base(preview::to_address(first), size) {}
 
@@ -152,52 +191,44 @@ class span : private detail::span_storage_t<T, Extent> {
   // template< class It, class End >
   // explicit(extent != std::dynamic_extent)
   // constexpr span( It first, End last );
-  template<typename It, typename End, std::enable_if_t<
-    conjunction<
+  template<typename It, typename End, std::enable_if_t<conjunction<
       bool_constant<(Extent == dynamic_extent)>,
       detail::span_ctor_first_last<It, End, element_type>
-    >::value , int> = 0>
+  >::value , int> = 0>
   constexpr span(It first, End last)
       : base(preview::to_address(first), last - first) {}
 
-  template<typename It, typename End, std::enable_if_t<
-    conjunction<
+  template<typename It, typename End, std::enable_if_t<conjunction<
       bool_constant<(Extent != dynamic_extent)>,
       detail::span_ctor_first_last<It, End, element_type>
-    >::value , int> = 0>
+  >::value , int> = 0>
   constexpr explicit span(It first, End last)
       : base(preview::to_address(first), last - first) {}
 
   // (4)
   // template< std::size_t N >
   // constexpr span( std::type_identity_t<element_type> (&arr)[N] ) noexcept;
-  template<std::size_t N, std::enable_if_t<
-    conjunction<
-      bool_constant<(Extent == dynamic_extent) || (Extent == N)>,
-      std::is_convertible<type_identity_t<element_type>, element_type>
-    >::value, int> = 0>
+  template<std::size_t N, std::enable_if_t<(Extent == dynamic_extent) || (Extent == N), int> = 0>
   constexpr span(type_identity_t<element_type> (&arr)[N]) noexcept
       : base(arr, N) {}
 
   // (5)
   // template< class U, std::size_t N >
   // constexpr span( std::array<U, N>& arr ) noexcept;
-  template<typename U, std::size_t N, std::enable_if_t<
-    conjunction<
+  template<typename U, std::size_t N, std::enable_if_t<conjunction<
       bool_constant<(Extent == dynamic_extent) || (Extent == N)>,
-      std::is_convertible<U, element_type>
-    >::value, int> = 0>
+      std::is_convertible<U(*)[], element_type(*)[]>
+  >::value, int> = 0>
   constexpr span(std::array<U, N>& arr) noexcept
       : base(arr.data(), N) {}
 
   // (6)
   // template< class U, std::size_t N >
   // constexpr span( const std::array<U, N>& arr ) noexcept;
-  template<typename U, std::size_t N, std::enable_if_t<
-    conjunction<
+  template<typename U, std::size_t N, std::enable_if_t<conjunction<
       bool_constant<(Extent == dynamic_extent) || (Extent == N)>,
-      std::is_convertible<const U, element_type>
-    >::value, int> = 0>
+      std::is_convertible<const U(*)[], element_type(*)[]>
+  >::value, int> = 0>
   constexpr span(const std::array<U, N>& arr) noexcept
       : base(arr.data(), N) {}
 
@@ -205,37 +236,33 @@ class span : private detail::span_storage_t<T, Extent> {
   // template< class R >
   // explicit(extent != std::dynamic_extent)
   // constexpr span( R&& range );
-  template<typename R, std::enable_if_t<
-    conjunction<
+  template<typename R, std::enable_if_t<conjunction<
       bool_constant<Extent == dynamic_extent>,
       detail::span_ctor_range<R, element_type>
   >::value, int> = 0>
   constexpr span(R&& range)
-      : base(ranges::data(range),
-             ranges::size(range)) {}
+      : base(ranges::data(range), ranges::size(range)) {}
 
-  template<typename R, std::enable_if_t<
-    conjunction<
+  template<typename R, std::enable_if_t<conjunction<
       bool_constant<Extent != dynamic_extent>,
       detail::span_ctor_range<R, element_type>
   >::value, int> = 0>
   constexpr explicit span(R&& range)
-      : base(ranges::data(range),
-             ranges::size(range)) {}
+      : base(ranges::data(range), ranges::size(range)) {}
 
   // (8) (C++ 26)
   // explicit(extent != std::dynamic_extent)
   // constexpr span( std::initializer_list<value_type> il ) noexcept;
-  template<typename E = element_type, std::enable_if_t<conjunction<
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       bool_constant<Extent == dynamic_extent>,
-      std::is_const<E>
+      std::is_const<element_type>
   >::value, int> = 0>
   constexpr span(std::initializer_list<value_type> il) noexcept
       : base(il.begin(), il.size()) {}
 
-  template<typename E = element_type, std::enable_if_t<conjunction<
+  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       bool_constant<Extent != dynamic_extent>,
-      std::is_const<E>
+      std::is_const<element_type>
   >::value, int> = 0>
   constexpr explicit span(std::initializer_list<value_type> il) noexcept
       : base(il.begin(), il.size()) {}
@@ -244,46 +271,46 @@ class span : private detail::span_storage_t<T, Extent> {
   // template< class U, std::size_t N >
   // explicit(extent != std::dynamic_extent && N == std::dynamic_extent)
   // constexpr span( const std::span<U, N>& source ) noexcept;
-  template<typename U, std::size_t N, std::enable_if_t<
-      conjunction<
-        bool_constant<!(Extent != dynamic_extent && N == dynamic_extent)>,
-        bool_constant<(
-          Extent == dynamic_extent ||
-          N == dynamic_extent ||
-          N == Extent)>,
-        std::is_convertible<U, element_type>
-      >::value, int> = 0>
-  constexpr span(const span<U, N>& source) noexcept : base(source.data(), source.size()) {}
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<!(Extent != dynamic_extent && OtherExtent == dynamic_extent)>, // explicit(false)
+      bool_constant<(
+        Extent == dynamic_extent ||
+        OtherExtent == dynamic_extent ||
+        Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>
+  >::value, int> = 0>
+  constexpr span(const span<U, OtherExtent>& source) noexcept
+      : base(source.data(), source.size()) {}
 
-  template<typename U, std::size_t N, std::enable_if_t<
-      conjunction<
-        bool_constant<(Extent != dynamic_extent && N == dynamic_extent)>,
-        bool_constant<(
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<(Extent != dynamic_extent && OtherExtent == dynamic_extent)>, // explicit(true)
+      bool_constant<(
           Extent == dynamic_extent ||
-          N == dynamic_extent ||
-          N == Extent)>,
-        std::is_convertible<U, element_type>
-      >::value, int> = 0>
-  constexpr explicit span(const span<U, N>& source) noexcept : base(source.data(), source.size()) {}
+          OtherExtent == dynamic_extent ||
+          Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>
+  >::value, int> = 0>
+  constexpr explicit span(const span<U, OtherExtent>& source) noexcept
+      : base(source.data(), source.size()) {}
 
   // (10)
   // constexpr span( const span& other ) noexcept = default;
   constexpr span(const span& other) noexcept = default;
 
-  constexpr iterator begin() const noexcept { return iterator(data()); }
-  constexpr iterator end() const noexcept { return iterator(data() + size()); }
+  constexpr iterator begin() const noexcept { return iterator{data()}; }
+  constexpr iterator end() const noexcept { return iterator{data() + size()}; }
 
-  constexpr const_iterator cbegin() const noexcept { return const_iterator{begin()}; }
-  constexpr const_iterator cend() const noexcept { return const_iterator{end()}; }
+  constexpr const_iterator cbegin() const noexcept { return begin(); }
+  constexpr const_iterator cend() const noexcept { return end(); }
 
-  constexpr reverse_iterator rbegin() const noexcept { return reverse_iterator(data() + size()); }
-  constexpr reverse_iterator rend() const noexcept { return reverse_iterator(data()); }
+  constexpr reverse_iterator rbegin() const noexcept { return reverse_iterator(end()); }
+  constexpr reverse_iterator rend() const noexcept { return reverse_iterator(begin()); }
 
-  constexpr const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator{rbegin()}; }
-  constexpr const_reverse_iterator crend() const noexcept { return const_reverse_iterator{rend()}; }
+  constexpr const_reverse_iterator crbegin() const noexcept { return rbegin(); }
+  constexpr const_reverse_iterator crend() const noexcept { return rend(); }
 
-  constexpr reference front() const { return *begin(); }
-  constexpr reference back() const { return *(end() - 1); }
+  constexpr reference front() const { return *data(); }
+  constexpr reference back() const { return *(data() + (size() - 1)); }
 
   constexpr reference at(size_type pos) const {
     if (pos >= size()) {
@@ -292,7 +319,7 @@ class span : private detail::span_storage_t<T, Extent> {
     return *(data() + pos);
   }
 
-  constexpr reference operator[](size_type idx) const { return data()[idx]; }
+  constexpr reference operator[](size_type idx) const { return *(data() +idx); }
 
   constexpr pointer data() const noexcept { return base::data(); }
 
@@ -305,29 +332,30 @@ class span : private detail::span_storage_t<T, Extent> {
   constexpr span<element_type, Count> first() const {
     return span<element_type, Count>(data(), Count);
   }
-  constexpr span<element_type, dynamic_extent> first(size_type Count) const {
-    return span<element_type, dynamic_extent>(data(), Count);
+  constexpr span<element_type, dynamic_extent> first(size_type count) const {
+    return span<element_type, dynamic_extent>(data(), count);
   }
 
   template<std::size_t Count, std::enable_if_t<(Count <= Extent), int> = 0>
   constexpr span<element_type, Count> last() const {
-    return span<element_type, Count>(data() + size() - Count, Count);
+    return span<element_type, Count>(data() + (size() - Count), Count);
   }
-  constexpr span<element_type, dynamic_extent> last(size_type Count) const {
-    return span<element_type, dynamic_extent>(data() + size() - Count, Count);
+  constexpr span<element_type, dynamic_extent> last(size_type count) const {
+    return span<element_type, dynamic_extent>(data() + (size() - count), count);
   }
 
   template<std::size_t Offset, std::size_t Count = dynamic_extent, std::enable_if_t<
-    (Offset <= Extent) && (Count == dynamic_extent || Count <= (Extent - Offset)), int> = 0>
-  constexpr subspan_type<Offset, Count> subspan() const {
-    return subspan_type<Offset, Count>(
-      data() + Offset,
-      (Count == dynamic_extent ? size() - Offset : Count));
-  };
-  constexpr span<element_type, dynamic_extent> subspan(size_type Offset, size_type Count) const {
-    return span<element_type, dynamic_extent>(
-      data() + Offset,
-      (Count == dynamic_extent ? size() - Offset : Count));
+    (Offset <= Extent) &&
+    (Count == dynamic_extent || Count <= (Extent - Offset))
+  , int> = 0>
+  constexpr auto subspan() const {
+    using subspan_type = span<element_type, (Count != dynamic_extent ? Count :
+                                             Extent != dynamic_extent ? Extent - Offset :
+                                             dynamic_extent)>;
+    return subspan_type(data() + Offset, Count != dynamic_extent ? Count : size() - Offset);
+  }
+  constexpr span<element_type, dynamic_extent> subspan(size_type offset, size_type count) const {
+    return span<element_type, dynamic_extent>(data() + offset, (count == dynamic_extent ? size() - offset : count));
   }
 };
 
@@ -337,7 +365,7 @@ struct ranges::enable_view<span<T, Extent>> : std::true_type {};
 #if __cplusplus >= 201703L
 
 template<typename It, typename EndOrSize, std::enable_if_t<contiguous_iterator<It>::value, int> = 0>
-span(It, EndOrSize) -> span<std::remove_reference_t<iter_reference_t<It>>>;
+span(It, EndOrSize) -> span<std::remove_reference_t<iter_reference_t<It>>, detail::maybe_static_ext<EndOrSize>::value>;
 
 template<typename T, std::size_t N>
 span(T (&)[N]) -> span<T, N>;
@@ -348,7 +376,7 @@ span(std::array<T, N>&) -> span<T, N>;
 template<typename T, std::size_t N>
 span(const std::array<T, N>&) -> span<const T, N>;
 
-template<typename R>
+template<typename R, std::enable_if_t<ranges::contiguous_range<R>::value, int> = 0>
 span(R&&) -> span<std::remove_reference_t<ranges::range_reference_t<R>>>;
 
 #endif
