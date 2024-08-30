@@ -43,7 +43,7 @@ template<
 >
 struct projected_impl {
   struct type : projected_impl_difference_type<I> {
-    using value_type = remove_cvref_t<indirect_result_t<Proj, I>>;
+    using value_type = remove_cvref_t<indirect_result_t<Proj&, I>>;
 
     indirect_result_t<Proj&, I> operator*() const;
   };

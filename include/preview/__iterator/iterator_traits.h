@@ -105,7 +105,7 @@ struct iterator_traits_legacy_input_iterator {
   using value_type = typename indirectly_readable_traits<Iter>::value_type;
   using pointer = typename iterator_traits_typename_pointer<Iter>::type;
   using reference = typename iterator_traits_typename_reference<Iter>::type;
-  using iterator_category = typename iterator_traits_typename_iterator_category<Iter>::type;;
+  using iterator_category = typename iterator_traits_typename_iterator_category<Iter>::type;
 };
 
 template<

@@ -164,7 +164,7 @@ constexpr decltype(auto) variant_raw_visit_impl2(Union&& u, F&& func, in_place_i
 template<std::size_t Base, typename Union, typename F, typename... Args>
 constexpr decltype(auto) variant_raw_visit_recurse(std::size_t i, Union&& u, F&& func, in_place_index_t<Base>, std::true_type, Args&&... args);
 template<std::size_t Base, typename Union, typename F, typename... Args>
-constexpr decltype(auto) variant_raw_visit_recurse(std::size_t i, Union&& u, F&& func, in_place_index_t<Base>, std::false_type, Args&&... args) {
+constexpr decltype(auto) variant_raw_visit_recurse(std::size_t, Union&& u, F&& func, in_place_index_t<Base>, std::false_type, Args&&... args) {
   // unreachable
   return variant_raw_visit_impl2(std::forward<Union>(u), std::forward<F>(func), in_place_index<0>, std::forward<Args>(args)...);
 }
@@ -426,7 +426,7 @@ struct variant_base {
   }
 
   void swap_base_impl(variant_base& rhs, std::false_type /* trivial */) {
-    variant_raw_visit(index_, union_, [this, &rhs](auto& x, auto i) {
+    variant_raw_visit(index_, union_, [this, &rhs](auto&, auto i) {
       constexpr std::size_t I = index_value<decltype(i)>::value;
       variant_raw_visit(rhs.index_, rhs.storage(), swapper_inner<I>{*this, rhs});
     });

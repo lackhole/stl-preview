@@ -264,7 +264,7 @@ class optional : private detail::optional_control_smf<T> {
 
   // constructors
   constexpr optional() noexcept = default;
-  constexpr optional(nullopt_t) noexcept {};
+  constexpr optional(nullopt_t) noexcept {}
   constexpr optional(const optional& other) = default;
   constexpr optional(optional&& other) = default;
 
@@ -714,7 +714,7 @@ constexpr inline bool operator!=(nullopt_t, const optional<T>& opt) noexcept {
 }
 
 template<typename T>
-constexpr inline bool operator<(const optional<T>& opt, nullopt_t) noexcept {
+constexpr inline bool operator<(const optional<T>&, nullopt_t) noexcept {
   return false;
 }
 
@@ -729,7 +729,7 @@ constexpr inline bool operator<=(const optional<T>& opt, nullopt_t) noexcept {
 }
 
 template<typename T>
-constexpr inline bool operator<=(nullopt_t, const optional<T>& opt) noexcept {
+constexpr inline bool operator<=(nullopt_t, const optional<T>&) noexcept {
   return true;
 }
 
@@ -739,12 +739,12 @@ constexpr inline bool operator>(const optional<T>& opt, nullopt_t) noexcept {
 }
 
 template<typename T>
-constexpr inline bool operator>(nullopt_t, const optional<T>& opt) noexcept {
+constexpr inline bool operator>(nullopt_t, const optional<T>&) noexcept {
   return false;
 }
 
 template<typename T>
-constexpr inline bool operator>=(const optional<T>& opt, nullopt_t) noexcept {
+constexpr inline bool operator>=(const optional<T>&, nullopt_t) noexcept {
   return true;
 }
 

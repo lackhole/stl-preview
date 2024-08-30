@@ -34,6 +34,11 @@
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
+
 namespace preview {
 namespace ranges {
 
@@ -269,5 +274,9 @@ split_view(R&&, range_value_t<R>)
 
 } // namespace ranges
 } // namespace preview
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_RANGES_VIEWS_SPLIT_VIEW_H_

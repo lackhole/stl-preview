@@ -14,6 +14,11 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/void_t.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#endif
+
 // automatically generates comparison operators based on user-defined `operator==` and `operator<` in C++20 way
 
 namespace preview {
@@ -190,5 +195,9 @@ struct is_greater_equal_than_comparable : detail::is_greater_equal_than_comparab
 
 } // namespace rel_ops
 } // namespace preview
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_UTILITY_CXX20_REL_OPS_H_

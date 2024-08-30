@@ -351,11 +351,11 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
         return !(x == y);
       }
 
-      friend constexpr decltype(auto) iter_move(const iterator& i) {
-        using R = common_reference_t<range_rvalue_reference_t<InnerBase>, range_rvalue_reference_t<PatternBase>>;
-        return i.inner_it_.visit([](auto&& i) -> R {
-          return ranges::iter_move(std::forward<decltype(i)>(i));
-        });
+      friend constexpr decltype(auto) iter_move(const iterator& x) {
+        using rvalue_reference = common_reference_t<
+            iter_rvalue_reference_t<InnerIter>,
+            iter_rvalue_reference_t<PatternIter>>;
+        return preview::visit<rvalue_reference>(ranges::iter_move, x.inner_it_);
       }
 
       template<typename IS = indirectly_swappable<iterator_t<InnerBase>, iterator_t<PatternBase>>, std::enable_if_t<IS::value, int> = 0>
