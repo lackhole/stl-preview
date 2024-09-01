@@ -985,7 +985,7 @@ Description
   | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]   |            |
   | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]   |            |
   | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]   |            |
-  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok]   |            |
+  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok] * |            |
   | `ranges::begin`                                                   | ![][c20ok]   | ![][c23ok] |
   | `ranges::end`                                                     | ![][c20ok]   | ![][c23ok] |
   | `ranges::cbegin`                                                  | ![][c20ok]   | ![][c23ok] |
@@ -1001,9 +1001,12 @@ Description
   | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]   |            |
 
   * Notes
-    #### `ranges::to`
+    * `ranges::to`
       * CTAD for `Args...` may be incorrect before C++17
       * Equipped with C++23 conversions(e.g., `pair-like` -> `std::pair`)
+    * `ranges::concat_view`
+      * Implemented before standardization
+      * Needs update
 
 
 #### `<rcu>`
