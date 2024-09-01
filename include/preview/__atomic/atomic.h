@@ -2,10 +2,12 @@
 // Created by yonggyulee on 2024. 7. 18.
 //
 
-#ifndef PREVIEW_INCLUDE_PREVIEW___ATOMIC_ATOMIC_H_
-#define PREVIEW_INCLUDE_PREVIEW___ATOMIC_ATOMIC_H_
+#ifndef PREVIEW_ATOMIC_ATOMIC_H_
+#define PREVIEW_ATOMIC_ATOMIC_H_
 
 #include <atomic>
+
+#include "boost/atomic.hpp"
 
 namespace preview {
 
@@ -17,8 +19,12 @@ struct atomic : std::atomic<T> {
  public:
   using std_atomic::std_atomic;
 
+  void foo() noexcept {
+
+  }
+
 };
 
 } // namespace preview
 
-#endif // PREVIEW_INCLUDE_PREVIEW___ATOMIC_ATOMIC_H_
+#endif // PREVIEW_ATOMIC_ATOMIC_H_

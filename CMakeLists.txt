@@ -11,7 +11,10 @@ project(preview CXX)
 option(PREVIEW_TEST "Build test" OFF)
 
 add_library(preview INTERFACE)
-target_include_directories(preview INTERFACE "${PREVIEW_INCLUDE_DIR}")
+target_include_directories(preview INTERFACE
+        "${PREVIEW_INCLUDE_DIR}"
+        "${CMAKE_CURRENT_LIST_DIR}/third_party/boost_1_86_0/include"
+)
 target_compile_definitions(preview INTERFACE PREVIEW_CMAKE_CONFIG)
 
 message("CMAKE_CXX_STANDARD: ${CMAKE_CXX_STANDARD}")
