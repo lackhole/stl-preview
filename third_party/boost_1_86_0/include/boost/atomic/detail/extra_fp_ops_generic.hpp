@@ -45,7 +45,7 @@ template<
     typename Value,
     std::size_t Size
 #if defined(BOOST_ATOMIC_DETAIL_INT_FP_ENDIAN_MATCH)
-    , bool = atomics::detail::is_iec559< Value >::value && atomics::detail::is_integral< typename Base::storage_type >::value
+    , bool = atomics::detail::is_iec559< Value >::value && std::is_integral< typename Base::storage_type >::value
 #endif
 >
 struct extra_fp_negate_generic :
