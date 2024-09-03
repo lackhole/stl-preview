@@ -8,6 +8,8 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__concepts_v2/detail/constraints_not_satisfied.h"
 #include "preview/__concepts_v2/detail/sized_true.h"
+#include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/disjunction.h"
 
 namespace preview {
 namespace concepts {
@@ -17,49 +19,95 @@ template<> struct valid_tag<true> { using valid = bool; };
 
 template<typename Derived, typename Base>
 struct concept_base : Base, valid_tag<Base::value> {
+ private:
+  template<typename C2, typename B2>
+  static constexpr sized_true<2> conj_c_c(concept_base, concept_base<C2, B2>, std::true_type, std::true_type)
+      { return {}; }
+  template<typename C2, typename B2>
+  static constexpr auto conj_c_c(concept_base, concept_base<C2, B2>, std::true_type, std::false_type)
+      { return expand_error(constraints_not_satisfied<C2, at<1, 2>>{}); }
+  template<typename C2, typename B2, bool B>
+  static constexpr auto conj_c_c(concept_base, concept_base<C2, B2>, std::false_type, std::integral_constant<bool, B>)
+      { expand_error(constraints_not_satisfied<Derived, at<0, 2>>{}); }
+
+  template<std::size_t N>
+  static constexpr sized_true<N + 1> conj_c_t(concept_base, sized_true<N>, std::true_type)
+      { return {}; }
+  template<std::size_t N>
+  static constexpr auto conj_c_t(concept_base, sized_true<N>, std::false_type)
+      { return expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{}); }
+  template<std::size_t N>
+  static constexpr sized_true<N + 1> conj_t_c(sized_true<N>, concept_base, std::true_type)
+      { return {}; }
+  template<std::size_t N>
+  static constexpr auto conj_t_c(sized_true<N>, concept_base, std::false_type)
+      { return expand_error(constraints_not_satisfied<Derived, at<N, N + 1>>{}); }
+
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto conj_c_f(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e, std::true_type)
+      { return add_to_at_t<1, 1, decltype(e)>{}; }
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto conj_c_f(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e, std::false_type)
+      { return expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{}); }
+
+
+  template<typename C2, typename B2>
+  static constexpr auto disj_c_c(concept_base, concept_base<C2, B2>, std::true_type)
+      { return sized_true<2>{}; }
+  template<typename C2, typename B2>
+  static constexpr auto disj_c_c(concept_base, concept_base<C2, B2>, std::false_type) {
+    using E1 = decltype(expand_error(constraints_not_satisfied<Derived, at<0, 2>>{}));
+    using E2 = decltype(expand_error(constraints_not_satisfied<C2, at<1, 2>>{}));
+    return concat_error_t<E1, E2>{};
+  }
+
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto disj_c_f(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...>, std::true_type)
+      { return sized_true<N + 1>{}; }
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto disj_c_f(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e, std::false_type) {
+    using E1 = decltype(expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{}));
+    using E2 = add_to_at_t<1, 1, decltype(e)>;
+    return concat_error_t<E1, E2>{};
+  }
+
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto disj_f_c(constraints_not_satisfied<Error, at<I, N>, ErrorInfo...>, concept_base, std::true_type)
+      { return sized_true<N + 1> {}; }
+  template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
+  static constexpr auto disj_f_c(constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e, concept_base, std::false_type) {
+    using E1 = add_to_at_t<0, 1, decltype(e)>;
+    using E2 = decltype(expand_error(constraints_not_satisfied<Derived, at<N, N + 1>>{}));
+    return concat_error_t<E1, E2>{};
+  }
+
+ public:
   using base = Base;
 
   /// conjunctions
 
   // concept && concept
   template<typename C2, typename B2>
-  friend constexpr auto operator&&(concept_base, concept_base<C2, B2>) noexcept {
-    if constexpr (Base::value) {
-      if constexpr (B2::value) return sized_true<2>{};
-      else                     return expand_error(constraints_not_satisfied<C2, at<1, 2>>{});
-    } else {
-      return expand_error(constraints_not_satisfied<Derived, at<0, 2>>{});
-    }
+  friend constexpr auto operator&&(concept_base x, concept_base<C2, B2> y) noexcept {
+    return conj_c_c(x, y, bool_constant<Base::value>{}, bool_constant<B2::value>{});
   }
 
   // concept && true
   template<std::size_t N>
   friend constexpr auto operator&&(concept_base, sized_true<N>) noexcept {
-    if constexpr (Base::value) {
-      return sized_true<N + 1>{};
-    } else {
-      return expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{});
-    }
+    return conj_c_t(concept_base{}, sized_true<N>{}, bool_constant<Base::value>{});
   }
 
   // true && concept
   template<std::size_t N>
   friend constexpr auto operator&&(sized_true<N>, concept_base) noexcept {
-    if constexpr (Base::value) {
-      return sized_true<N + 1>{};
-    } else {
-      return expand_error(constraints_not_satisfied<Derived, at<N, N + 1>>{});
-    }
+    return conj_t_c(sized_true<N>{}, concept_base{}, bool_constant<Base::value>{});
   }
 
   // concept && false
   template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
   friend constexpr auto operator&&(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e) noexcept {
-    if constexpr (Base::value) {
-      return add_to_at_t<1, 1, decltype(e)>{};
-    } else {
-      return expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{});
-    }
+    return conj_c_f(concept_base{}, e, bool_constant<Base::value>{});
   }
 
   // false && concept
@@ -71,13 +119,13 @@ struct concept_base : Base, valid_tag<Base::value> {
   // concept && bool_constant
   template<typename Other, std::enable_if_t<preview::conjunction<
       preview::disjunction<
-          std::is_base_of<std::integral_constant<bool, true>, Other>,
-          std::is_base_of<std::integral_constant<bool, false>, Other>
+          std::is_base_of<std::true_type, Other>,
+          std::is_base_of<std::false_type, Other>
       >,
       preview::negation<is_concept<Other>>
   >::value, int> = 0>
   friend constexpr auto operator&&(concept_base, Other) noexcept {
-    return Derived{} && concept_base<Other, std::bool_constant<Other::value>>{};
+    return Derived{} && concept_base<Other, bool_constant<Other::value>>{};
   }
 
   // bool_constant && concept
@@ -89,21 +137,15 @@ struct concept_base : Base, valid_tag<Base::value> {
       preview::negation<is_concept<Other>>
   >::value, int> = 0>
   friend constexpr auto operator&&(Other, concept_base) noexcept {
-    return concept_base<Other, std::bool_constant<Other::value>>{} && Derived{};
+    return concept_base<Other, bool_constant<Other::value>>{} && Derived{};
   }
 
   /// disjunctions
 
   // concept || concept
   template<typename C2, typename B2>
-  friend constexpr auto operator||(concept_base, concept_base<C2, B2>) noexcept {
-    if constexpr (Base::value || B2::value) {
-      return sized_true<2>{};
-    } else {
-      using E1 = decltype(expand_error(constraints_not_satisfied<Derived, at<0, 2>>{}));
-      using E2 = decltype(expand_error(constraints_not_satisfied<C2, at<1, 2>>{}));
-      return concat_error_t<E1, E2>{};
-    }
+  friend constexpr auto operator||(concept_base x, concept_base<C2, B2> y) noexcept {
+    return disj_c_c(x, y, disjunction<Base, B2>{});
   }
 
   // concept || true
@@ -120,26 +162,14 @@ struct concept_base : Base, valid_tag<Base::value> {
 
   // concept || false
   template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
-  friend constexpr auto operator||(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e) noexcept {
-    if constexpr (Base::value) {
-      return sized_true<N + 1> {};
-    } else {
-      using E1 = decltype(expand_error(constraints_not_satisfied<Derived, at<0, N + 1>>{}));
-      using E2 = add_to_at_t<1, 1, decltype(e)>;
-      return concat_error_t<E1, E2>{};
-    }
+  friend constexpr auto operator||(concept_base x, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> y) noexcept {
+    return disj_c_f(x, y, bool_constant<Base::value>{});
   }
 
   // false || concept
   template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
-  friend constexpr auto operator||(constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e, concept_base) noexcept {
-    if constexpr (Base::value) {
-      return sized_true<N + 1> {};
-    } else {
-      using E1 = add_to_at_t<0, 1, decltype(e)>;
-      using E2 = decltype(expand_error(constraints_not_satisfied<Derived, at<N, N + 1>>{}));
-      return concat_error_t<E1, E2>{};
-    }
+  friend constexpr auto operator||(constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> x, concept_base y) noexcept {
+    return disj_f_c(x, y, bool_constant<Base::value>{});
   }
 
   // concept || bool_constant
@@ -163,7 +193,7 @@ struct concept_base : Base, valid_tag<Base::value> {
       preview::negation<is_concept<Other>>
   >::value, int> = 0>
   friend constexpr auto operator||(Other, concept_base) noexcept {
-    return concept_base<Other, std::bool_constant<Other::value>>{} || Derived{};
+    return concept_base<Other, bool_constant<Other::value>>{} || Derived{};
   }
 
 
