@@ -9,25 +9,39 @@
 #include "preview/__type_traits/is_invocable.h"
 
 namespace preview {
+namespace detail {
 
 template<typename T>
-auto resolve_require(T x) {
-  if constexpr (is_invocable<concepts::expand_error_fn, T>::value) {
-    if constexpr (
-        concepts::derived_from_template<T, concepts::constraints_not_satisfied>::value &&
-        negation<is_specialization<T, concepts::constraints_not_satisfied>>::value)
-    {
-      return concepts::expand_error(concepts::constraints_not_satisfied<T, concepts::at<0, 1>>{});
-    } else {
-      return concepts::expand_error(x);
-    }
-  } else {
-    return x;
-  }
+constexpr auto resolve_require_2(T, std::true_type) {
+  return concepts::expand_error(concepts::constraints_not_satisfied<T, concepts::at<0, 1>>{});
+}
+
+template<typename T>
+constexpr auto resolve_require_2(T x, std::false_type) {
+  return concepts::expand_error(x);
+}
+
+template<typename T>
+constexpr auto resolve_require_1(T x, std::true_type) {
+  return resolve_require_2(x, conjunction<
+      concepts::derived_from_template<T, concepts::constraints_not_satisfied>,
+      negation<is_specialization<T, concepts::constraints_not_satisfied>>>{});
+}
+
+template<typename T>
+constexpr auto resolve_require_1(T x, std::false_type) {
+  return x;
+}
+
+} // namespace detail
+
+template<typename T>
+constexpr auto resolve_require(T x) {
+  return preview::detail::resolve_require_1(x, is_invocable<concepts::expand_error_fn, T>{});
 }
 
 template<typename Error, std::size_t I, std::size_t N, typename... Reason>
-auto resolve_require(concepts::constraints_not_satisfied<Error, concepts::at<I, N>, Reason...> x) { return x; }
+constexpr auto resolve_require(concepts::constraints_not_satisfied<Error, concepts::at<I, N>, Reason...> x) { return x; }
 
 } // namespace preview
 
