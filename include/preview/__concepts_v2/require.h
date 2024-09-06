@@ -35,6 +35,11 @@ constexpr auto resolve_require_1(T x, std::false_type) {
 
 } // namespace detail
 
+// T can be
+// 1. a single concept
+// 2. nested concepts that *already* evaluated to
+//    2A. sized_true<N>
+//    2B. constraints_not_satisfied
 template<typename T>
 constexpr auto resolve_require(T x) {
   return preview::detail::resolve_require_1(x, is_invocable<concepts::expand_error_fn, T>{});
