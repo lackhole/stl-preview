@@ -9,7 +9,6 @@
 #include "preview/__concepts_v2/detail/constraints_not_satisfied.h"
 #include "preview/__concepts_v2/detail/sized_true.h"
 #include "preview/__type_traits/bool_constant.h"
-#include "preview/__type_traits/disjunction.h"
 
 namespace preview {
 namespace concepts {
@@ -28,7 +27,7 @@ struct concept_base : Base, valid_tag<Base::value> {
       { return expand_error(constraints_not_satisfied<C2, at<1, 2>>{}); }
   template<typename C2, typename B2, bool B>
   static constexpr auto conj_c_c(concept_base, concept_base<C2, B2>, std::false_type, std::integral_constant<bool, B>)
-      { expand_error(constraints_not_satisfied<Derived, at<0, 2>>{}); }
+      { return expand_error(constraints_not_satisfied<Derived, at<0, 2>>{}); }
 
   template<std::size_t N>
   static constexpr sized_true<N + 1> conj_c_t(concept_base, sized_true<N>, std::true_type)
@@ -81,6 +80,11 @@ struct concept_base : Base, valid_tag<Base::value> {
     return concat_error_t<E1, E2>{};
   }
 
+  static constexpr auto negation(std::true_type)
+      { return constraints_not_satisfied<Derived, at<0, 1>>{}; }
+  static constexpr auto negation(std::false_type)
+      { return sized_true<1>{}; }
+
  public:
   using base = Base;
 
@@ -117,27 +121,21 @@ struct concept_base : Base, valid_tag<Base::value> {
   }
 
   // concept && bool_constant
-  template<typename Other, std::enable_if_t<preview::conjunction<
-      preview::disjunction<
-          std::is_base_of<std::true_type, Other>,
-          std::is_base_of<std::false_type, Other>
-      >,
-      preview::negation<is_concept<Other>>
+  template<typename BoolConstant, std::enable_if_t<preview::conjunction<
+      derived_from_bool_constant<BoolConstant>,
+      preview::negation<is_concept<BoolConstant>>
   >::value, int> = 0>
-  friend constexpr auto operator&&(concept_base, Other) noexcept {
-    return Derived{} && concept_base<Other, bool_constant<Other::value>>{};
+  friend constexpr auto operator&&(concept_base, BoolConstant) noexcept {
+    return Derived{} && concept_base<BoolConstant, bool_constant<BoolConstant::value>>{};
   }
 
   // bool_constant && concept
-  template<typename Other, std::enable_if_t<preview::conjunction<
-      preview::disjunction<
-          std::is_base_of<std::integral_constant<bool, true>, Other>,
-          std::is_base_of<std::integral_constant<bool, false>, Other>
-      >,
-      preview::negation<is_concept<Other>>
+  template<typename BoolConstant, std::enable_if_t<preview::conjunction<
+      derived_from_bool_constant<BoolConstant>,
+      preview::negation<is_concept<BoolConstant>>
   >::value, int> = 0>
-  friend constexpr auto operator&&(Other, concept_base) noexcept {
-    return concept_base<Other, bool_constant<Other::value>>{} && Derived{};
+  friend constexpr auto operator&&(BoolConstant, concept_base) noexcept {
+    return concept_base<BoolConstant, bool_constant<BoolConstant::value>>{} && Derived{};
   }
 
   /// disjunctions
@@ -173,46 +171,41 @@ struct concept_base : Base, valid_tag<Base::value> {
   }
 
   // concept || bool_constant
-  template<typename Other, std::enable_if_t<preview::conjunction<
-      preview::disjunction<
-          std::is_base_of<std::integral_constant<bool, true>, Other>,
-          std::is_base_of<std::integral_constant<bool, false>, Other>
-      >,
-      preview::negation<is_concept<Other>>
+  template<typename BoolConstant, std::enable_if_t<preview::conjunction<
+      derived_from_bool_constant<BoolConstant>,
+      preview::negation<is_concept<BoolConstant>>
   >::value, int> = 0>
-  friend constexpr auto operator||(concept_base, Other) noexcept {
-    return Derived{} || concept_base<Other, Other>{};
+  friend constexpr auto operator||(concept_base, BoolConstant) noexcept {
+    return Derived{} || concept_base<BoolConstant, BoolConstant>{};
   }
 
   // bool_constant || concept
-  template<typename Other, std::enable_if_t<preview::conjunction<
-      preview::disjunction<
-          std::is_base_of<std::integral_constant<bool, true>, Other>,
-          std::is_base_of<std::integral_constant<bool, false>, Other>
-      >,
-      preview::negation<is_concept<Other>>
+  template<typename BoolConstant, std::enable_if_t<preview::conjunction<
+      derived_from_bool_constant<BoolConstant>,
+      preview::negation<is_concept<BoolConstant>>
   >::value, int> = 0>
-  friend constexpr auto operator||(Other, concept_base) noexcept {
-    return concept_base<Other, bool_constant<Other::value>>{} || Derived{};
+  friend constexpr auto operator||(BoolConstant, concept_base) noexcept {
+    return concept_base<BoolConstant, BoolConstant>{} || Derived{};
   }
 
 
   /// negation
-  friend constexpr negation<Derived> operator!(concept_base) noexcept { return {}; }
+  friend constexpr auto operator!(concept_base) noexcept { return negation(bool_constant<Base::value>{}); }
 };
 
 } // namespace concepts
 } // namespace preview
 
-#define PREVIEW_DEFINE_CONCEPT_UNDER(ns, tmp, name, inst, ...) \
-namespace ns {                                                 \
-tmp                                                            \
-struct name                                                    \
-    : preview::concepts::concept_base<inst, decltype(__VA_ARGS__)> {};   \
-}                                                              \
-                                                               \
-tmp                                                            \
-PREVIEW_INLINE_VARIABLE constexpr ns::inst name                \
+#define PREVIEW_DEFINE_CONCEPT_TYPE(name, name_typed, ...) \
+struct name : preview::concepts::concept_base<name_typed, decltype(__VA_ARGS__)> {}
 
+#define PREVIEW_DEFINE_CONCEPT_UNDER(ns, Template, name, name_typed, ...) \
+namespace ns {                                                            \
+Template                                                                  \
+struct name                                                               \
+    : preview::concepts::concept_base<name_typed, decltype(__VA_ARGS__)> {};   \
+}                                                                         \
+Template                                                                  \
+PREVIEW_INLINE_VARIABLE constexpr ns::name_typed name
 
 #endif // PREVIEW_CONCEPTS_V2_DETAIL_CONCEPT_BASE_H_
