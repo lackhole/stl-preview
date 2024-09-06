@@ -47,9 +47,8 @@ struct sized_true : std::true_type {
 
 
   // TODO: Preserve type when negating?
-
   // negation
-  friend constexpr negation<sized_true> operator!(sized_true) noexcept { return {}; }
+  friend constexpr constraints_not_satisfied<sized_true, at<N, N>> operator!(sized_true) noexcept { return {}; }
 };
 
 // negation of constraints_not_satisfied
