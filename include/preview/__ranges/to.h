@@ -167,6 +167,7 @@ constexpr C ranges_to_unnested(tag_4, R&& r, Args&&... args) {
   C c(std::forward<Args>(args)...);
   preview::ranges::detail::try_reserve(c, r);
   ranges::for_each(r, container_appender(c));
+  return c;
 }
 
 template<typename C, typename R, typename... Args>

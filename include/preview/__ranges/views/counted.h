@@ -47,7 +47,7 @@ struct counted_niebloid {
       random_access_iterator<T>>;
 
   template<typename D, typename I, typename DiffType>
-  constexpr auto call(I&& it, DiffType&& count, tag_1 /* contigious_iterator */) const {
+  constexpr auto call(I&& it, DiffType&& count, tag_1 /* contiguous_iterator */) const {
     using Address = decltype(preview::to_address(std::forward<I>(it)));
     using T = std::remove_reference_t<iter_reference_t<Address>>;
     return span<T>(
