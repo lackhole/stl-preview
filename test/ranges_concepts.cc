@@ -147,8 +147,8 @@ TEST(VERSIONED(RangesConcepts), bidirectional_range) {
   EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::set<int>>);
   EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::list<int>>);
 
-  // MSVC's hash container models bidirectional range (iterator is from std::list)
-#if defined(_MSC_VER) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
+  // MSVC and Intel C++: hash container models bidirectional range (iterator is from std::list)
+#if defined(_MSC_VER)
   EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::unordered_map<int, int>>);
   EXPECT_TRUE_TYPE(ranges::bidirectional_range<std::unordered_set<int>>);
 #else
