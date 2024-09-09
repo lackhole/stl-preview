@@ -272,6 +272,9 @@ jobs:
           - cxx_compiler: icx
 
     steps:
+      - name: Install Ninja
+        run: sudo apt-get install -y ninja-build
+
       - name: Intel Apt repository
         timeout-minutes: 1
         run: |
