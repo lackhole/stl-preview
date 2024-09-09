@@ -85,6 +85,8 @@ int main() {
 | Apple clang | 14.0.0.14000029                       | 15.0.0.15000040 (Silicon)             |
 | Android NDK | r18 (clang 7.0)                       | r26 (clang 17.0.2)                    |
 | Emscripten  | 3.1.20 (clang 16.0.0)                 | latest(3.1.61) (clang 19.0.0)         |
+| MinGW       | 13.1.0                                | 14.2.0                                |
+| Intel C++   | ?                                     | icx 2024.2                            |
 
 ## Build & Install
 ### CMake
