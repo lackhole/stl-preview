@@ -7,14 +7,14 @@
 
 #include <type_traits>
 
-#include "preview/__concepts/requires_expression.h"
 #include "preview/__concepts/same_as.h"
+#include "preview/__concepts/subtractable.h"
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/sentinel_for.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
+#include "preview/__type_traits/is_subtractable.h"
 #include "preview/__type_traits/negation.h"
-#include "preview/__type_traits/void_t.h"
 
 namespace preview {
 
@@ -23,35 +23,19 @@ struct disable_sized_sentinel_for : std::false_type {};
 
 namespace detail {
 
-template<typename S, typename I, typename = void, typename = void>
-struct explicit_sized_sentinel_subtract_check : std::false_type {};
-
-template<typename S, typename I>
-struct explicit_sized_sentinel_subtract_check<
-    S, I,
-    void_t<decltype(std::declval<S>() - std::declval<I>())>,
-    void_t<decltype(std::declval<I>() - std::declval<S>())>
-  > : conjunction<
-        same_as<decltype(std::declval<S>() - std::declval<I>()), iter_difference_t<I>>,
-        same_as<decltype(std::declval<I>() - std::declval<S>()), iter_difference_t<I>>
-      > {};
-
-template<typename S, typename I>
-struct sized_sentinel_requires : requires_expression<explicit_sized_sentinel_subtract_check, const S&, const I&> {};
-
-template<
-    typename S,
-    typename I,
-    bool = conjunction<
-          sentinel_for<S, I>,
-          negation<disable_sized_sentinel_for<std::remove_cv_t<S>, std::remove_cv_t<I>>>,
-          has_typename_type<iter_difference<I>>
-        >::value
->
+template<typename S, typename I, bool = conjunction<
+    sentinel_for<S, I>,
+    negation<disable_sized_sentinel_for<std::remove_cv_t<S>, std::remove_cv_t<I>>>,
+    has_typename_type<iter_difference<I>>
+>::value>
 struct sized_sentinel_for_impl : std::false_type {};
 
 template<typename S, typename I>
-struct sized_sentinel_for_impl<S, I, true> : sized_sentinel_requires<S, I> {};
+struct sized_sentinel_for_impl<S, I, true>
+  : conjunction<
+      is_subtractable<const S&, const I&, same_as, iter_difference_t<I>>,
+      is_subtractable<const I&, const S&, same_as, iter_difference_t<I>>
+  > {};
 
 } // namespace detail
 

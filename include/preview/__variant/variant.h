@@ -588,14 +588,14 @@ class variant : private detail::variant_control_smf<Types...> {
       : base(in_place_index<detail::variant_overload_type_index<T, TypeSeq>::value>, std::forward<T>(t)) {}
 
   template<typename T, typename... Args, std::enable_if_t<conjunction<
-      bool_constant<( TypeSeq::template unique<T> )>,
+      type_sequence_unique<T, TypeSeq>,
       std::is_constructible<T, Args...>
   >::value, int> = 0>
   constexpr explicit variant(in_place_type_t<T>, Args&&... args)
       : base(in_place_index<type_sequence_type_index<T, TypeSeq>::value>, std::forward<Args>(args)...) {}
 
   template<typename T, typename U, typename... Args, std::enable_if_t<conjunction<
-      bool_constant<( TypeSeq::template unique<T> )>,
+      type_sequence_unique<T, TypeSeq>,
       std::is_constructible<T, std::initializer_list<U>&, Args...>
   >::value, int> = 0>
   constexpr explicit variant(in_place_type_t<T>, std::initializer_list<U> il, Args&&... args)
@@ -638,7 +638,7 @@ class variant : private detail::variant_control_smf<Types...> {
 
   template<typename T, typename... Args, std::enable_if_t<conjunction<
       std::is_constructible<T, Args...>,
-      bool_constant<( TypeSeq::template unique<T> )>
+      type_sequence_unique<T, TypeSeq>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX20 T& emplace(Args&&... args) {
     return emplace<TypeSeq::template index<T>>(std::forward<Args>(args)...);
@@ -646,7 +646,7 @@ class variant : private detail::variant_control_smf<Types...> {
 
   template<typename T, typename U, typename... Args, std::enable_if_t<conjunction<
       std::is_constructible<T, std::initializer_list<U>&, Args...>,
-      bool_constant<( TypeSeq::template unique<T> )>
+      type_sequence_unique<T, TypeSeq>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX20 T& emplace(std::initializer_list<U> il, Args&&... args) {
     return emplace<TypeSeq::template index<T>>(il, std::forward<Args>(args)...);

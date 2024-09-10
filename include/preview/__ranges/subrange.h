@@ -264,12 +264,18 @@ make_subrange(I i, S s, make_unsigned_like_t<iter_difference_t<I>> n) {
   return subrange<I, S, subrange_kind::sized>(std::move(i), std::move(s), n);
 }
 
+namespace detail {
+
+template<typename R>
+constexpr subrange_kind subrange_kind_v() noexcept {
+  return (sized_range<R>::value || sized_sentinel_for<sentinel_t<R>, iterator_t<R>>::value) ?
+      subrange_kind::sized : subrange_kind::unsized;
+}
+
+} // namespace detail
+
 template<typename R, std::enable_if_t<borrowed_range<R>::value, int> = 0>
-constexpr subrange<iterator_t<R>, sentinel_t<R>,
-             (sized_range<R>::value ||
-              sized_sentinel_for<sentinel_t<R>, iterator_t<R>>::value) ?
-                subrange_kind::sized : subrange_kind::unsized>
-make_subrange(R&& r) {
+constexpr subrange<iterator_t<R>, sentinel_t<R>, detail::subrange_kind_v<R>()> make_subrange(R&& r) {
   return {std::forward<R>(r)};
 }
 
@@ -309,11 +315,7 @@ subrange(I, S, make_unsigned_like_t<iter_difference_t<I>>) ->
     subrange<I, S, ranges::subrange_kind::sized>;
 
 template<typename R>
-subrange(R&&) ->
-    subrange<ranges::iterator_t<R>, ranges::sentinel_t<R>,
-             (ranges::sized_range<R>::value ||
-              sized_sentinel_for<ranges::sentinel_t<R>, ranges::iterator_t<R>>::value) ?
-                ranges::subrange_kind::sized : ranges::subrange_kind::unsized>;
+subrange(R&&) -> subrange<ranges::iterator_t<R>, ranges::sentinel_t<R>, detail::subrange_kind_v<R>()>;
 
 #endif
 

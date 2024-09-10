@@ -35,6 +35,7 @@
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/detail/tag.h"
 #include "preview/__type_traits/has_operator_arrow.h"
+#include "preview/__type_traits/is_post_incrementable.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 #include "preview/__utility/in_place.h"
@@ -175,7 +176,7 @@ class common_iterator {
             forward_iterator<I>,
             disjunction<
                 conjunction<
-                    detail::is_post_incrementable<I>,
+                    is_post_incrementable<I>,
                     dereferenceable<I>
                 >,
                 negation< indirectly_readable<I> >,

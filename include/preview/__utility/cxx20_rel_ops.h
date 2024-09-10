@@ -23,7 +23,7 @@
 
 namespace preview {
 namespace rel_ops {
-namespace detail {
+namespace detail_adl_check {
 
 template<typename T, typename U, typename = void>
 struct equality_comparable_precxx20 : std::false_type {};
@@ -40,14 +40,14 @@ struct less_than_comparable_precxx20<
     void_t<decltype( std::declval<T>() < std::declval<U>() )>
 > : std::is_convertible<decltype( std::declval<T>() < std::declval<U>() ), bool> {};
 
-} // namespace detail
+} // namespace detail_adl_check
 
 #if __cplusplus < 202002L
 
 // synthesized from `U == T`
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
-    detail::equality_comparable_precxx20<const U&, const T&>
+    detail_adl_check::equality_comparable_precxx20<const U&, const T&>
 >::value, int> = 0>
 constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
   return b == a;
@@ -55,7 +55,7 @@ constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
 
 #endif // __cplusplus < 202002L
 
-namespace detail {
+namespace detail_adl_check {
 
 struct is_equality_comparable_impl {
   template<typename T, typename U>
@@ -68,17 +68,17 @@ struct is_equality_comparable_impl {
   using type = decltype(test<T, U>(0));
 };
 
-} // namespace detail
+} // namespace detail_adl_check
 
 template<typename T, typename U>
 struct is_equality_comparable
 #if (defined(__GNUC__) || defined(__GNUG__)) && !defined(__clang__) && (__GNUC__ >= 12)
     : disjunction<
-        detail::equality_comparable_precxx20<T, U>,
-        detail::equality_comparable_precxx20<U, T>
+        detail_adl_check::equality_comparable_precxx20<T, U>,
+        detail_adl_check::equality_comparable_precxx20<U, T>
     > {};
 #else
-    : detail::is_equality_comparable_impl::type<T, U> {};
+    : detail_adl_check::is_equality_comparable_impl::type<T, U> {};
 #endif
 
 
@@ -86,15 +86,15 @@ struct is_equality_comparable
 template<typename T, typename U, std::enable_if_t<conjunction<
     negation<std::is_same<T, U>>,
     is_equality_comparable<T, U>,
-    negation< detail::less_than_comparable_precxx20<const T&, const U&> >,
-    detail::less_than_comparable_precxx20<const U&, const T&>
+    negation< detail_adl_check::less_than_comparable_precxx20<const T&, const U&> >,
+    detail_adl_check::less_than_comparable_precxx20<const U&, const T&>
   >::value, int> = 0>
 constexpr bool operator<(const T& a, const U& b) noexcept(noexcept(!( (b < a) || (a == b)))) {
   // (a < b) -> !(a >= b) -> !( a > b || a == b) -> !( b < a || a == b)
   return !( (b < a) || (a == b));
 }
 
-namespace detail {
+namespace detail_adl_check {
 
 struct is_less_than_comparable_impl {
   template<typename T, typename U>
@@ -107,10 +107,10 @@ struct is_less_than_comparable_impl {
   using type = decltype(test<T, U>(0));
 };
 
-} // namespace detail
+} // namespace detail_adl_check
 
 template<typename T, typename U>
-struct is_less_than_comparable : detail::is_less_than_comparable_impl::type<T, U> {};
+struct is_less_than_comparable : detail_adl_check::is_less_than_comparable_impl::type<T, U> {};
 
 // return `!(a == b)`. Synthesized from `T == U`
 template<typename T, typename U, std::enable_if_t<is_equality_comparable<T, U>::value, int> = 0>
@@ -136,7 +136,7 @@ constexpr bool operator>=(const T& a, const U& b) noexcept(noexcept(!(a < b))) {
   return !(a < b); // (a >= b) -> !(a < b)
 }
 
-namespace detail {
+namespace detail_adl_check {
 
 struct is_non_equality_comparable_impl {
   template<typename T, typename U>
@@ -182,16 +182,16 @@ struct is_greater_equal_than_comparable_impl {
   using type = decltype(test<T, U>(0));
 };
 
-} // namespace detail
+} // namespace detail_adl_check
 
 template<typename T, typename U>
-struct is_non_equality_comparable : detail::is_non_equality_comparable_impl::type<T, U> {};
+struct is_non_equality_comparable : detail_adl_check::is_non_equality_comparable_impl::type<T, U> {};
 template<typename T, typename U>
-struct is_less_equal_than_comparable : detail::is_less_equal_than_comparable_impl::type<T, U> {};
+struct is_less_equal_than_comparable : detail_adl_check::is_less_equal_than_comparable_impl::type<T, U> {};
 template<typename T, typename U>
-struct is_greater_than_comparable : detail::is_greater_than_comparable_impl::type<T, U> {};
+struct is_greater_than_comparable : detail_adl_check::is_greater_than_comparable_impl::type<T, U> {};
 template<typename T, typename U>
-struct is_greater_equal_than_comparable : detail::is_greater_equal_than_comparable_impl::type<T, U> {};
+struct is_greater_equal_than_comparable : detail_adl_check::is_greater_equal_than_comparable_impl::type<T, U> {};
 
 } // namespace rel_ops
 } // namespace preview

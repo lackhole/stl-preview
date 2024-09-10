@@ -336,28 +336,28 @@ class optional : private detail::optional_control_smf<T> {
   constexpr explicit optional(in_place_t, std::initializer_list<U> ilist, Args&&... args)
     : base(in_place, ilist, std::forward<Args>(args)...) {}
 
-  template<typename U = value_type, std::enable_if_t<conjunction<
-      std::is_constructible<value_type,U&&>,
+  template<typename U = T, std::enable_if_t<conjunction<
+      std::is_constructible<T, U>,
       negation<std::is_same<remove_cvref_t<U>, in_place_t>>,
       negation<std::is_same<remove_cvref_t<U>, optional<T>>>,
       disjunction<
           negation< std::is_same<std::remove_cv_t<T>, bool> >,
-          negation< is_specialization<remove_cvref_t<U>, optional> >
+          negation< is_specialization<remove_cvref_t<U>, preview::optional> >
       >,
-      std::is_convertible<U&&, value_type> // explicit(false)
+      std::is_convertible<U, T> // explicit(false)
   >::value, int> = 0>
   constexpr optional(U&& value)
     : base(in_place, std::forward<U>(value)) {}
 
-  template<typename U = value_type, std::enable_if_t<conjunction<
-      std::is_constructible<value_type,U&&>,
+  template<typename U = T, std::enable_if_t<conjunction<
+      std::is_constructible<T, U>,
       negation<std::is_same<remove_cvref_t<U>, in_place_t>>,
       negation<std::is_same<remove_cvref_t<U>, optional<T>>>,
       disjunction<
           negation< std::is_same<std::remove_cv_t<T>, bool> >,
-          negation< is_specialization<remove_cvref_t<U>, optional> >
+          negation< is_specialization<remove_cvref_t<U>, preview::optional> >
       >,
-      negation<std::is_convertible<U&&, value_type>> // explicit(true)
+      negation<std::is_convertible<U, T>> // explicit(true)
   >::value, int> = 0>
   constexpr explicit optional(U&& value)
     : base(in_place, std::forward<U>(value)) {}
@@ -454,7 +454,7 @@ class optional : private detail::optional_control_smf<T> {
   }
 
   template<typename F, std::enable_if_t<
-      is_specialization<invoke_result_t<F, T&>, optional>
+      is_specialization<invoke_result_t<F, T&>, preview::optional>
   ::value, int> = 0>
   constexpr auto and_then(F&& f) & {
     if (*this)
@@ -464,7 +464,7 @@ class optional : private detail::optional_control_smf<T> {
   }
 
   template<typename F, std::enable_if_t<
-      is_specialization<invoke_result_t<F, const T&>, optional>
+      is_specialization<invoke_result_t<F, const T&>, preview::optional>
   ::value, int> = 0>
   constexpr auto and_then(F&& f) const & {
     if (*this)
@@ -474,7 +474,7 @@ class optional : private detail::optional_control_smf<T> {
   }
 
   template<typename F, std::enable_if_t<
-      is_specialization<invoke_result_t<F, T>, optional>
+      is_specialization<invoke_result_t<F, T>, preview::optional>
   ::value, int> = 0>
   constexpr auto and_then(F&& f) && {
     if (*this)
@@ -484,7 +484,7 @@ class optional : private detail::optional_control_smf<T> {
   }
 
   template<typename F, std::enable_if_t<
-      is_specialization<invoke_result_t<F, const T>, optional>
+      is_specialization<invoke_result_t<F, const T>, preview::optional>
   ::value, int> = 0>
   constexpr auto and_then(F&& f) const && {
     if (*this)
@@ -493,9 +493,7 @@ class optional : private detail::optional_control_smf<T> {
       return remove_cvref_t<invoke_result_t<F, const T>>{};
   }
 
-  template<typename F, std::enable_if_t<conjunction<
-      is_invocable<F, T&>
-  >::value, int> = 0>
+  template<typename F, std::enable_if_t<is_invocable<F, T&>::value, int> = 0>
   constexpr auto transform(F&& f) & {
     using U = std::remove_cv_t<invoke_result_t<F, T&>>;
     if (*this)
@@ -504,9 +502,7 @@ class optional : private detail::optional_control_smf<T> {
       return optional<U>{};
   }
 
-  template<typename F, std::enable_if_t<
-      is_invocable<F, const T&>
-  ::value, int> = 0>
+  template<typename F, std::enable_if_t<is_invocable<F, const T&>::value, int> = 0>
   constexpr auto transform(F&& f) const & {
     using U = std::remove_cv_t<invoke_result_t<F, const T&>>;
     if (*this)
@@ -515,9 +511,7 @@ class optional : private detail::optional_control_smf<T> {
       return optional<U>{};
   }
 
-  template<typename F, std::enable_if_t<
-      is_invocable<F, T>
-  ::value, int> = 0>
+  template<typename F, std::enable_if_t<is_invocable<F, T>::value, int> = 0>
   constexpr auto transform(F&& f) && {
     using U = std::remove_cv_t<invoke_result_t<F, T>>;
     if (*this)
@@ -526,9 +520,7 @@ class optional : private detail::optional_control_smf<T> {
       return optional<U>{};
   }
 
-  template<typename F, std::enable_if_t<
-      is_invocable<F, const T>
-  ::value, int> = 0>
+  template<typename F, std::enable_if_t<is_invocable<F, const T>::value, int> = 0>
   constexpr auto transform(F&& f) const && {
     using U = std::remove_cv_t<invoke_result_t<F, const T>>;
     if (*this)

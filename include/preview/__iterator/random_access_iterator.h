@@ -9,6 +9,7 @@
 
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/requires_expression.h"
+#include "preview/__concepts/subtractable.h"
 #include "preview/__concepts/totally_ordered.h"
 #include "preview/__iterator/detail/iter_concept.h"
 #include "preview/__iterator/bidirectional_iterator.h"
@@ -16,9 +17,16 @@
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/iter_reference_t.h"
 #include "preview/__iterator/sized_sentinel_for.h"
+#include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
+#include "preview/__type_traits/is_addible.h"
+#include "preview/__type_traits/is_add_assignable.h"
+#include "preview/__type_traits/is_subscriptable.h"
+#include "preview/__type_traits/is_subtractable.h"
+#include "preview/__type_traits/is_subtract_assignable.h"
 #include "preview/__type_traits/is_referenceable.h"
 #include "preview/__type_traits/remove_cvref.h"
+#include "preview/__type_traits/void_t.h"
 
 #ifdef _MSC_VER
 #pragma warning( push )
@@ -27,69 +35,37 @@
 
 namespace preview {
 namespace detail {
-namespace detail_random_access_iterator {
 
-template<typename I, typename D, typename = void, typename = void>
-struct explicit_op_assign_check : std::false_type {};
-template<typename I, typename D>
-struct explicit_op_assign_check<
-      I, D,
-      void_t<decltype( std::declval<I>() += std::declval<D>() )>,
-      void_t<decltype( std::declval<I>() -= std::declval<D>() )>
-    >
-    : conjunction<
-        same_as<decltype( std::declval<I>() += std::declval<D>() ), std::add_lvalue_reference_t<std::remove_reference_t<I>>>,
-        same_as<decltype( std::declval<I>() -= std::declval<D>() ), std::add_lvalue_reference_t<std::remove_reference_t<I>>>
-      > {};
-
-template<typename I, typename D, typename = void, typename = void, typename = void, typename = void>
-struct explicit_op_const_check : std::false_type {};
-template<typename I, typename D>
-struct explicit_op_const_check<
-      I, D,
-      void_t<decltype( std::declval<I>() + std::declval<D>() )>,
-      void_t<decltype( std::declval<D>() + std::declval<I>() )>,
-      void_t<decltype( std::declval<I>() - std::declval<D>() )>,
-      void_t<decltype( std::declval<I>()[std::declval<D>()] )>
-    >
-    : conjunction<
-        same_as<decltype( std::declval<I>() + std::declval<D>() ), remove_cvref_t<I>>,
-        same_as<decltype( std::declval<D>() + std::declval<I>() ), remove_cvref_t<I>>,
-        same_as<decltype( std::declval<I>() - std::declval<D>() ), remove_cvref_t<I>>,
-        same_as<decltype( std::declval<I>()[std::declval<D>()] ), iter_reference_t<remove_cvref_t<I>>>
-      > {};
-
-template<typename I, bool = is_referencable<iter_difference_t<I>>::value /* false */>
-struct op_check : std::false_type {};
-
-template<typename I>
-struct op_check<I, true>
-    : conjunction<
-        requires_expression<explicit_op_assign_check, I&, const iter_difference_t<I>&>,
-        requires_expression<explicit_op_const_check, const I&, const iter_difference_t<I>&>
-    > {};
-
-} // detail_random_access_iterator
-
-template<
-    typename I,
-    bool =
-        conjunction<
-          bidirectional_iterator<I>,
-          has_typename_type<iter_difference<I>>,
-          has_typename_type<iter_reference<I>>
-        >::value /* false */
->
+template<typename I, bool = conjunction<
+    bidirectional_iterator<I>,
+    has_typename_type<iter_difference<I>, is_referencable>,
+    has_typename_type<iter_reference<I>>
+>::value /* false */>
 struct random_access_iterator_impl : std::false_type {};
 
 template<typename I>
-struct random_access_iterator_impl<I, true>
-    : conjunction<
+struct random_access_iterator_impl<I, true> :
+#if defined(_MSC_VER) && _MSC_VER < 1920
+    // BUGBUG
+    // const T*& + const std::ptrdiff_t& -> T*
+    // const std::ptrdiff_t& + const T*& -> T* const
+    disjunction<
+        std::is_pointer<std::decay_t<I>>,
+#endif
+    conjunction<
         derived_from<ITER_CONCEPT<I>, random_access_iterator_tag>,
         totally_ordered<I>,
         sized_sentinel_for<I, I>,
-        detail_random_access_iterator::op_check<I>
-      > {};
+        is_add_assignable     <I&,       const iter_difference_t<I>&, same_as, I&>,
+        is_subtract_assignable<I&,       const iter_difference_t<I>&, same_as, I&>,
+        is_addible            <const I&, const iter_difference_t<I>&, same_as, I>,
+        is_addible            <const iter_difference_t<I>&, const I&, same_as, I>,
+        is_subtractable       <const I&, const iter_difference_t<I>&, same_as, I>,
+        is_subscriptable      <const I&, const iter_difference_t<I>&, same_as, iter_reference_t<I>>
+#if defined(_MSC_VER) && _MSC_VER < 1920
+    >
+#endif
+    > {};
 
 } // namespace detail
 

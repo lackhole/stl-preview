@@ -65,7 +65,7 @@ TEST(VERSIONED(Span), operator_assign) {
 
   dynamic_1 = dynamic_2; // OK
   dynamic_1 = static_1;  // OK
-  EXPECT_FALSE_TYPE(std::is_assignable<decltype((static_1)), decltype((dynamic_1))>); // ERROR: no match for ‘operator=’
+  EXPECT_FALSE_TYPE(std::is_assignable<decltype((static_1)), decltype((dynamic_1))>); // ERROR: no match for 'operator='
   static_1 = static_2;   // OK: same extents = 4
   EXPECT_FALSE_TYPE(std::is_assignable<decltype((static_1)), decltype((static_3))>);  // ERROR: different extents: 4 and 3
 }

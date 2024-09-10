@@ -31,12 +31,19 @@ struct enable_borrowed_range_t : std::integral_constant<bool, enable_borrowed_ra
 } // namespace preview
 } // namespace ranges
 
+
+#if defined(_MSC_VER) && _MSC_VER < 1920
+#define PREVIEW_RANGES_NS ::preview::ranges::
+#else
+#define PREVIEW_RANGES_NS preview::ranges::
+#endif
+
 #if PREVIEW_HAVE_CXX20_RANGES
 #   define PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(...) \
         inline constexpr bool std::ranges::enable_borrowed_range<__VA_ARGS__>
 #else
 #   define PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(...) \
-        PREVIEW_INLINE_VARIABLE constexpr bool preview::ranges::enable_borrowed_range<__VA_ARGS__>
+        PREVIEW_INLINE_VARIABLE constexpr bool PREVIEW_RANGES_NS enable_borrowed_range<__VA_ARGS__>
 #endif
 
 #if 17 <= PREVIEW_CXX_VERSION && PREVIEW_CXX_VERSION < 20

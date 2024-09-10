@@ -186,13 +186,13 @@ class basic_const_iterator : public detail::basic_const_iterator_category<Iter> 
   }
 
   template<typename Other, std::enable_if_t<
-      detail::const_iterator_implicit_conversion_check<basic_const_iterator, Other, const Iter&>::value, int> = 0>
+      detail::const_iterator_implicit_conversion_check<preview::basic_const_iterator, Other, const Iter&>::value, int> = 0>
   constexpr operator Other() const& noexcept(is_nothrow_convertible<const Iter&, Other>::value) {
     return current_;
   }
 
   template<typename Other, std::enable_if_t<
-      detail::const_iterator_implicit_conversion_check<basic_const_iterator, Other, Iter>::value, int> = 0>
+      detail::const_iterator_implicit_conversion_check<preview::basic_const_iterator, Other, Iter>::value, int> = 0>
   constexpr operator Other() && noexcept(is_nothrow_convertible<Iter, Other>::value) {
     return std::move(current_);
   }

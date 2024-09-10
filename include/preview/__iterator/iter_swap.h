@@ -14,6 +14,7 @@
 #include "preview/__iterator/indirectly_movable_storable.h"
 #include "preview/__iterator/indirectly_readable.h"
 #include "preview/__iterator/iter_reference_t.h"
+#include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/negation.h"
@@ -24,8 +25,13 @@ namespace preview {
 namespace ranges {
 namespace detail_iter_swap {
 
+#if defined(_MSC_VER) && _MSC_VER < 1920
+template<typename T, typename U, std::enable_if_t<always_false<T>::value, int> = 0>
+auto iter_swap(T, U) -> void;
+#else
 template<typename T, typename U>
 void iter_swap(T, U) = delete;
+#endif
 
 template<typename T, typename U>
 constexpr auto test_iter_swap(int) -> decltype(iter_swap(std::declval<T>(), std::declval<U>()), std::true_type{});

@@ -119,11 +119,21 @@ class split_view : public view_interface<split_view<V, Pattern>> {
       return tmp;
     }
 
-    friend constexpr bool operator==(const iterator& x, const iterator& y) {
+#if defined(_MSC_VER) && _MSC_VER <= 1920
+    friend
+#else
+    friend constexpr
+#endif
+    bool operator==(const iterator& x, const iterator& y) {
       return x.cur_ == y.cur_ && x.trailing_empty_ == y.trailing_empty_;
     }
 
-    friend constexpr bool operator!=(const iterator& x, const iterator& y) {
+#if defined(_MSC_VER) && _MSC_VER <= 1920
+    friend
+#else
+    friend constexpr
+#endif
+    bool operator!=(const iterator& x, const iterator& y) {
       return !(x == y);
     }
 

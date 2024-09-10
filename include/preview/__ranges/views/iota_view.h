@@ -32,6 +32,10 @@
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/is_addible.h"
+#include "preview/__type_traits/is_post_decrementable.h"
+#include "preview/__type_traits/is_pre_decrementable.h"
+#include "preview/__type_traits/is_subtractable.h"
 #include "preview/__type_traits/make_signed_like.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
@@ -62,35 +66,15 @@ using iota_diff_t =
         make_signed_like_t<W>
     >;
 
-template<typename I, bool = incrementable<I>::value, typename = void, typename = void>
+template<typename I, bool = incrementable<I>::value>
 struct iv_decrementable : std::false_type {};
 
 template<typename I>
-struct iv_decrementable<
-      I, true,
-      void_t<decltype( --std::declval<I&>() )>,
-      void_t<decltype( std::declval<I&>()-- )>
-    > : conjunction<
-          same_as<decltype( --std::declval<I&>() ), I&>,
-          same_as<decltype( std::declval<I&>()-- ), I>
-        > {};
-
-template<typename I, typename D, typename = void, typename = void, typename = void, typename = void>
-struct iv_advanceable_explicit : std::false_type {};
-
-template<typename I, typename D>
-struct iv_advanceable_explicit<
-      I, D,
-      void_t<decltype( std::declval<I>() + std::declval<D>() )>,
-      void_t<decltype( std::declval<D>() + std::declval<I>() )>,
-      void_t<decltype( std::declval<I>() - std::declval<D>() )>,
-      void_t<decltype( std::declval<I>() - std::declval<I>() )>
-    > : conjunction<
-          std::is_constructible<remove_cvref_t<I>, decltype( std::declval<I>() + std::declval<D>() )>,
-          std::is_constructible<remove_cvref_t<I>, decltype( std::declval<D>() + std::declval<I>() )>,
-          std::is_constructible<remove_cvref_t<I>, decltype( std::declval<I>() - std::declval<D>() )>,
-          convertible_to<decltype( std::declval<I>() - std::declval<I>() ), remove_cvref_t<D>>
-        >{};
+struct iv_decrementable<I, true>
+  : conjunction<
+      is_pre_decrementable<I&, same_as, I&>,
+      is_post_decrementable<I&, same_as, I>
+  > {};
 
 template<typename I, bool = conjunction<iv_decrementable<I>, totally_ordered<I>>::value>
 struct iv_advanceable : std::false_type {};
@@ -98,8 +82,12 @@ struct iv_advanceable : std::false_type {};
 template<typename I>
 struct iv_advanceable<I, true>
     : conjunction<
-        requires_expression<preview::detail::detail_random_access_iterator::explicit_op_assign_check, I&, const iota_diff_t<I>&>,
-        requires_expression<iv_advanceable_explicit, const I&, const iota_diff_t<I>&>
+        is_add_assignable<I&, const iota_diff_t<I>&, same_as, I&>,
+        is_subtract_assignable<I&, const iota_diff_t<I>&, same_as, I&>,
+        is_addible<const I&, const iota_diff_t<I>&, meta::bind_front<std::is_constructible, I>::template test>,
+        is_addible<const iota_diff_t<I>&, const I&, meta::bind_front<std::is_constructible, I>::template test>,
+        is_subtractable<const I&, const iota_diff_t<I>&, meta::bind_front<std::is_constructible, I>::template test>,
+        is_subtractable<const I&, const I&, convertible_to, iota_diff_t<I>>
     > {};
 
 template<typename I, bool = incrementable<I>::value /* true */>
@@ -229,44 +217,45 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
       return W(value_ + n);
     }
 
-    friend constexpr std::enable_if_t<equality_comparable<W>::value, bool>
-    operator==(const iterator& x, const iterator& y) {
+    template<bool B = equality_comparable<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator==(const iterator& x, const iterator& y) {
       return x.value_ == y.value_;
     }
-    friend constexpr std::enable_if_t<equality_comparable<W>::value, bool>
-    operator!=(const iterator& x, const iterator& y) {
+    template<bool B = equality_comparable<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator!=(const iterator& x, const iterator& y) {
       return !(x == y);
     }
-    friend constexpr std::enable_if_t<totally_ordered<W>::value, bool>
-    operator<(const iterator& x, const iterator& y) {
+    template<bool B = totally_ordered<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator<(const iterator& x, const iterator& y) {
       return x.value_ < y.value_;
     }
-    friend constexpr std::enable_if_t<totally_ordered<W>::value, bool>
-    operator>(const iterator& x, const iterator& y) {
+    template<bool B = totally_ordered<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator>(const iterator& x, const iterator& y) {
       return y < x;
     }
-    friend constexpr std::enable_if_t<totally_ordered<W>::value, bool>
-    operator<=(const iterator& x, const iterator& y) {
+    template<bool B = totally_ordered<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator<=(const iterator& x, const iterator& y) {
       return !(y < x);
     }
-    friend constexpr std::enable_if_t<totally_ordered<W>::value, bool>
-    operator>=(const iterator& x, const iterator& y) {
+    template<bool B = totally_ordered<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr bool operator>=(const iterator& x, const iterator& y) {
       return !(x < y);
     }
 
-    friend constexpr std::enable_if_t<detail::iv_advanceable<W>::value, iterator>
-    operator+(iterator i, difference_type n) {
-      i += n;
-      return i;
-    }
-    friend constexpr std::enable_if_t<detail::iv_advanceable<W>::value, iterator>
-    operator+(difference_type n, iterator i) {
+    template<bool B = detail::iv_advanceable<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr iterator operator+(iterator i, difference_type n) {
       i += n;
       return i;
     }
 
-    friend constexpr std::enable_if_t<detail::iv_advanceable<W>::value, iterator>
-    operator-(iterator i, difference_type n) {
+    template<bool B = detail::iv_advanceable<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr iterator operator+(difference_type n, iterator i) {
+      i += n;
+      return i;
+    }
+
+    template<bool B = detail::iv_advanceable<W>::value, std::enable_if_t<B, int> = 0>
+    friend constexpr iterator operator-(iterator i, difference_type n) {
       i -= n;
       return i;
     }

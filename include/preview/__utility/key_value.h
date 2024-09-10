@@ -36,7 +36,7 @@ PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<1> value;
 PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<1> second;
 
 template<std::size_t I>
-PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<I> element;
+PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<I> element{};
 
 } // namespace preview
 
