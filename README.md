@@ -77,16 +77,16 @@ int main() {
 ## Compiler Support
 [![Build Status](https://github.com/lackhole/stl-preview/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/lackhole/stl-preview/actions/workflows/cmake-multi-platform.yml)
 
-| Compiler    | Minimum version tested                | Maximum version tested                |
-|-------------|---------------------------------------|---------------------------------------|
-| MSVC        | 19.29.30154.0 (Visual Studio 16 2019) | 19.40.33811.0 (Visual Studio 17 2022) |
-| gcc         | 9.5.0                                 | 13.1.0                                |
-| clang       | 11.1.0                                | 15.0.7                                |
-| Apple clang | 14.0.0.14000029                       | 15.0.0.15000040 (Silicon)             |
-| Android NDK | r18 (clang 7.0)                       | r26 (clang 17.0.2)                    |
-| Emscripten  | 3.1.20 (clang 16.0.0)                 | latest(3.1.61) (clang 19.0.0)         |
-| MinGW       | 13.1.0                                | 14.2.0                                |
-| Intel C++   | ?                                     | icx 2024.2                            |
+| Compiler    | Minimum version tested             | Maximum version tested             |
+|-------------|------------------------------------|------------------------------------|
+| MSVC        | 19.16.27051.0 (Visual Studio 2017) | 19.40.33811.0 (Visual Studio 2022) |
+| gcc         | 9.5.0                              | 13.1.0                             |
+| clang       | 11.1.0                             | 15.0.7                             |
+| Apple clang | 14.0.0.14000029                    | 15.0.0.15000040 (Silicon)          |
+| Android NDK | r18 (clang 7.0)                    | r26 (clang 17.0.2)                 |
+| Emscripten  | 3.1.20 (clang 16.0.0)              | latest(3.1.61) (clang 19.0.0)      |
+| MinGW       | 13.1.0                             | 14.2.0                             |
+| Intel C++   | ?                                  | icx 2024.2                         |
 
 ## Build & Install
 ### CMake
