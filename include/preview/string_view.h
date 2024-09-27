@@ -6,6 +6,7 @@
 #define PREVIEW_STRING_VIEW_H_
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
@@ -23,6 +24,14 @@
 #include <string_view>
 #endif
 
+#if PREVIEW_CXX_VERSION < 26 // P2697
+#include <bitset>
+#endif
+
+#if PREVIEW_CXX_VERSION < 26 // P2495
+#include <sstream>
+#endif
+
 #include "preview/__functional/hash_array.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/sized_sentinel_for.h"
@@ -38,11 +47,19 @@
 #include "preview/__ranges/sized_range.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/has_typename_type.h"
+#include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/type_identity.h"
 #include "preview/__type_traits/remove_cvref.h"
 
 namespace preview {
+namespace detail {
+
+template<typename T> struct is_bitset : std::false_type {};
+template<std::size_t N>
+struct is_bitset<std::bitset<N>> : std::true_type {};
+
+} // namespace detail
 
 template<
     typename CharT,
@@ -103,19 +120,65 @@ class basic_string_view {
   // Add two custom constructors since std::basic_string cannot be modified
   // It is the programmer's responsibility to ensure that the resulting string view does not outlive the string.
   constexpr basic_string_view(const std::basic_string<CharT, Traits>& s)
-  : data_(s.data()), size_(s.size()) {}
+      : data_(s.data()), size_(s.size()) {}
 
   constexpr basic_string_view(std::basic_string<CharT, Traits>&& s)
       : data_(s.data()), size_(s.size()) {}
 
-#if __cplusplus < 201703L
+#if PREVIEW_CXX_VERSION < 17
   // Substitutaion for std::basic_string::basic_string(StringViewLike, ...)
   explicit operator std::basic_string<CharT, Traits>() const {
     return std::basic_string<CharT, Traits>(data(), size());
   }
 #else
-  operator std::basic_string_view<CharT, Traits>() const {
+  constexpr operator std::basic_string_view<CharT, Traits>() const {
     return std::basic_string_view<CharT, Traits>(data(), size());
+  }
+#endif
+
+  // P2697R1
+#if PREVIEW_CXX_VERSION < 26
+  template<typename T, std::enable_if_t<conjunction<
+      detail::is_bitset<T>
+#if PREVIEW_CXX_VERSION >= 17
+      , negation<std::is_constructible<T, std::basic_string_view<CharT, Traits>>>
+#endif
+  >::value, int> = 0>
+  constexpr explicit operator T() const {
+    constexpr CharT kZero = '0';
+    constexpr CharT kOne = '1';
+
+    for (auto c : *this) {
+      if (!Traits::eq(c, kZero) && !Traits::eq(c, kOne))
+        throw std::invalid_argument("preview::string_view::operator std::bitset : invalid character");
+    }
+
+    T bitset;
+    std::size_t len = (std::min)(bitset.size(), size_);
+    for (size_type i = 0; i < len; ++i) {
+      bitset[i] = Traits::eq(data_[len - 1 - i], kOne);
+    }
+
+    return bitset;
+  }
+#endif
+
+  // P2495R3
+#if PREVIEW_CXX_VERSION < 26
+  template<typename T, std::enable_if_t<conjunction<
+      disjunction<
+          is_specialization<T, std::basic_stringbuf>,
+          is_specialization<T, std::basic_istringstream>,
+          is_specialization<T, std::basic_ostringstream>,
+          is_specialization<T, std::basic_stringstream>
+      >
+#if PREVIEW_CXX_VERSION >= 17
+      , negation<std::is_constructible<T, std::basic_string_view<CharT, Traits>>>
+#endif
+  >::value, int> = 0>
+  constexpr explicit operator T() const {
+    // Cannot avoid memory allocation
+    return T(std::basic_string<CharT, Traits, typename T::allocator_type>(data(), size()));
   }
 #endif
 
@@ -559,7 +622,7 @@ std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>&
 
 using string_view = basic_string_view<char>;
 using wstring_view = basic_string_view<wchar_t>;
-#if __cplusplus >= 202002L
+#if PREVIEW_CXX_VERSION >= 20
 using u8string_view = basic_string_view<char8_t>;
 #endif
 using u16string_view = basic_string_view<char16_t>;
@@ -572,7 +635,7 @@ constexpr string_view operator ""_sv(const char* str, std::size_t len) noexcept 
   return string_view{str, len};
 }
 
-#if __cplusplus >= 202002L
+#if PREVIEW_CXX_VERSION >= 20
 constexpr u8string_view operator ""_sv(const char8_t* str, std::size_t len) noexcept {
   return u8string_view{str, len};
 }
@@ -596,7 +659,8 @@ constexpr wstring_view operator ""_sv(const wchar_t* str, std::size_t len) noexc
 template<typename CharT, typename Traits >
 struct ranges::enable_view<basic_string_view<CharT, Traits>> : std::true_type {};
 
-#if __cplusplus >= 201703L
+#if PREVIEW_CXX_VERSION >= 17
+
 template<typename It, typename End>
 basic_string_view(It, End) -> basic_string_view<iter_value_t<It>>;
 
@@ -605,8 +669,192 @@ basic_string_view(R&&) -> basic_string_view<ranges::range_value_t<R>>;
 
 #endif
 
-} // namespace preview
+namespace detail {
 
+template<typename CharT>
+struct string_view_concatenator {
+  const CharT* lhs_begin;
+  const CharT* lhs_end;
+  const CharT* rhs_begin;
+  const CharT* rhs_end;
+
+  struct iterator {
+    using iterator_category = std::random_access_iterator_tag;
+    using value_type = CharT;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const CharT*;
+    using reference = const value_type&;
+
+    string_view_concatenator* base{};
+    pointer ptr{};
+
+    constexpr iterator() = default;
+
+    constexpr iterator& operator++() {
+      if (++ptr == base->lhs_end) {
+        ptr = base->rhs_begin;
+      }
+      return *this;
+    }
+    constexpr iterator operator++(int) {
+      iterator temp = *this;
+      ++*this;
+      return temp;
+    }
+    constexpr iterator& operator+=(difference_type n) {
+      if (ptr < base->lhs_end && base->lhs_begin <= ptr) {
+        auto new_pos = ptr + n;
+        if (new_pos < base->lhs_end) {
+          ptr = new_pos;
+        } else {
+          ptr = base->rhs_begin + (new_pos - base->lhs_end);
+        }
+      } else {
+        // ptr exceeds the range
+        assert(ptr + n < base->rhs_end);
+        ptr += n;
+      }
+      return *this;
+    }
+    friend constexpr iterator operator+(iterator x, difference_type n) {
+      x += n;
+      return x;
+    }
+    friend constexpr iterator operator+(difference_type n, iterator x) {
+      x += n;
+      return x;
+    }
+
+    constexpr iterator& operator--() {
+      if (ptr == base->rhs_begin) {
+        ptr = base->lhs_end - 1;
+      } else {
+        --ptr;
+      }
+      return *this;
+    }
+
+    constexpr iterator operator--(int) {
+      iterator temp = *this;
+      --*this;
+      return temp;
+    }
+
+    constexpr iterator& operator-=(difference_type n) {
+      auto new_pos = ptr - n;
+      if (base->lhs_begin <= new_pos && new_pos < base->lhs_end) {
+        ptr = new_pos;
+      } else {
+        ptr = base->rhs_begin + (new_pos - base->lhs_end);
+
+        // ptr exceeds the range
+        assert(base->rhs_begin <= ptr && ptr < base->rhs_end);
+      }
+      return *this;
+    }
+    friend constexpr iterator operator-(iterator x, difference_type n) {
+      x -= n;
+      return x;
+    }
+    friend constexpr iterator operator-(difference_type n, iterator x) {
+      x -= n;
+      return x;
+    }
+
+    friend constexpr difference_type operator-(const iterator& x, const iterator& y) {
+      assert(x.base == y.base);
+
+      if (x.is_left()) {
+        if (y.is_left()) return x.ptr - y.ptr; // both in lhs
+        else return (x.ptr - x.base->lhs_end) + (x.base->rhs_begin - y.ptr); // lhs - rhs
+      } else {
+        if (y.is_left()) return (x.ptr - x.base->rhs_begin) + (x.base->lhs_end - y.ptr); // rhs - lhs
+        else return x.ptr - y.ptr; // both in rhs
+      }
+    }
+
+    constexpr reference operator[](difference_type n) const {
+      return *(*this + n);
+    }
+    constexpr reference operator*() const {
+      return *ptr;
+    }
+    constexpr pointer operator->() const {
+      return ptr;
+    }
+
+    friend constexpr bool operator==(const iterator& lhs, const iterator& rhs) {
+      return lhs.ptr == rhs.ptr;
+    }
+    friend constexpr bool operator!=(const iterator& lhs, const iterator& rhs) {
+      return lhs.ptr != rhs.ptr;
+    }
+
+    friend constexpr bool operator<(const iterator& x, const iterator& y) {
+      if (x.is_left()) {
+        if (y.is_left()) return x.ptr < y.ptr;
+        else return true;
+      } else {
+        if (y.is_left()) return false;
+        else return x.ptr < y.ptr;
+      }
+    }
+    friend constexpr bool operator<=(const iterator& x, const iterator& y) {
+      return !(y < x);
+    }
+    friend constexpr bool operator>(const iterator& x, const iterator& y) {
+      return y < x;
+    }
+    friend constexpr bool operator>=(const iterator& x, const iterator& y) {
+      return !(x < y);
+    }
+
+    constexpr bool is_left() const noexcept {
+      return base->lhs_begin <= ptr && ptr < base->lhs_end;
+    }
+  };
+
+  iterator begin() { return {this, lhs_begin}; }
+  iterator end() { return {this, rhs_end}; }
+};
+
+} // namespace detail
+
+
+// https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p2591r5
+
+template<typename CharT, typename Traits, typename Allocator>
+constexpr std::basic_string<CharT, Traits, Allocator>
+operator+(const std::basic_string<CharT, Traits, Allocator>& lhs, type_identity_t<basic_string_view<CharT, Traits>> rhs) {
+  // TODO: Benchmark this with modification though std::basic_string::data after C++17
+  detail::string_view_concatenator<CharT> concatenator{lhs.data(), lhs.data() + lhs.size(), rhs.data(), rhs.data() + rhs.size()};
+  std::basic_string<CharT, Traits, Allocator> result(concatenator.begin(), concatenator.end());
+  return result;
+}
+
+template<typename CharT, typename Traits, typename Allocator>
+constexpr std::basic_string<CharT, Traits, Allocator>
+operator+(std::basic_string<CharT, Traits, Allocator>&& s, type_identity_t<basic_string_view<CharT, Traits>> sv) {
+  s.append(sv.data(), sv.size());
+  return std::move(s);
+}
+
+template<typename CharT, typename Traits, typename Allocator>
+constexpr std::basic_string<CharT, Traits, Allocator>
+operator+(type_identity_t<basic_string_view<CharT, Traits>> lhs, const std::basic_string<CharT, Traits, Allocator>& rhs) {
+  detail::string_view_concatenator<CharT> concatenator{lhs.data(), lhs.data() + lhs.size(), rhs.data(), rhs.data() + rhs.size()};
+  std::basic_string<CharT, Traits, Allocator> result(concatenator.begin(), concatenator.end());
+  return result;
+}
+
+template<typename CharT, typename Traits, typename Allocator>
+constexpr std::basic_string<CharT, Traits, Allocator>
+operator+(type_identity_t<basic_string_view<CharT, Traits>> sv, std::basic_string<CharT, Traits, Allocator>&& s) {
+  s.insert(0, sv.data(), sv.size());
+  return std::move(s);
+}
+
+} // namespace preview
 
 namespace std {
 
