@@ -13,6 +13,11 @@
 #include "preview/__type_traits/void_t.h"
 #include "preview/__utility/type_sequence.h"
 
+#ifdef _MSC_VER
+#pragma warning( push )
+#pragma warning( disable : 4244)
+#endif
+
 namespace preview {
 
 template<typename T, typename U, template<typename...> class Constraint = always_true,
@@ -25,5 +30,9 @@ struct is_add_assignable<T, U, Constraint, CallArgs, Proj, void_t<decltype(std::
     : meta::bind_first<Constraint, Proj<decltype(std::declval<T>() += std::declval<U>())>, CallArgs> {};
 
 } // namespace preview
+
+#ifdef _MSC_VER
+#pragma warning( pop )
+#endif
 
 #endif // PREVIEW_TYPE_TRAITS_IS_ADD_ASSIGNABLE_H_
