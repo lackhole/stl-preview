@@ -108,7 +108,7 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/308/691-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/15/132-grey)![][p011] |
+|                                     | ![](https://img.shields.io/badge/311/694-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
@@ -125,7 +125,7 @@ Implementation available in C++14 ~ :
 | [random](#random)                   | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/29/36-grey)![][p081]  | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [span](#span)                       | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
-| [string_view](#string_view)         | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
+| [string_view](#string_view)         | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/3/3-grey)![][p100] *  |
 | [tuple](#tuple)                     | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                        |
 | [type_traits](#type_traits)         | ![](https://img.shields.io/badge/17/26-grey)![][p065]   |   | ![](https://img.shields.io/badge/8/10-grey)![][p080]   | ![](https://img.shields.io/badge/7/13-grey)![][p054]    | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [utility](#utility)                 | ![](https://img.shields.io/badge/7/8-grey)![][p088]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
@@ -1054,12 +1054,21 @@ Description
 
 #### `<string_view>`
 
-  |                                | Introduced | Revision              |
-  |--------------------------------|------------|-----------------------|
-  | `basic_string_view`            | ![][c17ok] | ![][c20ok] ![][c23ok] |
-  | `std::hash<basic_string_view>` | ![][c17ok] |                       |
-  | `swap(optional)`               | ![][c17ok] |                       |
-  | `operator""_sv`                | ![][c17ok] |                       |
+  |                                | Introduced | Revision                           |
+  |--------------------------------|------------|------------------------------------|
+  | `basic_string_view`            | ![][c17ok] | ![][c20ok] ![][c23ok] ![][c26ok] * |
+  | `std::hash<basic_string_view>` | ![][c17ok] |                                    |
+  | `swap(optional)`               | ![][c17ok] |                                    |
+  | `operator""_sv`                | ![][c17ok] |                                    |
+
+  * Notes
+    * C++26 
+      * [P2591 (R5)](https://wg21.link/P2591R5)
+      * [P2697 (R1)](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2697r1.pdf)
+        * Implemented as `preview::basic_string_view::operator bitset`
+      * [P2495 (R3)](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/p2495r3.pdf)
+        * Implemented as `preview::basic_string_view::operator string-streams`
+        * Memory allocation is performed (conversion to `std::basic_string`)
 
 #### `<source_location>`
   N/A
