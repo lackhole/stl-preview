@@ -690,6 +690,10 @@ struct string_view_concatenator {
 
     constexpr iterator() = default;
 
+    constexpr iterator(string_view_concatenator* base, pointer ptr)
+        : base(base)
+        , ptr(ptr) {}
+
     constexpr iterator& operator++() {
       if (++ptr == base->lhs_end) {
         ptr = base->rhs_begin;
