@@ -519,7 +519,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
       negation<is_specialization<remove_cvref_t<U>, unexpected>>,
       disjunction<
           negation<std::is_same<bool, std::remove_cv_t<T>>>,
-          negation<is_specialization<remove_cvref_t<U>, expected>>
+          negation<is_specialization<remove_cvref_t<U>, preview::expected>>
       >,
       negation<std::is_convertible<U, T>>
   >::value, int> = 0>
@@ -534,7 +534,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
       negation<is_specialization<remove_cvref_t<U>, unexpected>>,
       disjunction<
           negation<std::is_same<bool, std::remove_cv_t<T>>>,
-          negation<is_specialization<remove_cvref_t<U>, expected>>
+          negation<is_specialization<remove_cvref_t<U>, preview::expected>>
       >,
       std::is_convertible<U, T>
   >::value, int> = 0>

@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <type_traits>
 
+#include "preview/__core/nodiscard.h"
 #include "preview/__iterator/basic_const_iterator.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
@@ -83,7 +84,7 @@ struct static_span_storage {
 
   T* data() const noexcept { return ptr_; }
 
-  [[nodiscard]]
+  PREVIEW_NODISCARD
   std::size_t size() const noexcept { return Extent; }
 
   T* ptr_;
@@ -96,7 +97,7 @@ struct dynamic_span_storage {
 
   T* data() const noexcept { return ptr_; }
 
-  [[nodiscard]]
+  PREVIEW_NODISCARD
   std::size_t size() const noexcept { return size_; }
 
   T* ptr_;
@@ -119,7 +120,11 @@ template<typename T, std::size_t N>
 struct is_array<std::array<T, N>> : std::true_type {};
 
 template<typename It, typename T, bool = contiguous_iterator<It>::value /* true */>
-struct span_ctor_first_count : std::is_convertible<iter_reference_t<It>, T> {};
+struct span_ctor_first_count
+    : std::is_convertible<
+        std::remove_reference_t<iter_reference_t<It>>(*)[],
+        T(*)[]
+    > {};
 template<typename It, typename T>
 struct span_ctor_first_count<It, T, false> : std::false_type {};
 

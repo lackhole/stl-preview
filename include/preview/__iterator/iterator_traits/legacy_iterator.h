@@ -11,20 +11,17 @@
 #include "preview/__concepts/dereferenceable.h"
 #include "preview/__iterator/weakly_incrementable.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/is_post_incrementable.h"
+#include "preview/__type_traits/is_pre_incrementable.h"
 #include "preview/__type_traits/is_referenceable.h"
 
 namespace preview {
 namespace detail {
 
-template<typename I, bool = dereferenceable<decltype(std::declval<I&>()++)>::value>
-struct LegacyIteratorCheckPostIncrement_2 : std::false_type {};
-template<typename I>
-struct LegacyIteratorCheckPostIncrement_2<I, true> : is_referencable<decltype(*std::declval<I&>()++)> {};
-
-template<typename I, bool = preview::detail::is_post_incrementable<I>::value>
+template<typename I, bool = is_post_incrementable<I, dereferenceable>::value>
 struct LegacyIteratorCheckPostIncrement : std::false_type {};
 template<typename I>
-struct LegacyIteratorCheckPostIncrement<I, true> : LegacyIteratorCheckPostIncrement_2<I> {};
+struct LegacyIteratorCheckPostIncrement<I, true> : is_referencable<decltype(*std::declval<I&>()++)> {};
 
 } // namespace detail
 
@@ -35,7 +32,7 @@ template<typename I>
 struct LegacyIterator<I, true>
     : conjunction<
         is_referencable<decltype(*std::declval<I&>())>,
-        detail::is_pre_incrementable<I>,
+        is_pre_incrementable<I>,
         detail::LegacyIteratorCheckPostIncrement<I>,
         copyable<I>
 > {};

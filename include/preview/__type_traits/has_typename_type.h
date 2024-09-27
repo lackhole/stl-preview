@@ -8,24 +8,25 @@
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
+#include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/meta.h"
+#include "preview/__type_traits/type_identity.h"
 #include "preview/__type_traits/void_t.h"
+#include "preview/__utility/type_sequence.h"
 
 namespace preview {
-namespace detail {
 
-template<typename T, typename = void>
-struct has_typename_type_impl : std::false_type {};
+template<typename T, template<typename...> class Constraint = always_true, typename CallArgs = type_sequence<>,
+         template<typename, typename...> class Proj = type_identity_t, typename = void>
+struct has_typename_type : std::false_type {};
 
-template<typename T>
-struct has_typename_type_impl<T, void_t<typename T::type>> : std::true_type {};
+template<typename T, template<typename...> class Constraint, typename CallArgs, template<typename, typename...> class Proj>
+struct has_typename_type<T, Constraint, CallArgs, Proj, void_t<typename T::type>>
+    : meta::bind_first<Constraint, Proj<typename T::type>, CallArgs> {};
 
-} // namespace detail
-
-template<typename T>
-struct has_typename_type : detail::has_typename_type_impl<T> {};
-
-template<typename... B>
-PREVIEW_INLINE_VARIABLE constexpr bool has_typename_type_v = has_typename_type<B...>::value;
+template<typename T, template<typename...> class Constraint, typename CallArgs = type_sequence<>,
+         template<typename, typename...> class Proj = type_identity_t>
+PREVIEW_INLINE_VARIABLE constexpr bool has_typename_type_v = has_typename_type<T, Constraint, CallArgs, Proj>::value;
 
 } // namespace preview
 

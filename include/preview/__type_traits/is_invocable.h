@@ -54,7 +54,7 @@ struct invoke_result
     : std::conditional_t<
           detail::is_invocable_r_impl<void, F, Args...>::invocable::value,
               type_identity<typename detail::is_invocable_r_impl<void, F, Args...>::test_return_type>,
-          detail::not_invocable> {};
+          preview::detail::not_invocable> {};
 
 template<typename F, typename ...Args>
 using invoke_result_t = typename invoke_result<F, Args...>::type;

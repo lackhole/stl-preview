@@ -7,6 +7,8 @@
 
 #include <cstddef>
 
+#include "preview/__type_traits/bool_constant.h"
+
 namespace preview {
 
 template<typename...>
@@ -107,9 +109,6 @@ struct type_sequence {
   static constexpr std::size_t count = type_sequence_type_count<T, type_sequence>::value;
 
   template<typename T>
-  static constexpr bool unique = (type_sequence_type_count<T, type_sequence>::value == 1);
-
-  template<typename T>
   static constexpr std::size_t index = type_sequence_type_index<T, type_sequence>::value;
 
   template<std::size_t I>
@@ -118,6 +117,24 @@ struct type_sequence {
   using front = element_type<0>;
   using back = element_type<sizeof...(Types) - 1>;
 };
+
+template<typename T, typename TypeSeq, bool First = false>
+struct type_sequence_unique;
+
+template<typename T, bool First>
+struct type_sequence_unique<T, type_sequence<>, First> : bool_constant<First> {};
+
+template<typename T, typename... Types>
+struct type_sequence_unique<T, type_sequence<T, Types...>, true>
+    : std::false_type {};
+
+template<typename T, typename... Types>
+struct type_sequence_unique<T, type_sequence<T, Types...>, false>
+    : type_sequence_unique<T, type_sequence<Types...>, true> {};
+
+template<typename T, typename U, typename... Types, bool First>
+struct type_sequence_unique<T, type_sequence<U, Types...>, First>
+    : type_sequence_unique<T, type_sequence<Types...>, First> {};
 
 } // namespace preview
 

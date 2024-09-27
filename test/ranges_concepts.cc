@@ -60,7 +60,7 @@ template<typename T, std::size_t N>
 struct MyBorrowedRange : preview::span<T, N> {};
 
 template<typename T, std::size_t N>
-PREVIEW_INLINE_VARIABLE constexpr bool ranges::enable_borrowed_range<MyBorrowedRange<T, N>> = true;
+PREVIEW_INLINE_VARIABLE constexpr bool ::preview::ranges::enable_borrowed_range<MyBorrowedRange<T, N>> = true;
 
 TEST(VERSIONED(RangesConcepts), borrowed_range) {
   EXPECT_TRUE_TYPE  (ranges::range<MyRange<int, 8>>);
@@ -204,7 +204,7 @@ TEST(VERSIONED(RangesConcepts), common_range) {
 }
 
 template<typename T>
-auto test_viewable_range(T &&) -> ranges::viewable_range<T&&>;
+auto test_viewable_range(T&&) -> ranges::viewable_range<T>;
 
 TEST(VERSIONED(RangesConcepts), viewable_range) {
   auto il = {1, 2, 3};
@@ -229,7 +229,7 @@ TEST(VERSIONED(RangesConcepts), viewable_range) {
   EXPECT_TRUE_TYPE(decltype(test_viewable_range( ranges::ref_view<ranges::owning_view<std::string>>(o) )));
 
   EXPECT_FALSE_TYPE(decltype(test_viewable_range( std::move(il) )));
-  EXPECT_FALSE_TYPE(decltype(test_viewable_range( std::move(arr) )));
+  EXPECT_FALSE_TYPE(ranges::viewable_range<decltype(std::move(arr))>);
   EXPECT_FALSE_TYPE(decltype(test_viewable_range( o )));
 }
 
