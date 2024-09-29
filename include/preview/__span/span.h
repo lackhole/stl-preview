@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include "preview/__core/nodiscard.h"
+#include "preview/__core/std_version.h"
 #include "preview/__iterator/basic_const_iterator.h"
 #include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
@@ -31,6 +32,10 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
+
+#if PREVIEW_CXX_VERSION >= 20
+#include <span>
+#endif
 
 namespace preview {
 namespace detail {
@@ -277,23 +282,25 @@ class span : private detail::span_storage_t<T, Extent> {
   // explicit(extent != std::dynamic_extent && N == std::dynamic_extent)
   // constexpr span( const std::span<U, N>& source ) noexcept;
   template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
-      bool_constant<!(Extent != dynamic_extent && OtherExtent == dynamic_extent)>, // explicit(false)
       bool_constant<(
         Extent == dynamic_extent ||
         OtherExtent == dynamic_extent ||
         Extent == OtherExtent)>,
-      std::is_convertible<U(*)[], element_type(*)[]>
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(false)
+      bool_constant<!(Extent != dynamic_extent && OtherExtent == dynamic_extent)>
   >::value, int> = 0>
   constexpr span(const span<U, OtherExtent>& source) noexcept
       : base(source.data(), source.size()) {}
 
   template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
-      bool_constant<(Extent != dynamic_extent && OtherExtent == dynamic_extent)>, // explicit(true)
       bool_constant<(
           Extent == dynamic_extent ||
           OtherExtent == dynamic_extent ||
           Extent == OtherExtent)>,
-      std::is_convertible<U(*)[], element_type(*)[]>
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(true)
+      bool_constant<(Extent != dynamic_extent && OtherExtent == dynamic_extent)>
   >::value, int> = 0>
   constexpr explicit span(const span<U, OtherExtent>& source) noexcept
       : base(source.data(), source.size()) {}
@@ -301,6 +308,58 @@ class span : private detail::span_storage_t<T, Extent> {
   // (10)
   // constexpr span( const span& other ) noexcept = default;
   constexpr span(const span& other) noexcept = default;
+
+#if PREVIEW_CXX_VERSION >= 20
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<(
+          Extent == dynamic_extent ||
+          OtherExtent == dynamic_extent ||
+          Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(true)
+      bool_constant<(Extent != dynamic_extent && OtherExtent == dynamic_extent)>
+  >::value, int> = 0>
+  constexpr explicit span(const std::span<U, OtherExtent>& source) noexcept
+      : base(source.data(), source.size()) {}
+
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<(
+          Extent == dynamic_extent ||
+          OtherExtent == dynamic_extent ||
+          Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(false)
+      bool_constant<!(Extent != dynamic_extent && OtherExtent == dynamic_extent)>
+  >::value, int> = 0>
+  constexpr span(const std::span<U, OtherExtent>& source) noexcept
+      : base(source.data(), source.size()) {}
+
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<(
+          Extent == dynamic_extent ||
+          OtherExtent == dynamic_extent ||
+          Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(true)
+      bool_constant<(OtherExtent != dynamic_extent && Extent == dynamic_extent)>
+  >::value, int> = 0>
+  constexpr explicit operator std::span<U, OtherExtent>() const noexcept {
+    return std::span<U, OtherExtent>(data(), size());
+  }
+
+  template<typename U, std::size_t OtherExtent, std::enable_if_t<conjunction<
+      bool_constant<(
+          Extent == dynamic_extent ||
+          OtherExtent == dynamic_extent ||
+          Extent == OtherExtent)>,
+      std::is_convertible<U(*)[], element_type(*)[]>,
+      // explicit(false)
+      bool_constant<!(OtherExtent != dynamic_extent && Extent == dynamic_extent)>
+  >::value, int> = 0>
+  constexpr operator std::span<U, OtherExtent>() const noexcept {
+    return std::span<U, OtherExtent>(data(), size());
+  }
+#endif
 
   constexpr iterator begin() const noexcept { return iterator{data()}; }
   constexpr iterator end() const noexcept { return iterator{data() + size()}; }
