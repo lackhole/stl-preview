@@ -82,10 +82,10 @@ struct static_span_storage {
   constexpr static_span_storage() noexcept : ptr_(nullptr) {}
   constexpr static_span_storage(T* ptr, std::size_t) noexcept : ptr_(ptr) {}
 
-  T* data() const noexcept { return ptr_; }
+  constexpr T* data() const noexcept { return ptr_; }
 
   PREVIEW_NODISCARD
-  std::size_t size() const noexcept { return Extent; }
+  constexpr std::size_t size() const noexcept { return Extent; }
 
   T* ptr_;
 };
@@ -95,10 +95,10 @@ struct dynamic_span_storage {
   constexpr dynamic_span_storage() noexcept : ptr_(nullptr), size_(0) {}
   constexpr dynamic_span_storage(T* ptr, std::size_t size) noexcept : ptr_(ptr), size_(size) {}
 
-  T* data() const noexcept { return ptr_; }
+  constexpr T* data() const noexcept { return ptr_; }
 
   PREVIEW_NODISCARD
-  std::size_t size() const noexcept { return size_; }
+  constexpr std::size_t size() const noexcept { return size_; }
 
   T* ptr_;
   std::size_t size_;
