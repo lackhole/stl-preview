@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "preview/algorithm.h"
+#include "preview/array.h"
 #include "preview/ranges.h"
 
 namespace ranges = preview::ranges;
@@ -111,6 +112,100 @@ TEST(VERSIONED(Span), deduction_guides) {
   preview::span s8{v}; // guide (5)
   EXPECT_EQ(sizeof s8, sizeof(std::size_t) * 2);
   EXPECT_EQ(s8.extent, preview::dynamic_extent);
+}
+
+#endif // C++17
+
+#if PREVIEW_CXX_VERSION >= 20
+
+#include <span>
+
+TEST(VERSIONED(Span), std_span_compat) {
+  const auto arr = preview::to_array({1, 2, 3, 4, 5});
+
+  static_assert(std::is_convertible_v<preview::span<int>, preview::span<int>> ==
+                std::is_convertible_v<preview::span<int>,     std::span<int>>, "");
+  static_assert(std::is_convertible_v<preview::span<unsigned int>, preview::span<int>> ==
+                std::is_convertible_v<preview::span<unsigned int>,     std::span<int>>, "");
+  static_assert(std::is_convertible_v<preview::span<int>, preview::span<unsigned int>> ==
+                std::is_convertible_v<preview::span<int>,     std::span<unsigned int>>, "");
+
+  static_assert(std::is_convertible_v<preview::span<int, 5>, preview::span<int>> ==
+                std::is_convertible_v<preview::span<int, 5>,     std::span<int>>, "");
+  static_assert(std::is_convertible_v<preview::span<unsigned int, 5>, preview::span<int>> ==
+                std::is_convertible_v<preview::span<unsigned int, 5>,     std::span<int>>, "");
+  static_assert(std::is_convertible_v<preview::span<int, 5>, preview::span<unsigned int>> ==
+                std::is_convertible_v<preview::span<int, 5>,     std::span<unsigned int>>, "");
+
+  static_assert(std::is_convertible_v<preview::span<int>, preview::span<int, 5>> ==
+                std::is_convertible_v<preview::span<int>,     std::span<int, 5>>, "");
+  static_assert(std::is_convertible_v<preview::span<unsigned int>, preview::span<int, 5>> ==
+                std::is_convertible_v<preview::span<unsigned int>,     std::span<int, 5>>, "");
+  static_assert(std::is_convertible_v<preview::span<int>, preview::span<unsigned int, 5>> ==
+                std::is_convertible_v<preview::span<int>,     std::span<unsigned int, 5>>, "");
+
+  static_assert(std::is_convertible_v<preview::span<int, 5>, preview::span<int, 5>> ==
+                std::is_convertible_v<preview::span<int, 5>,     std::span<int, 5>>, "");
+  static_assert(std::is_convertible_v<preview::span<unsigned int, 5>, preview::span<int, 5>> ==
+                std::is_convertible_v<preview::span<unsigned int, 5>,     std::span<int, 5>>, "");
+  static_assert(std::is_convertible_v<preview::span<int, 5>, preview::span<unsigned int, 5>> ==
+                std::is_convertible_v<preview::span<int, 5>,     std::span<unsigned int, 5>>, "");
+
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int>, preview::span<int>> ==
+                preview::is_explicitly_convertible_v<preview::span<int>,     std::span<int>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<unsigned int>, preview::span<int>> ==
+                preview::is_explicitly_convertible_v<preview::span<unsigned int>,     std::span<int>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int>, preview::span<unsigned int>> ==
+                preview::is_explicitly_convertible_v<preview::span<int>,     std::span<unsigned int>>, "");
+
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int, 5>, preview::span<int>> ==
+                preview::is_explicitly_convertible_v<preview::span<int, 5>,     std::span<int>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<unsigned int, 5>, preview::span<int>> ==
+                preview::is_explicitly_convertible_v<preview::span<unsigned int, 5>,     std::span<int>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int, 5>, preview::span<unsigned int>> ==
+                preview::is_explicitly_convertible_v<preview::span<int, 5>,     std::span<unsigned int>>, "");
+
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int>, preview::span<int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<int>,     std::span<int, 5>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<unsigned int>, preview::span<int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<unsigned int>,     std::span<int, 5>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int>, preview::span<unsigned int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<int>,     std::span<unsigned int, 5>>, "");
+
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int, 5>, preview::span<int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<int, 5>,     std::span<int, 5>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<unsigned int, 5>, preview::span<int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<unsigned int, 5>,     std::span<int, 5>>, "");
+  static_assert(preview::is_explicitly_convertible_v<preview::span<int, 5>, preview::span<unsigned int, 5>> ==
+                preview::is_explicitly_convertible_v<preview::span<int, 5>,     std::span<unsigned int, 5>>, "");
+
+  static_assert(std::is_constructible_v<preview::span<int>, preview::span<int>> ==
+                std::is_constructible_v<    std::span<int>, preview::span<int>>, "");
+  static_assert(std::is_constructible_v<preview::span<unsigned int>, preview::span<int>> ==
+                std::is_constructible_v<    std::span<unsigned int>, preview::span<int>>, "");
+  static_assert(std::is_constructible_v<preview::span<int>, preview::span<unsigned int>> ==
+                std::is_constructible_v<    std::span<int>, preview::span<unsigned int>>, "");
+
+  static_assert(std::is_constructible_v<preview::span<int, 5>, preview::span<int>> ==
+                std::is_constructible_v<    std::span<int, 5>, preview::span<int>>, "");
+  static_assert(std::is_constructible_v<preview::span<unsigned int, 5>, preview::span<int>> ==
+                std::is_constructible_v<    std::span<unsigned int, 5>, preview::span<int>>, "");
+  static_assert(std::is_constructible_v<preview::span<int, 5>, preview::span<unsigned int>> ==
+                std::is_constructible_v<    std::span<int, 5>, preview::span<unsigned int>>, "");
+
+  static_assert(std::is_constructible_v<preview::span<int>, preview::span<int, 5>> ==
+                std::is_constructible_v<    std::span<int>, preview::span<int, 5>>, "");
+  static_assert(std::is_constructible_v<preview::span<unsigned int>, preview::span<int, 5>> ==
+                std::is_constructible_v<    std::span<unsigned int>, preview::span<int, 5>>, "");
+  static_assert(std::is_constructible_v<preview::span<int>, preview::span<unsigned int, 5>> ==
+                std::is_constructible_v<    std::span<int>, preview::span<unsigned int, 5>>, "");
+
+  static_assert(std::is_constructible_v<preview::span<int, 5>, preview::span<int, 5>> ==
+                std::is_constructible_v<    std::span<int, 5>, preview::span<int, 5>>, "");
+  static_assert(std::is_constructible_v<preview::span<unsigned int, 5>, preview::span<int, 5>> ==
+                std::is_constructible_v<    std::span<unsigned int, 5>, preview::span<int, 5>>, "");
+  static_assert(std::is_constructible_v<preview::span<int, 5>, preview::span<unsigned int, 5>> ==
+                std::is_constructible_v<    std::span<int, 5>, preview::span<unsigned int, 5>>, "");
 }
 
 #endif // C++17
