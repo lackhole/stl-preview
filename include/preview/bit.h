@@ -6,5 +6,6 @@
 #define PREVIEW_BIT_H_
 
 #include "preview/__bit/bit_cast.h"
+#include "preview/__bit/byteswap.h"
 
 #endif // PREVIEW_BIT_H_
