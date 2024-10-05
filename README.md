@@ -315,8 +315,9 @@ Description
 
 * Notes
   * `preview::any`
-    * `preview::any` is an alias to `std::any` if using C++17 or later to prevent
-      implicit construction of `std::any` from `preview::any` and vice-versa
+    * `preview::any` is an alias of `std::any` if using C++17 or later to prevent
+      implicit construction of `std::any` from `preview::any` and vice-versa. 
+      See [any.h](include/preview/__any/any.h) for more detail.
 
 #### `<array>`
 
