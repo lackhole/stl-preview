@@ -108,7 +108,7 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/311/694-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
+|                                     | ![](https://img.shields.io/badge/316/694-grey)![][p046] |   | ![](https://img.shields.io/badge/49/113-grey)![][p043] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
@@ -131,7 +131,7 @@ Implementation available in C++14 ~ :
 | [utility](#utility)                 | ![](https://img.shields.io/badge/7/8-grey)![][p088]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [variant](#variant)                 | ![](https://img.shields.io/badge/9/9-grey)![][p100]     |   | ![](https://img.shields.io/badge/9/9-grey)![][p100]    |                                                         |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [any](#any)                         | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/0-grey)![][p000]    |                                                         |                                                        |                                                        |
+| [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [atomic](#atomic)                   | ![](https://img.shields.io/badge/0/17-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |
 | [barrier](#barrier)                 | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
 | [charconv](#charconv)               | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/14-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                        |
@@ -305,13 +305,19 @@ Description
 
 #### `<any>`
 
-  |                | Introduced | Revision |
-  |----------------|------------|----------|
-  | `any`          | ![][c17no] |          |
-  | `bad_any_cast` | ![][c17no] |          |
-  | `swap(any)`    | ![][c17no] |          |
-  | `make_any`     | ![][c17no] |          |
-  | `any_cast`     | ![][c17no] |          |
+  |                | Introduced  | Revision |
+  |----------------|-------------|----------|
+  | `any`          | ![][c17ok]* |          |
+  | `bad_any_cast` | ![][c17ok]  |          |
+  | `swap(any)`    | ![][c17ok]  |          |
+  | `make_any`     | ![][c17ok]  |          |
+  | `any_cast`     | ![][c17ok]  |          |
+
+* Notes
+  * `preview::any`
+    * `preview::any` is an alias of `std::any` if using C++17 or later to prevent
+      implicit construction of `std::any` from `preview::any` and vice-versa. 
+      See [any.h](include/preview/__any/any.h) for more detail.
 
 #### `<array>`
 

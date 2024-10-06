@@ -9,6 +9,7 @@
 #include "preview/__utility/cmp.h"
 #include "preview/__utility/compressed_pair.h"
 #include "preview/__utility/cxx20_rel_ops.h"
+#include "preview/__utility/exchange.h"
 #include "preview/__utility/forward_like.h"
 #include "preview/__utility/in_place.h"
 #include "preview/__utility/in_range.h"
