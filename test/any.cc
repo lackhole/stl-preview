@@ -279,15 +279,15 @@ TEST(VERSIONED(Any), type) {
     static_stream() << ", ";
   }
 
-  EXPECT_EQ(
-      static_stream().str(),
-      (std::stringstream{}
-          << "{}"         << ", "
-          << 42           << ", "
-          << 123u         << ", "
-          << 3.14159f     << ", "
-          << 2.71828      << ", "
-          << "\"C++17\""  << ", ").str());
+  std::stringstream ss;
+  ss << "{}"         << ", "
+     << 42           << ", "
+     << 123u         << ", "
+     << 3.14159f     << ", "
+     << 2.71828      << ", "
+     << "\"C++17\""  << ", ";
+
+  EXPECT_EQ(static_stream().str(), ss.str());
   static_stream().str("");
 
   process(preview::any(0xFULL));
