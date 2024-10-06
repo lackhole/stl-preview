@@ -16,6 +16,19 @@ std::cout << map[0] << ' '
           << map[1] << ' '
           << map[2] << '\n';
 // A B C
+
+
+// Not dirty-macro-magic! just simple alias. 
+// SFINAE can be easily made without macro using good-old-school mechanism
+template<typename T, preview_requires(preview::integral<T>)>
+void foo(T) {}
+
+// Readable error message!
+foo(3);
+
+// error: no matching function for call to 'foo'
+// note: candidate template ignored: substitution failure [with T = double]: no type named 'valid' in 
+// 'constraints_not_satisfied<integral<double>, at<0, 1>, because<std::is_integral<double>, is_false>>
 ```
 
 **`preview` is standard-conforming, and is compatible with existing STL**
