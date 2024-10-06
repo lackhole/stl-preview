@@ -387,7 +387,7 @@ struct any_big_handler {
   }
 
   static void swap(any& lhs, any& rhs) {
-    preview::exchange(any_big_handler<T>::get_ptr(lhs), any_big_handler<T>::get_ptr(rhs));
+    preview::exchange(lhs.storage_.ptr, rhs.storage_.ptr);
     preview::exchange(lhs.vptr_, rhs.vptr_);
   }
 };
