@@ -32,7 +32,7 @@ TEST(VERSIONED(Any), basics) {
   EXPECT_EQ(preview::any_cast<bool>(a), true);
 
   // bad cast
-  EXPECT_THROW(preview::any_cast<float>(a), preview::bad_any_cast);
+  EXPECT_THROW((void)preview::any_cast<float>(a), preview::bad_any_cast);
 
   // has value
   a = 2;
@@ -161,8 +161,8 @@ TEST(VERSIONED(Any), operator_assign) {
 
 struct Star {
   Star(std::string name, int id)
-      : name{name}
-      , id{id} {}
+      : name(std::move(name))
+      , id(id) {}
 
   std::string name;
   int id;
@@ -353,7 +353,7 @@ TEST(VERSIONED(Any), any_cast) {
     // Simple example
     auto a1 = preview::any(12);
 
-    EXPECT_THROW(preview::any_cast<std::string>(a1), preview::bad_any_cast);
+    EXPECT_THROW((void)preview::any_cast<std::string>(a1), preview::bad_any_cast);
 
     // Pointer example
     EXPECT_NE(preview::any_cast<int>(&a1), nullptr);
@@ -367,10 +367,10 @@ TEST(VERSIONED(Any), any_cast) {
     EXPECT_EQ(preview::any_cast<const std::string&>(a1), "hollo"); //< const reference
 
     auto s1 = preview::any_cast<std::string&&>(std::move(a1)); //< rvalue reference
-    // Note: “s1” is a move-constructed std::string:
+    // Note: "s1" is a move-constructed std::string:
     static_assert(std::is_same<decltype(s1), std::string>::value, "");
 
-    // Note: the std::string in “a1” is left in valid but unspecified state
+    // Note: the std::string in "a1" is left in valid but unspecified state
     EXPECT_EQ(a1.has_value(), true);
     EXPECT_EQ(preview::any_cast<std::string>(&a1)->size(), 0);
     EXPECT_EQ(s1.size(), 5);
