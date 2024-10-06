@@ -354,7 +354,7 @@ struct any_big_handler {
 
   template<typename... Args>
   static T& create(any* thiz, Args&&... args) {
-    any_big_handler<T>::get_ptr(*thiz) = ::new T(std::forward<Args>(args)...);
+    any_big_handler<T>::set_ptr(*thiz, ::new T(std::forward<Args>(args)...));
     thiz->vptr_ = &any_big_handler<T>::handle;
     return *any_big_handler<T>::get_ptr(*thiz);
   }
@@ -363,6 +363,7 @@ struct any_big_handler {
   using pointer = T*;
   using const_pointer = std::add_const_t<T>*;
 
+  static void set_ptr(any& self, pointer ptr) noexcept { self.storage_.ptr = ptr; }
   static pointer       get_ptr(      any& self) noexcept { return static_cast<pointer      >(self.storage_.ptr); }
   static const_pointer get_ptr(const any& self) noexcept { return static_cast<const_pointer>(self.storage_.ptr); }
 
@@ -375,7 +376,7 @@ struct any_big_handler {
   }
 
   static void move(any& self, any* other) {
-    any_big_handler<T>::get_ptr(*other) = any_big_handler<T>::get_ptr(self);
+    any_big_handler<T>::set_ptr(*other, any_big_handler<T>::get_ptr(self));
     other->vptr_ = self.vptr_;
     self.vptr_ = nullptr;
   }
