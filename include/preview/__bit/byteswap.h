@@ -18,39 +18,42 @@
 #endif
 
 namespace preview {
-    namespace detail {
-        template<typename T, std::enable_if_t<std::is_unsigned<T>::value, int> = 0>
-        constexpr T byteswap_impl(T n) noexcept {
-            constexpr T byte_mask{ (1 << CHAR_BIT) - 1 };
+namespace detail {
 
-            T result{ 0 };
-            for (unsigned i{ 0 }; i < sizeof(T); i++) {
-                const std::size_t nth_byte{ CHAR_BIT * (sizeof(T) - i - 1) };
-                const T byte{ static_cast<T>((n & (byte_mask << nth_byte)) >> nth_byte) };
-                result |= byte << (i * CHAR_BIT);
-            }
-            return result;
-        }
+template<typename T, std::enable_if_t<std::is_unsigned<T>::value, int> = 0>
+constexpr T byteswap_impl(T n) noexcept {
+    constexpr T byte_mask{ (1 << CHAR_BIT) - 1 };
 
-        template<typename T, std::enable_if_t<std::is_signed<T>::value, int> = 0, typename UnsignedT = typename std::make_unsigned<T>::type>
-        constexpr UnsignedT byteswap_impl(T n) {
-            return byteswap_impl<UnsignedT>(preview::bit_cast<UnsignedT>(n));
-        }
-
-        template<typename T, std::enable_if_t<preview::negation_v<std::is_integral<T>>, int> = 0>
-        constexpr T byteswap_impl(T) {
-            static_assert(false, "byteswap needs integral type !");
-        }
+    T result{ 0 };
+    for (unsigned i{ 0 }; i < sizeof(T); i++) {
+        const std::size_t nth_byte{ CHAR_BIT * (sizeof(T) - i - 1) };
+        const T byte{ static_cast<T>((n & (byte_mask << nth_byte)) >> nth_byte) };
+        result |= byte << (i * CHAR_BIT);
     }
+    return result;
+}
 
-    template<typename T>
-    constexpr T byteswap(T n) noexcept {
+template<typename T, std::enable_if_t<std::is_signed<T>::value, int> = 0, typename UnsignedT = typename std::make_unsigned<T>::type>
+constexpr UnsignedT byteswap_impl(T n) {
+    return byteswap_impl<UnsignedT>(preview::bit_cast<UnsignedT>(n));
+}
+
+template<typename T, std::enable_if_t<preview::negation_v<std::is_integral<T>>, int> = 0>
+constexpr T byteswap_impl(T) {
+    static_assert(false, "byteswap needs integral type !");
+}
+
+} // namespace detail
+
+template<typename T>
+constexpr T byteswap(T n) noexcept {
 #if PREVIEW_CXX_VERSION >= 23
     return std::byteswap<T>(n);
 #else
     return preview::detail::byteswap_impl<T>(n);
 #endif
-    }
 }
+
+} // namespace preview
 
 #endif
