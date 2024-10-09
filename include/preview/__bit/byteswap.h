@@ -24,11 +24,14 @@ template<typename T>
 constexpr T byteswap_impl(T n, std::true_type /* is unsigned */) noexcept {
   constexpr T byte_mask{ (1 << CHAR_BIT) - 1 };
   T result{ 0 };
+  unsigned upper_shift{ CHAR_BIT * (sizeof(T) - 1) };
+  unsigned lower_shift{ 0 };
 
   for (unsigned i{ 0 }; i < sizeof(T); i++) {
-    const std::size_t nth_byte{ CHAR_BIT * (sizeof(T) - i - 1) };
-    const T byte{ static_cast<T>((n & (byte_mask << nth_byte)) >> nth_byte) };
-    result |= byte << (i * CHAR_BIT);
+    const T byte{ static_cast<T>((n & (byte_mask << upper_shift)) >> upper_shift) };
+    result |= byte << lower_shift;
+    lower_shift += CHAR_BIT;
+    upper_shift -= CHAR_BIT;
   }
   return result;
 }
