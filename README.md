@@ -112,7 +112,7 @@ Implementation available in C++14 ~ :
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
-| [bit](#bit)                         | ![](https://img.shields.io/badge/1/14-grey)![][p007]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                        |
+| [bit](#bit)                         | ![](https://img.shields.io/badge/2/14-grey)![][p014]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                        |
@@ -359,7 +359,7 @@ Description
   |------------------|------------|----------|
   | `endian`         | ![][c20no] |          |
   | `bit_cast`       | ![][c20ok] |          |
-  | `byteswap`       | ![][c23no] |          |
+  | `byteswap`       | ![][c23ok] |          |
   | `has_single_bit` | ![][c20no] |          |
   | `bit_ceil`       | ![][c20no] |          |
   | `bit_floor`      | ![][c20no] |          |
