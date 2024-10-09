@@ -34,8 +34,8 @@ constexpr T byteswap_impl(T n, std::true_type /* is unsigned */) noexcept {
 }
 
 template<typename T, typename UnsignedT = typename std::make_unsigned<T>::type>
-constexpr UnsignedT byteswap_impl(T n, std::false_type /* is signed */) {
-  return preview::bit_cast<UnsignedT>(preview::detail::byteswap_impl<UnsignedT>(preview::bit_cast<UnsignedT>(n), std::true_type{}));
+constexpr T byteswap_impl(T n, std::false_type /* is signed */) {
+  return preview::bit_cast<T>(preview::detail::byteswap_impl<UnsignedT>(preview::bit_cast<UnsignedT>(n), std::true_type{}));
 }
 
 } // namespace detail
