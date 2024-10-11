@@ -41,6 +41,16 @@ constexpr T byteswap_impl(T n, std::false_type /* is signed */) {
   return preview::bit_cast<T>(preview::detail::byteswap_impl<UnsignedT>(preview::bit_cast<UnsignedT>(n), std::true_type{}));
 }
 
+template<typename T, std::size_t Size>
+constexpr inline T byteswap_check_size(T n, std::integral_constant<std::size_t, Size>) {
+  return preview::detail::byteswap_impl<T>(n, std::is_unsigned<T>{});
+}
+
+template<typename T>
+constexpr inline T byteswap_check_size(T n, std::integral_constant<std::size_t, 1>) {
+  return n;
+}
+
 } // namespace detail
 
 template<typename T, std::enable_if_t<std::is_integral<T>::value, int> = 0>
@@ -48,7 +58,7 @@ constexpr inline T byteswap(T n) noexcept {
 #if PREVIEW_CXX_VERSION >= 23
   return std::byteswap<T>(n);
 #else
-  return sizeof(T) == 1 ? n : preview::detail::byteswap_impl<T>(n, std::is_unsigned<T>{});
+  return preview::detail::byteswap_check_size<T>(n, std::integral_constant<std::size_t, sizeof(T)>{});
 #endif
 }
 
