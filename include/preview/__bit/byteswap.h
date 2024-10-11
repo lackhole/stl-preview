@@ -11,7 +11,6 @@
 
 #include "preview/config.h"
 #include "preview/__bit/bit_cast.h"
-#include "preview/__type_traits/negation.h"
 
 #if PREVIEW_CXX_VERSION >= 23
   #include <bit>
