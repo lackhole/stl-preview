@@ -11,6 +11,7 @@
 
 #include "preview/__concepts/copyable.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/movable.h"
 #include "preview/__memory/addressof.h"
 #include "preview/optional.h"
@@ -44,7 +45,10 @@ struct movable_box_storage_base;
 template<typename T>
 struct movable_box_storage_base<T, true> {
 
-  constexpr movable_box_storage_base() = default;
+  template<bool B = default_initializable<T>::value, std::enable_if_t<B, int> = 0>
+  constexpr movable_box_storage_base()
+      noexcept(std::is_nothrow_default_constructible<T>::value)
+      : movable_box_storage_base(in_place) {}
   constexpr movable_box_storage_base(const movable_box_storage_base&) = default;
   constexpr movable_box_storage_base(movable_box_storage_base&&) = default;
   constexpr movable_box_storage_base& operator=(const movable_box_storage_base&) = default;
@@ -129,6 +133,11 @@ struct movable_box_storage_base<T, true> {
 template<typename T>
 struct movable_box_storage_base<T, false> : private optional<T> {
   using base = optional<T>;
+
+  template<bool B = default_initializable<T>::value, std::enable_if_t<B, int> = 0>
+  constexpr movable_box_storage_base()
+  noexcept(std::is_nothrow_default_constructible<T>::value)
+      : base(in_place) {}
 
   using base::base;
   using base::operator=;

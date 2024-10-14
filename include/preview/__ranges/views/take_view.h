@@ -11,6 +11,7 @@
 
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/counted_iterator.h"
 #include "preview/__iterator/sentinel_for.h"
 #include "preview/__ranges/simple_view.h"
@@ -128,11 +129,12 @@ class take_view : public view_interface<take_view<V>> {
     sentinel_t<Base> end_;
   };
 
-  take_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr take_view() {}
 
   constexpr explicit take_view(V base, range_difference_t<V> count)
-      : base_(std::move(base)), count_(count) {}
-
+      : base_(std::move(base))
+      , count_(count) {}
 
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       copy_constructible<V>

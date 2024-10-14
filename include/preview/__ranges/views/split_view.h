@@ -11,6 +11,7 @@
 #include "preview/__algorithm/ranges/search.h"
 #include "preview/__concepts/constructible_from.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/same_as.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
@@ -175,7 +176,8 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     sentinel_t<V> end_ = sentinel_t<V>();
   };
 
-  split_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pattern>::value, std::enable_if_t<B, int> = 0>
+  constexpr split_view() {}
 
   constexpr explicit split_view(V base, Pattern pattern)
       : base_(std::move(base))

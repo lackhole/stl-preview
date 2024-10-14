@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "preview/__core/inline_variable.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/next.h"
 #include "preview/__ranges/common_range.h"
 #include "preview/__ranges/simple_view.h"
@@ -375,8 +376,8 @@ struct concat_view : view_interface<concat_view<Rngs...>> {
 
   };
 
-
-  concat_view() = default;
+  template<bool B = default_initializable<std::tuple<Rngs...>>::value, std::enable_if_t<B, int> = 0>
+  constexpr concat_view() {}
 
   explicit concat_view(Rngs... rngs)
       : bases_{std::move(rngs)...} {}

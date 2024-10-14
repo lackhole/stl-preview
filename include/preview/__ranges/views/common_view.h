@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "preview/__concepts/copyable.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/common_iterator.h"
 #include "preview/__ranges/borrowed_range.h"
 #include "preview/__ranges/begin.h"
@@ -32,7 +33,8 @@ class common_view : public view_interface<common_view<V>> {
   static_assert(common_range<V>::value == false, "Constraints not satisfied");
   static_assert(copyable<iterator_t<V>>::value, "Constraints not satisfied");
 
-  common_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr common_view() {}
 
   constexpr explicit common_view(V r)
       : base_(std::move(r)) {}

@@ -10,6 +10,7 @@
 
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/convertible_to.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iter_move.h"
@@ -89,7 +90,8 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
     using pointer = void;
     using reference = Tuple<difference_type, range_reference_t<Base>>;
 
-    iterator() = default;
+    template<bool B = default_initializable<iterator_t<Base>>::value, std::enable_if_t<B, int> = 0>
+    constexpr iterator() {}
 
     template<bool AntiConst, std::enable_if_t<conjunction<
         bool_constant<((Const != AntiConst) && Const)>,
@@ -227,8 +229,8 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
      }
 
    private:
-    iterator_t<Base> current_;
-    difference_type pos_;
+    iterator_t<Base> current_{};
+    difference_type pos_ = 0;
   };
 
   template<bool Const>
@@ -299,7 +301,8 @@ class enumerate_view : public view_interface<enumerate_view<V>> {
     sentinel_t<Base> end_;
   };
 
-  enumerate_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr enumerate_view() {}
 
   constexpr explicit enumerate_view(V base)
       : base_(std::move(base)) {}

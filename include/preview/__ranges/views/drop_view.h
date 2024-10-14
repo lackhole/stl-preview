@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/next.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/begin.h"
@@ -68,11 +69,11 @@ class drop_view : public detail::drop_view_cached_begin<drop_view<V>, V> {
  public:
   static_assert(view<V>::value, "Constraints not satisfied");
 
-  drop_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr drop_view() {}
 
   constexpr explicit drop_view(V base, range_difference_t<V> count)
       : base_(std::move(base)), count_(count) {}
-
 
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       copy_constructible<V>

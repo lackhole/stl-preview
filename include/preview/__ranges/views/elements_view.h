@@ -12,6 +12,7 @@
 
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/convertible_to.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
@@ -128,7 +129,8 @@ class elements_view : public view_interface<elements_view<V, N>> {
     using reference = typename iterator_reference<range_reference_t<Base>>::type;
 #endif
 
-    iterator() = default;
+    template<bool B = default_initializable<iterator_t<Base>>::value, std::enable_if_t<B, int> = 0>
+    constexpr iterator() {}
 
     constexpr explicit iterator(iterator_t<Base> current)
         : current_(std::move(current)) {}
@@ -261,7 +263,7 @@ class elements_view : public view_interface<elements_view<V, N>> {
       return static_cast<E>(std::get<N>(*std::forward<T>(e)));
     }
 
-    iterator_t<Base> current_;
+    iterator_t<Base> current_{};
   };
 
   template<bool Const>
@@ -347,7 +349,8 @@ class elements_view : public view_interface<elements_view<V, N>> {
     sentinel_t<Base> end_;
   };
 
-  elements_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr elements_view() {}
 
   constexpr explicit elements_view(V base)
       : base_(std::move(base)) {}
@@ -413,7 +416,7 @@ class elements_view : public view_interface<elements_view<V, N>> {
   }
 
  private:
-  V base_;
+  V base_{};
 };
 
 } // namespace ranges

@@ -457,7 +457,8 @@ class join_view : public detail::join_view_inner_base<join_view<V>, V> {
     sentinel_t<Base> end_{};
   };
 
-  join_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr join_view() {}
 
   constexpr explicit join_view(V base)
       : base_(std::move(base)) {}

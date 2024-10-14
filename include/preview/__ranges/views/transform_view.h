@@ -11,6 +11,7 @@
 
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__concepts/invocable.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
@@ -111,7 +112,8 @@ class transform_view : public view_interface<transform_view<V, F>> {
     using reference = invoke_result_t<decltype(std::declval<const F&>()), decltype(*std::declval<iterator_t<Base>&>())>;
 #endif
 
-    iterator() = default;
+    template<bool B = default_initializable<iterator_t<Base>>::value, std::enable_if_t<B, int> = 0>
+    constexpr iterator() {}
 
     constexpr iterator(Parent& parent, iterator_t<Base> current)
         : current_(std::move(current))
@@ -247,7 +249,7 @@ class transform_view : public view_interface<transform_view<V, F>> {
       return std::move(ref);
     }
 
-    iterator_t<Base> current_;
+    iterator_t<Base> current_{};
     Parent* parent_ = nullptr;
   };
 
@@ -306,7 +308,8 @@ class transform_view : public view_interface<transform_view<V, F>> {
     sentinel_t<Base> end_;
   };
 
-  transform_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<F>::value, std::enable_if_t<B, int> = 0>
+  constexpr transform_view() {}
 
   constexpr explicit transform_view(V base, F func)
       : base_(std::move(base))

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/next.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
@@ -56,7 +57,8 @@ class reverse_view
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(bidirectional_range<V>::value, "Constraints not satisfied");
 
-  reverse_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr reverse_view() {}
 
   constexpr reverse_view(V r)
       : base_(std::move(r)) {}

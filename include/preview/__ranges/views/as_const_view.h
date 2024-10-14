@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__ranges/cbegin.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/enable_borrowed_range.h"
@@ -25,7 +26,8 @@ class as_const_view : public view_interface<as_const_view<V>> {
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(input_range<V>::value, "Constraints not satisfied");
 
-  as_const_view() = default;
+  template<bool B = default_initializable<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr as_const_view() {}
 
   constexpr explicit as_const_view(V base)
       : base_(std::move(base)) {}

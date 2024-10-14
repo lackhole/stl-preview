@@ -146,12 +146,11 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     using reference = std::conditional_t<incrementable<W>::value, W, void>;
 #endif
 
-    template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      default_initializable<W>
-    >::value, int> = 0>
-    constexpr iterator() : value_(W()) {}
+    template<bool B = default_initializable<W>::value, std::enable_if_t<B, int> = 0>
+    constexpr iterator() {}
 
-    constexpr explicit iterator(W value) : value_(value) {}
+    constexpr explicit iterator(W value)
+        : value_(value) {}
 
     constexpr W operator*() const noexcept(std::is_nothrow_copy_constructible<W>::value) {
       return value_;
@@ -306,7 +305,7 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     friend class iota_view;
     friend class sentinel;
 
-    W value_;
+    W value_ = W();
   };
 
   class sentinel {
@@ -349,19 +348,19 @@ class iota_view : public view_interface<iota_view<W, Bound>> {
     Bound bound_;
   };
 
+  template<bool B = default_initializable<W>::value, std::enable_if_t<B, int> = 0>
+  constexpr iota_view() {}
 
-  template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-    default_initializable<W>
-  >::value, int> = 0>
-  constexpr iota_view() : value_(W()), bound_(Bound()) {}
-
-  constexpr explicit iota_view(W value) : value_(value), bound_(Bound()) {}
+  constexpr explicit iota_view(W value)
+      : value_(value)
+      , bound_(Bound()) {}
 
   constexpr explicit iota_view(type_identity_t<W> value,
                                type_identity_t<Bound> bound) : value_(value), bound_(bound) {}
 
   constexpr explicit iota_view(iterator first, typename detail::iv_ctor_iterator_last<W, Bound, iota_view>::type last)
-      : value_(*first), bound_(get_value(last)) {}
+      : value_(*first)
+      , bound_(get_value(last)) {}
 
   constexpr iterator begin() const {
     return iterator(value_);

@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "preview/__algorithm/ranges/find_if.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__core/std_version.h"
@@ -142,7 +143,8 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
     using reference = range_reference_t<V>;
 #endif
 
-    iterator() = default;
+    template<bool B = default_initializable<iterator_t<V>>::value, std::enable_if_t<B, int> = 0>
+    constexpr iterator() {}
 
     constexpr iterator(filter_view& parent, iterator_t<V> current)
         : current_(std::move(current))
@@ -265,10 +267,12 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
 
   friend class iterator;
 
-  filter_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pred>::value, std::enable_if_t<B, int> = 0>
+  constexpr filter_view() {}
 
   constexpr explicit filter_view(V base, Pred pred)
-      : base_(std::move(base)), pred_(std::move(pred)) {}
+      : base_(std::move(base))
+      , pred_(std::move(pred)) {}
 
   template<typename V2 = V, std::enable_if_t<copy_constructible<V2>::value, int> = 0>
   constexpr V base() const & {

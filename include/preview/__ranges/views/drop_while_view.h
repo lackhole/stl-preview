@@ -10,6 +10,7 @@
 
 #include "preview/__algorithm/ranges/find_if_not.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
 #include "preview/__ranges/enable_borrowed_range.h"
 #include "preview/__ranges/end.h"
@@ -64,7 +65,8 @@ class drop_while_view
   static_assert(std::is_object<Pred>::value, "Constraints not satisfied");
   static_assert(indirect_unary_predicate<const Pred, iterator_t<V>>::value, "Constraints not satisfied");
 
-  drop_while_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pred>::value, std::enable_if_t<B, int> = 0>
+  constexpr drop_while_view() {}
 
   constexpr explicit drop_while_view(V base, Pred pred)
       : base_(std::move(base)), pred_(std::move(pred)) {}
