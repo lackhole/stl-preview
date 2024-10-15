@@ -97,10 +97,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         build_type: [Debug, Release]
         compiler: [clang]
         compiler_version: [11, 12, 13, 14, 15]
+        platform: [x64, x86]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
@@ -112,6 +113,7 @@ jobs:
       uses: egor-tensin/setup-clang@v1
       with:
         version: ${{ matrix.compiler_version }}
+        platform: ${{ matrix.platform }}
 
     - name: Configure CMake
       env:
