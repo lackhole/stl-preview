@@ -56,7 +56,7 @@ jobs:
         platform: [x64, x86]
         build_type: [Debug, Release]
         compiler: [gcc]
-        compiler_version: [9, 10, 11, 12, 13]
+        compiler_version: [9, 10, 11, 12, 13, 14]
         include:
           - cc_compiler: gcc
           - cxx_compiler: g++
@@ -103,6 +103,53 @@ jobs:
         build_type: [Debug, Release]
         compiler: [clang]
         compiler_version: [11, 12, 13, 14, 15]
+        platform: [x64, x86]
+        include:
+          - cc_compiler: clang
+          - cxx_compiler: clang++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Clang
+      uses: egor-tensin/setup-clang@v1
+      with:
+        version: ${{ matrix.compiler_version }}
+        platform: ${{ matrix.platform }}
+
+    - name: Configure CMake
+      env:
+        CC: cc
+        CXX: c++
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
+  ubuntu-clang-latest:
+    runs-on: ${{ matrix.os }}
+
+#    concurrency:
+#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
+#      cancel-in-progress: true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04]
+        build_type: [Debug, Release]
+        compiler: [clang]
+        compiler_version: [16, 17, 18]
         platform: [x64, x86]
         include:
           - cc_compiler: clang
