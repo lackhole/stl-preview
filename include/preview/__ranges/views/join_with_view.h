@@ -11,6 +11,7 @@
 #include "preview/__concepts/common_reference_with.h"
 #include "preview/__concepts/common_with.h"
 #include "preview/__concepts/convertible_to.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
@@ -510,10 +511,12 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
     sentinel_t<Base> end_{};
   };
 
-  join_with_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pattern>::value, int = 0>
+  constexpr join_with_view() {}
 
   constexpr explicit join_with_view(V base, Pattern pattern)
-      : base_(std::move(base)), pattern_(std::move(pattern)) {}
+      : base_(std::move(base))
+      , pattern_(std::move(pattern)) {}
 
   template<typename R, std::enable_if_t<conjunction<
     constructible_from<V, views::all_t<R>>,
@@ -603,7 +606,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
   }
 
   V base_{};
-  Pattern pattern_;
+  Pattern pattern_{};
 };
 
 #if __cplusplus >= 201703L

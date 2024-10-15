@@ -15,6 +15,7 @@
 #include "preview/__concepts/constructible_from.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/derived_from.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__iterator/default_sentinel_t.h"
@@ -461,7 +462,8 @@ class lazy_split_view
   static_assert(indirectly_comparable<iterator_t<V>, iterator_t<Pattern>, ranges::equal_to>::value, "Constraints not satisfied");
   static_assert(disjunction<forward_range<V>, detail::tiny_range<Pattern>>::value, "Constraints not satisfied");
 
-  lazy_split_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pattern>::value, std::enable_if_t<B, int> = 0>
+  constexpr lazy_split_view() {}
 
   constexpr explicit lazy_split_view(V base, Pattern pattern)
       : base_(std::move(base))

@@ -25,30 +25,30 @@ namespace views {
 namespace detail {
 
 struct repeat_niebloid {
-  template<typename W, std::enable_if_t<conjunction<
-      move_constructible< std::decay_t<W> >,
-      std::is_object    < std::decay_t<W> >,
-      same_as           < std::decay_t<W>,
-                          std::remove_cv_t<std::decay_t<W>> >
+  template<typename T, std::enable_if_t<conjunction<
+      move_constructible< std::decay_t<T> >,
+      std::is_object    < std::decay_t<T> >,
+      same_as           < std::decay_t<T>,
+                          std::remove_cv_t<std::decay_t<T>> >
   >::value, int> = 0>
-  constexpr auto operator()(W&& value) const {
-    return repeat_view<std::decay_t<W>>{std::forward<W>(value)};
+  constexpr auto operator()(T&& value) const {
+    return repeat_view<std::decay_t<T>>{std::forward<T>(value)};
   }
 
-  template<typename W, typename Bound, std::enable_if_t<conjunction<
-      move_constructible< std::decay_t<W>     >,
+  template<typename T, typename Bound, std::enable_if_t<conjunction<
+      move_constructible< std::decay_t<T>     >,
       semiregular       < std::decay_t<Bound> >,
 
-      std::is_object    < std::decay_t<W> >,
-      same_as           < std::decay_t<W>,
-                          std::remove_cv_t<std::decay_t<W>> >,
+      std::is_object    < std::decay_t<T> >,
+      same_as           < std::decay_t<T>,
+                          std::remove_cv_t<std::decay_t<T>> >,
       disjunction<
           ranges::detail::integer_like_with_usable_difference_type< std::decay_t<Bound> >,
           same_as< std::decay_t<Bound>, unreachable_sentinel_t >
       >
   >::value, int> = 0>
-  constexpr auto operator()(W&& value, Bound&& bound) const {
-    return repeat_view<std::decay_t<W>, std::decay_t<Bound>>{std::forward<W>(value), std::forward<Bound>(bound)};
+  constexpr auto operator()(T&& value, Bound&& bound) const {
+    return repeat_view<std::decay_t<T>, std::decay_t<Bound>>{std::forward<T>(value), std::forward<Bound>(bound)};
   }
 };
 

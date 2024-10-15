@@ -12,6 +12,7 @@
 
 #include "preview/__concepts/constructible_from.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/integer_like.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__concepts/same_as.h"
@@ -40,13 +41,13 @@ using integer_like_with_usable_difference_type = disjunction<
 
 } // namespace detail
 
-template<typename W, typename Bound = unreachable_sentinel_t>
-class repeat_view : public view_interface<repeat_view<W, Bound>> {
+template<typename T, typename Bound = unreachable_sentinel_t>
+class repeat_view : public view_interface<repeat_view<T, Bound>> {
  public:
-  static_assert(move_constructible<W>::value, "Constraints not satisfied");
+  static_assert(move_constructible<T>::value, "Constraints not satisfied");
   static_assert(semiregular<Bound>::value, "Constraints not satisfied");
-  static_assert(std::is_object<W>::value, "Constraints not satisfied");
-  static_assert(same_as<W, std::remove_cv_t<W>>::value, "Constraints not satisfied");
+  static_assert(std::is_object<T>::value, "Constraints not satisfied");
+  static_assert(same_as<T, std::remove_cv_t<T>>::value, "Constraints not satisfied");
   static_assert(disjunction<
                     detail::integer_like_with_usable_difference_type<Bound>,
                     same_as<Bound, unreachable_sentinel_t>
@@ -59,21 +60,21 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
    public:
     using iterator_concept = random_access_iterator_tag;
     using iterator_category = random_access_iterator_tag;
-    using value_type = W;
+    using value_type = T;
     using difference_type = std::conditional_t<
         signed_integer_like<index_type>::value, index_type, detail::iota_diff_t<index_type>>;
 #if !PREVIEW_STD_HAVE_CXX20_ITERATOR
     using pointer = void;
-    using reference =  const W&;
+    using reference =  const T&;
 #endif
 
     constexpr iterator() : value_(nullptr), current_() {}
 
-    constexpr const W& operator*() const noexcept {
+    constexpr const T& operator*() const noexcept {
       return *value_;
     }
 
-    constexpr const W& operator[](difference_type n) const noexcept {
+    constexpr const T& operator[](difference_type n) const noexcept {
       return *(*this + n);
     }
 
@@ -153,35 +154,37 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
     }
 
   private:
-   constexpr explicit iterator(const W* value, index_type b = index_type())
+   constexpr explicit iterator(const T* value, index_type b = index_type())
        : value_(value), current_(b)
    {
      assert(((void)"B must be non negative", std::is_same<Bound, unreachable_sentinel_t>::value || (b >= 0)));
    }
 
-    const W* value_;
+    const T* value_;
     index_type current_;
   };
 
-  repeat_view()
-      : value_(W()), bound_() {}
+  template<bool B = default_initializable<T>::value, std::enable_if_t<B, int> = 0>
+  constexpr repeat_view() {}
 
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
-      copy_constructible<W>
+      copy_constructible<T>
   >::value, int> = 0>
-  constexpr explicit repeat_view(const W& value, Bound bound = Bound())
-      : value_(value), bound_(bound){}
+  constexpr explicit repeat_view(const T& value, Bound bound = Bound())
+      : value_(value)
+      , bound_(bound){}
 
-  constexpr explicit repeat_view(W&& value, Bound bound = Bound())
-      : value_(std::move(value)), bound_(bound){}
+  constexpr explicit repeat_view(T&& value, Bound bound = Bound())
+      : value_(std::move(value))
+      , bound_(bound){}
 
-  template<typename... WArgs, typename... BoundArgs, std::enable_if_t<conjunction<
-      constructible_from<W, WArgs...>,
+  template<typename... TArgs, typename... BoundArgs, std::enable_if_t<conjunction<
+      constructible_from<T, TArgs...>,
       constructible_from<Bound, BoundArgs...>
   >::value, int> = 0>
-  constexpr repeat_view(std::piecewise_construct_t, std::tuple<WArgs...> value_args, std::tuple<BoundArgs...> bound_args = std::tuple<>())
+  constexpr repeat_view(std::piecewise_construct_t, std::tuple<TArgs...> value_args, std::tuple<BoundArgs...> bound_args = std::tuple<>())
       : repeat_view(std::piecewise_construct, std::move(value_args), std::move(bound_args),
-                    std::index_sequence_for<WArgs...>{}, std::index_sequence_for<BoundArgs...>{}) {}
+                    std::index_sequence_for<TArgs...>{}, std::index_sequence_for<BoundArgs...>{}) {}
 
   PREVIEW_CONSTEXPR_AFTER_CXX17 iterator begin() const {
     return iterator(preview::addressof(*value_));
@@ -209,20 +212,20 @@ class repeat_view : public view_interface<repeat_view<W, Bound>> {
   }
 
  private:
-  template<typename WTuple, typename BoundTuple, std::size_t... I, std::size_t... J>
+  template<typename Tuple, typename BoundTuple, std::size_t... I, std::size_t... J>
   constexpr repeat_view(
-      std::piecewise_construct_t, WTuple&& value_args, BoundTuple&& bound_args,
+      std::piecewise_construct_t, Tuple&& value_args, BoundTuple&& bound_args,
       std::index_sequence<I...>, std::index_sequence<J...>)
-      : value_(std::get<I>(std::forward<WTuple>(value_args))...), bound_(std::get<J>(std::forward<BoundTuple>(bound_args))...) {}
+      : value_(std::get<I>(std::forward<Tuple>(value_args))...), bound_(std::get<J>(std::forward<BoundTuple>(bound_args))...) {}
 
-  movable_box<W> value_;
-  Bound bound_;
+  movable_box<T> value_;
+  Bound bound_{};
 };
 
 #if __cplusplus >= 201703L
 
-template<typename W, typename Bound>
-repeat_view(W, Bound) -> repeat_view<W, Bound>;
+template<typename T, typename Bound>
+repeat_view(T, Bound) -> repeat_view<T, Bound>;
 
 #endif
 

@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/movable.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/contiguous_range.h"
@@ -32,12 +33,13 @@ class owning_view : public view_interface<owning_view<R>> {
   static_assert(movable<R>::value, "Constraints not satisfied");
   static_assert(is_initializer_list<R>::value == false, "Constraints not satisfied");
 
-  constexpr owning_view() = default;
+  template<bool B = default_initializable<R>::value, std::enable_if_t<B, int> = 0>
+  constexpr owning_view() {}
+
   constexpr owning_view(owning_view&&) = default;
   constexpr owning_view(const owning_view&) = delete;
   constexpr owning_view(R&& t) noexcept(std::is_nothrow_move_constructible<R>::value)
       : r_(std::move(t)) {}
-
 
   owning_view& operator=(owning_view&&) = default;
   owning_view& operator=(const owning_view&) = delete;
@@ -67,7 +69,6 @@ class owning_view : public view_interface<owning_view<R>> {
   constexpr auto end() const {
     return ranges::end(r_);
   }
-
 
   template<typename T = R, std::enable_if_t<is_invocable<decltype(ranges::end), T&>::value, int> = 0>
   constexpr bool empty() {
@@ -102,7 +103,7 @@ class owning_view : public view_interface<owning_view<R>> {
   }
 
  private:
-  R r_;
+  R r_ = R();
 };
 
 } // namespace ranges

@@ -12,6 +12,7 @@
 #include "preview/__core/constexpr.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
 #include "preview/__memory/addressof.h"
@@ -119,10 +120,12 @@ class take_while_view : public view_interface<take_while_view<V, Pred>> {
     const Pred* pred_;
   };
 
-  take_while_view() = default;
+  template<bool B = default_initializable<V>::value && default_initializable<Pred>::value, std::enable_if_t<B, int> = 0>
+  constexpr take_while_view() {}
 
   constexpr explicit take_while_view(V base, Pred pred)
-      : base_(std::move(base)), pred_(std::move(pred)) {}
+      : base_(std::move(base))
+      , pred_(std::move(pred)) {}
 
   template<typename Dummy = void, std::enable_if_t<preview::conjunction<std::is_void<Dummy>,
       copy_constructible<V>
@@ -171,7 +174,7 @@ class take_while_view : public view_interface<take_while_view<V, Pred>> {
 
  private:
   V base_{};
-  movable_box<Pred> pred_{};
+  movable_box<Pred> pred_;
 };
 
 #if __cplusplus >= 201703L

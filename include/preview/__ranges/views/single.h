@@ -11,6 +11,7 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__concepts/constructible_from.h"
 #include "preview/__concepts/copy_constructible.h"
+#include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/move_constructible.h"
 #include "preview/__ranges/movable_box.h"
 #include "preview/__ranges/view_interface.h"
@@ -26,7 +27,8 @@ class single_view : public ranges::view_interface<single_view<T>> {
   static_assert(move_constructible<T>::value, "Constraints not satisfied");
   static_assert(std::is_object<T>::value, "Constraints not satisfied");
 
-  constexpr single_view() = default;
+  template<bool B = default_initializable<T>::value, std::enable_if_t<B, int> = 0>
+  constexpr single_view() {}
 
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       copy_constructible<T>
