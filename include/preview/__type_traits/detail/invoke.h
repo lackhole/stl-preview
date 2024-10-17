@@ -9,7 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-#include "preview/__type_traits/is_specialization.h"
+#include "preview/__functional/is_reference_wrapper.h"
 #include "preview/__type_traits/remove_cvref.h"
 
 namespace preview {
@@ -114,7 +114,7 @@ struct get_invoke_tag_1<F, false, false> : std::integral_constant<invoke_tag_1, 
 
 template<typename T, typename T1,
          bool v1 = std::is_base_of<T, std::remove_reference_t<T1>>::value,
-         bool v2 = is_specialization<std::remove_cv_t<T1>, std::reference_wrapper>::value>
+         bool v2 = is_reference_wrapper<std::remove_cv_t<T1>>::value>
 struct get_invoke_tag_2;
 
 template<typename T, typename T1, bool any>
