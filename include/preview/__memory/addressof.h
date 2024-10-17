@@ -18,10 +18,10 @@ namespace detail {
 PREVIEW_INLINE_VARIABLE constexpr int builtin_addressof_tester{};
 
 template<typename = void>
-struct have_builtin_addressof : std::false_type {};
+struct have_builtin_addressof_test : std::false_type {};
 
 template<>
-struct have_builtin_addressof<
+struct have_builtin_addressof_test<
     void_t<
         decltype(std::integral_constant<
             bool,
@@ -29,6 +29,8 @@ struct have_builtin_addressof<
         >{})
     >
 > : std::true_type {};
+
+using have_builtin_addressof = have_builtin_addressof_test<>;
 
 template<typename T>
 constexpr T* addressof_object(T& t, std::true_type) noexcept {
@@ -46,7 +48,7 @@ T* addressof_object(T& t, std::false_type) noexcept {
 
 template<typename T>
 constexpr T* addressof_impl(T& t, std::true_type /* is_object */) noexcept {
-  return preview::detail::addressof_object(t, have_builtin_addressof<>{});
+  return preview::detail::addressof_object(t, have_builtin_addressof{});
 }
 
 template<typename T>
