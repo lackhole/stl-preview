@@ -59,9 +59,31 @@ struct can_bind_to_reference_noexcept : bool_constant<noexcept(can_bind_to_refer
 } // namespace detail
 
 template<typename T>
-class reference_wrapper {
+class reference_wrapper
+#if PREVIEW_CONFORM_CXX20_STANDARD
+ : public std::reference_wrapper<T>
+#endif
+{
+
+#if PREVIEW_CONFORM_CXX20_STANDARD
+  using base = std::reference_wrapper<T>;
+#else
+  constexpr reference_wrapper(in_place_t, T& ref)
+      : ptr_(preview::addressof(ref)) {}
+
+  T* ptr_;
+#endif
+
  public:
   using type = T;
+
+#if PREVIEW_CONFORM_CXX20_STANDARD
+  using base::base;
+  using base::operator=;
+  using base::get;
+  using base::operator type &;
+  using base::operator();
+#else
 
   template<typename U, std::enable_if_t<conjunction<
       detail::can_bind_to_reference<U, T>,
@@ -90,21 +112,22 @@ class reference_wrapper {
     return *ptr_;
   }
 
-  // Not a standard function! This is required for std::invoke to handle reference_wrapper correctly.
-  constexpr T& operator*() const noexcept {
-    return *ptr_;
+  template<typename... ArgTypes>
+  constexpr invoke_result_t<T&, ArgTypes...>
+  operator()(ArgTypes&&... args) const noexcept(is_nothrow_invocable<T&, ArgTypes...>::value) {
+    static_assert(is_complete_v<T>, "T must be complete type");
+    return preview::detail::INVOKE(get(), std::forward<ArgTypes>(args)...);
   }
+#endif
 
   // Not a standard function! Use this function on deduced context is needed
   std::reference_wrapper<T> to_std() {
     return get();
   }
 
-  template<typename... ArgTypes>
-  constexpr invoke_result_t<T&, ArgTypes...>
-  operator()(ArgTypes&&... args) const noexcept(is_nothrow_invocable<T&, ArgTypes...>::value) {
-    static_assert(is_complete_v<T>, "T must be complete type");
-    return preview::detail::INVOKE(get(), std::forward<ArgTypes>(args)...);
+  // Not a standard function! This is required for std::invoke to handle reference_wrapper correctly.
+  constexpr T& operator*() const noexcept {
+    return get();
   }
 
   template<typename U = T, std::enable_if_t<rel_ops::is_equality_comparable<U&, U&>::value, int> = 0>
@@ -142,16 +165,16 @@ class reference_wrapper {
   friend constexpr bool operator==(reference_wrapper x, reference_wrapper<const T> y) {
     return x.get() == y.get();
   }
+  // const T  ==  T
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator==(reference_wrapper x, reference_wrapper<std::remove_const_t<T>> y) {
+    return y.get() == x.get();
+  }
 #if !PREVIEW_CONFORM_CXX20_STANDARD
   // T  !=  const T
   template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, rel_ops::is_equality_comparable<U&, const U&>>, int> = 0>
   friend constexpr bool operator!=(reference_wrapper x, reference_wrapper<const T> y) {
     return !(x == y);
-  }
-  // const T  ==  T
-  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
-  friend constexpr bool operator==(reference_wrapper x, reference_wrapper<std::remove_const_t<T>> y) {
-    return y.get() == x.get();
   }
   // const T  !=  T
   template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
@@ -243,11 +266,171 @@ class reference_wrapper {
     return !(x < y);
   }
 
- private:
-  constexpr reference_wrapper(in_place_t, T& ref)
-      : ptr_(preview::addressof(ref)) {}
 
-  T* ptr_;
+  // Comparison with std::reference_wrapper<T>
+  template<typename U = T, std::enable_if_t<rel_ops::is_equality_comparable<U&, U&>::value, int> = 0>
+  friend constexpr bool operator==(reference_wrapper x, std::reference_wrapper<T> y) {
+    return x.get() == y.get();
+  }
+#if !PREVIEW_CONFORM_CXX20_STANDARD
+  template<typename U = T, std::enable_if_t<rel_ops::is_equality_comparable<U&, U&>::value, int> = 0>
+  friend constexpr bool operator==(std::reference_wrapper<T> x, reference_wrapper y) {
+    return x.get() == y.get();
+  }
+  template<typename U = T, std::enable_if_t<rel_ops::is_equality_comparable<U&, U&>::value, int> = 0>
+  friend constexpr bool operator!=(reference_wrapper x, std::reference_wrapper<T> y) {
+    return !(x == y);
+  }
+  template<typename U = T, std::enable_if_t<rel_ops::is_equality_comparable<U&, U&>::value, int> = 0>
+  friend constexpr bool operator!=(std::reference_wrapper<T> x, reference_wrapper y) {
+    return !(x == y);
+  }
+#endif
+
+  // Comparison with std::reference_wrapper<const T>
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, rel_ops::is_equality_comparable<U&, const U&>>, int> = 0>
+  friend constexpr bool operator==(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return x.get() == y.get();
+  }
+  // const T  ==  T
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator==(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return y.get() == x.get();
+  }
+#if !PREVIEW_CONFORM_CXX20_STANDARD
+  // T  !=  const T
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, rel_ops::is_equality_comparable<U&, const U&>>, int> = 0>
+  friend constexpr bool operator!=(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return !(x == y);
+  }
+  // const T  !=  T
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator!=(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return !(y == x);
+  }
+#endif
+
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, rel_ops::is_equality_comparable<U&, const U&>>, int> = 0>
+  friend constexpr bool operator==(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return y.get() == x;
+  }
+  // const T  ==  T
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator==(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return x.get() == y.get();
+  }
+#if !PREVIEW_CONFORM_CXX20_STANDARD
+  // T  !=  const T
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, rel_ops::is_equality_comparable<U&, const U&>>, int> = 0>
+  friend constexpr bool operator!=(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return !(y == x);
+  }
+  // const T  !=  T
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, rel_ops::is_equality_comparable<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator!=(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return !(y == x);
+  }
+#endif
+
+
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator<(reference_wrapper x, std::reference_wrapper<T> y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator<(std::reference_wrapper<T> x, reference_wrapper y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator<=(reference_wrapper x, std::reference_wrapper<T> y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator<=(std::reference_wrapper<T> x, reference_wrapper y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator>(reference_wrapper x, std::reference_wrapper<T> y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator>(std::reference_wrapper<T> x, reference_wrapper y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator>=(reference_wrapper x, std::reference_wrapper<T> y) {
+    return !(x < y);
+  }
+  template<typename U = T, std::enable_if_t<detail::synth_three_way_possible<U&, U&>::value, int> = 0>
+  friend constexpr bool operator>=(std::reference_wrapper<T> x, reference_wrapper y) {
+    return !(x < y);
+  }
+
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<U&, const U&>>, int> = 0>
+  friend constexpr bool operator<(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<U&, const U&>>, int> = 0>
+  friend constexpr bool operator<=(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<U&, const U&>>, int> = 0>
+  friend constexpr bool operator>(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<U&, const U&>>, int> = 0>
+  friend constexpr bool operator>=(reference_wrapper x, std::reference_wrapper<const T> y) {
+    return !(x < y);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<U&, std::remove_const_t<U>&>>, int> = 0>
+  friend constexpr bool operator<(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<U&, std::remove_const_t<U>&>>, int> = 0>
+  friend constexpr bool operator<=(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<U&, std::remove_const_t<U>&>>, int> = 0>
+  friend constexpr bool operator>(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<U&, std::remove_const_t<U>&>>, int> = 0>
+  friend constexpr bool operator>=(reference_wrapper x, std::reference_wrapper<std::remove_const_t<T>> y) {
+    return !(x < y);
+  }
+
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<const U&, U&>>, int> = 0>
+  friend constexpr bool operator<(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<const U&, U&>>, int> = 0>
+  friend constexpr bool operator<=(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<const U&, U&>>, int> = 0>
+  friend constexpr bool operator>(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<negation<std::is_const<U>>, detail::synth_three_way_possible<const U&, U&>>, int> = 0>
+  friend constexpr bool operator>=(std::reference_wrapper<const T> x, reference_wrapper y) {
+    return !(x < y);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator<(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return x.get() < y.get();
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator<=(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return !(y < x);
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator>(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return y < x;
+  }
+  template<typename U = T, std::enable_if_t<conjunction_v<std::is_const<U>, detail::synth_three_way_possible<std::remove_const_t<U>&, U&>>, int> = 0>
+  friend constexpr bool operator>=(std::reference_wrapper<std::remove_const_t<T>> x, reference_wrapper y) {
+    return !(x < y);
+  }
 };
 
 #if PREVIEW_CXX_VERSION >= 17
@@ -271,7 +454,6 @@ template<typename T>
 constexpr reference_wrapper<T> ref(std::reference_wrapper<T> t) noexcept {
   return reference_wrapper<T>(t.get());
 }
-
 
 template<typename T>
 constexpr reference_wrapper<const T> cref(const T& t) noexcept {

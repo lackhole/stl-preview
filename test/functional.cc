@@ -1,5 +1,9 @@
 #include "preview/core.h"
 #include "preview/functional.h"
+
+#include <functional>
+#include <type_traits>
+
 #include "preview/string_view.h"
 
 #include "gtest.h"
@@ -136,4 +140,120 @@ TEST(VERSIONED(Functional), not_fn) {
   static_assert(differ_cpp26(1, 2) == true);
   static_assert(differ_cpp26(2, 2) == false);
 #endif
+}
+
+template<typename T>
+void foo(std::reference_wrapper<T> x) {}
+
+struct A {
+  explicit A(int data) : data(data) {}
+
+  int data{};
+  int mem_fn() { return data; }
+
+  friend constexpr bool operator==(const A& x, const A& y) {
+    return x.data == y.data;
+  }
+  friend constexpr bool operator<(const A& x, const A& y) {
+    return x.data < y.data;
+  }
+};
+
+TEST(VERSIONED(Functional), reference_wrapper) {
+  A x{10};
+  auto r = preview::ref(x);
+  EXPECT_EQ(r, /* == */ A{10}); EXPECT_EQ(A{10}, /* == */ r);
+  EXPECT_NE(r, /* != */ A{0 }); EXPECT_NE(A{0 }, /* != */ r);
+  EXPECT_GT(r, /* >  */ A{9 }); EXPECT_GT(A{11}, /* >  */ r);
+  EXPECT_GE(r, /* >= */ A{9 }); EXPECT_GE(A{11}, /* >= */ r);
+  EXPECT_LT(r, /* <  */ A{11}); EXPECT_LT(A{9 }, /* <  */ r);
+  EXPECT_LE(r, /* <= */ A{11}); EXPECT_LE(A{9 }, /* <= */ r);
+
+  EXPECT_EQ(r, r);
+  EXPECT_EQ(r, preview::cref(x)); EXPECT_EQ(preview::cref(x), r);
+
+  A y{20};
+  EXPECT_NE(r, preview::ref(y)); EXPECT_NE(r, preview::cref(y));
+  EXPECT_GT(preview::ref(y), r); EXPECT_GT(preview::cref(y), r);
+  EXPECT_GE(preview::ref(y), r); EXPECT_GE(preview::cref(y), r);
+  EXPECT_LT(r, preview::ref(y)); EXPECT_LT(r, preview::cref(y));
+  EXPECT_LE(r, preview::ref(y)); EXPECT_LE(r, preview::cref(y));
+
+  EXPECT_EQ(preview::invoke(&A::data, r), 10);
+  preview::invoke(&A::data, r) += 5;
+  EXPECT_EQ(preview::invoke(&A::data, r), 15);
+  EXPECT_EQ(preview::invoke(&A::mem_fn, r), 15);
+
+  {
+    auto cr = preview::cref(x);
+    A z{30};
+
+    EXPECT_EQ(r,  std::ref(x));      EXPECT_EQ(std::ref(x) , r );
+    EXPECT_EQ(r,  std::cref(x));     EXPECT_EQ(std::cref(x), r );
+
+    (void)(cr != std::ref(x));
+    (void)(std::ref(x) == cr);
+
+    EXPECT_EQ(cr, std::ref(x));      EXPECT_EQ(std::ref(x) , cr);
+    EXPECT_EQ(cr, std::cref(x));     EXPECT_EQ(std::cref(x), cr);
+
+    EXPECT_NE(r,  std::ref(y));      EXPECT_NE(std::ref(y) , r );
+    EXPECT_NE(r,  std::cref(y));     EXPECT_NE(std::cref(y), r );
+    EXPECT_NE(cr, std::ref(y));      EXPECT_NE(std::ref(y) , cr);
+    EXPECT_NE(cr, std::cref(y));     EXPECT_NE(std::cref(y), cr);
+
+    // x < y < z
+
+    EXPECT_GT(preview::ref(z),  std::ref(y));   EXPECT_GT(std::ref(y),  preview::ref(x));
+    EXPECT_GT(preview::ref(z),  std::cref(y));  EXPECT_GT(std::cref(y), preview::ref(x));
+    EXPECT_GT(preview::cref(z), std::ref(y));   EXPECT_GT(std::ref(y),  preview::cref(x));
+    EXPECT_GT(preview::cref(z), std::cref(y));  EXPECT_GT(std::cref(y), preview::cref(x));
+
+    EXPECT_GE(preview::ref(z),  std::ref(y));   EXPECT_GE(std::ref(y),  preview::ref(x));
+    EXPECT_GE(preview::ref(z),  std::cref(y));  EXPECT_GE(std::cref(y), preview::ref(x));
+    EXPECT_GE(preview::cref(z), std::ref(y));   EXPECT_GE(std::ref(y),  preview::cref(x));
+    EXPECT_GE(preview::cref(z), std::cref(y));  EXPECT_GE(std::cref(y), preview::cref(x));
+
+    EXPECT_LT(preview::ref(x),  std::ref(y));   EXPECT_LT(std::ref(y),  preview::ref(z));
+    EXPECT_LT(preview::ref(x),  std::cref(y));  EXPECT_LT(std::cref(y), preview::ref(z));
+    EXPECT_LT(preview::cref(x), std::ref(y));   EXPECT_LT(std::ref(y),  preview::cref(z));
+    EXPECT_LT(preview::cref(x), std::cref(y));  EXPECT_LT(std::cref(y), preview::cref(z));
+
+    EXPECT_LE(preview::ref(x),  std::ref(y));   EXPECT_LE(std::ref(y),  preview::ref(z));
+    EXPECT_LE(preview::ref(x),  std::cref(y));  EXPECT_LE(std::cref(y), preview::ref(z));
+    EXPECT_LE(preview::cref(x), std::ref(y));   EXPECT_LE(std::ref(y),  preview::cref(z));
+    EXPECT_LE(preview::cref(x), std::cref(y));  EXPECT_LE(std::cref(y), preview::cref(z));
+  }
+
+#if PREVIEW_CXX_VERSION >= 17
+  std::invoke(&A::data, r) -= 5;
+  EXPECT_EQ(std::invoke(&A::data, r), 10);
+  EXPECT_EQ(std::invoke(&A::mem_fn, r), 10);
+#endif
+
+#if PREVIEW_CONFORM_CXX20_STANDARD
+  (void)foo(r);
+#endif
+
+//  preview::simple_common_reference_t<int&, preview::reference_wrapper<int>&>
+
+  using T = int&;
+  using R = preview::reference_wrapper<int>&;
+
+  using bcr = preview::basic_common_reference<
+      int,
+      preview::reference_wrapper<int>,
+      preview::detail::basic_common_reference_qual_gen<T>::qual,
+      preview::detail::basic_common_reference_qual_gen<R>::qual>;
+  using t = typename bcr::type;
+//
+//  static_assert(preview::detail::common_reference_tag_2<T, R>::value);
+//
+//
+  static_assert(std::is_same<preview::common_reference_t<int&, int&>, int&>::value, "");
+  static_assert(std::is_same<preview::common_reference_t<int&, preview::reference_wrapper<int>&>, int&>::value, "");
+  static_assert(std::is_same<preview::common_reference_t<int&, preview::reference_wrapper<int>&>, int&>::value, "");
+  static_assert(std::is_same<preview::common_reference_t<int&,     std::reference_wrapper<int>&>, int&>::value, "");
+//  static_assert(std::is_same_v<    std::common_reference_t<int&, preview::reference_wrapper<int>&>, int&>);
+
 }
