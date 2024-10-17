@@ -512,18 +512,18 @@ using preview::detail::preview_refwrap_to_std_refwrap::cref;
 
 #if PREVIEW_CONFORM_CXX20_STANDARD
 
-template<class R, class T, template<class> class RQual, template<class> class TQual>
-requires (preview::detail::ref_wrap_common_reference_exists_with<R, T, RQual<R>, TQual<T>> &&
-          !preview::detail::ref_wrap_common_reference_exists_with<T, R, TQual<T>, RQual<R>>)
-struct std::basic_common_reference<R, T, RQual, TQual> {
-  using type = std::common_reference_t<typename R::type&, TQual<T>>;
-};
+// Single defition to prevent some old compilers complaining duplicated difinition
 
-template<class T, class R, template<class> class TQual, template<class> class RQual>
-requires (preview::detail::ref_wrap_common_reference_exists_with<R, T, RQual<R>, TQual<T>> &&
-          !preview::detail::ref_wrap_common_reference_exists_with<T, R, TQual<T>, RQual<R>>)
-struct std::basic_common_reference<T, R, TQual, RQual> {
-  using type = std::common_reference_t<typename R::type&, TQual<T>>;
+template<class T, class U, template<class> class TQual, template<class> class UQual>
+requires (
+    (preview::detail::ref_wrap_common_reference_exists_with<T, U, TQual<T>, UQual<U>> &&
+     !preview::detail::ref_wrap_common_reference_exists_with<U, T, UQual<U>, TQual<T>>) ||
+    (preview::detail::ref_wrap_common_reference_exists_with<U, T, UQual<U>, TQual<T>> &&
+     !preview::detail::ref_wrap_common_reference_exists_with<T, U, TQual<T>, UQual<U>>)
+)
+struct std::basic_common_reference<T, U, TQual, UQual> {
+  using type = typename preview::detail::bcr_specialization::basic_common_reference_base<
+      T, U, TQual, UQual, preview::detail::bcr_specialization::kReferenceWrapper>::type;
 };
 
 #endif
