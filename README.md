@@ -111,14 +111,15 @@ Implementation available in C++14 ~ :
 |                                     | ![](https://img.shields.io/badge/312/694-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
+| [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/2/14-grey)![][p014]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                        |
-| [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/3/5-grey)![][p060]    | ![](https://img.shields.io/badge/6/7-grey)![][p086]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/3/5-grey)![][p060]    |
+| [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/4/6-grey)![][p067]    | ![](https://img.shields.io/badge/12/14-grey)![][p086]   | ![](https://img.shields.io/badge/3/4-grey)![][p075]    | ![](https://img.shields.io/badge/4/6-grey)![][p067]    |
 | [iterator](#iterator)               | ![](https://img.shields.io/badge/57/59-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/51/52-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
-| [memory](#memory)                   | ![](https://img.shields.io/badge/9/44-grey)![][p020]    |   | ![](https://img.shields.io/badge/4/11-grey)![][p036]   | ![](https://img.shields.io/badge/9/36-grey)![][p025]    | ![](https://img.shields.io/badge/0/3-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [memory](#memory)                   | ![](https://img.shields.io/badge/9/44-grey)![][p020]    |   | ![](https://img.shields.io/badge/4/11-grey)![][p036]   | ![](https://img.shields.io/badge/9/35-grey)![][p026]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [numbers](#numbers)                 | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |                                                        |                                                        |
 | [numeric](#numeric)                 | ![](https://img.shields.io/badge/1/15-grey)![][p007]    |   | ![](https://img.shields.io/badge/0/9-grey)![][p000]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
 | [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
@@ -126,12 +127,11 @@ Implementation available in C++14 ~ :
 | [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/29/36-grey)![][p081]  | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [span](#span)                       | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [string_view](#string_view)         | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/3/3-grey)![][p100] *  |
-| [tuple](#tuple)                     | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                        |
-| [type_traits](#type_traits)         | ![](https://img.shields.io/badge/17/26-grey)![][p065]   |   | ![](https://img.shields.io/badge/8/10-grey)![][p080]   | ![](https://img.shields.io/badge/7/13-grey)![][p054]    | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [tuple](#tuple)                     | ![](https://img.shields.io/badge/7/8-grey)![][p088]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/5/6-grey)![][p083]    |
+| [type_traits](#type_traits)         | ![](https://img.shields.io/badge/17/26-grey)![][p065]   |   | ![](https://img.shields.io/badge/8/10-grey)![][p080]   | ![](https://img.shields.io/badge/7/13-grey)![][p054]    | ![](https://img.shields.io/badge/2/6-grey)![][p033]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [utility](#utility)                 | ![](https://img.shields.io/badge/7/8-grey)![][p088]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/2/3-grey)![][p067]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [variant](#variant)                 | ![](https://img.shields.io/badge/9/9-grey)![][p100]     |   | ![](https://img.shields.io/badge/9/9-grey)![][p100]    |                                                         |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [atomic](#atomic)                   | ![](https://img.shields.io/badge/0/17-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |
 | [barrier](#barrier)                 | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
 | [charconv](#charconv)               | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/14-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                        |
@@ -159,7 +159,7 @@ Implementation available in C++14 ~ :
 | [semaphore](#semaphore)             | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        |                                                        |
 | [shared_mutex](#shared_mutex)       | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |                                                         |                                                        |                                                        |
 | [stop_token](#stop_token)           | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
-| [string](#string)                   | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]     |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
+| [string](#string)                   | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]     | ![](https://img.shields.io/badge/0/1-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [source_location](#source_location) | N/A                                                     |   |                                                        |                                                         |                                                        |                                                        |
 | [syncstream](#syncstream)           | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/3-grey)![][p000]     |                                                        |                                                        |
 | [spanstream](#spanstream)           | ![](https://img.shields.io/badge/0/4-grey)![][p000]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |                                                        |
@@ -550,7 +550,7 @@ Description
   |-----------------|------------|----------|
   | `flat_set`      | ![][c23no] |          |
   | `flat_multiset` | ![][c23no] |          |
- 
+
 #### `<format>`
 
   |                                            | Introduced | Revision              |
@@ -585,24 +585,51 @@ Description
 
 #### `<functional>`
 
-  |                                 | Introduced | Revision     |
-  |---------------------------------|------------|--------------|
-  | `default_searcher`              | ![][c17ok] | ![][c20ok]   |
-  | `boyer_moore_searcher`          | ![][c17no] |              |
-  | `boyer_moore_horspool_searcher` | ![][c17no] |              |
-  | `invoke`                        | ![][c17ok] |              |
-  | `invoke_r`                      | ![][c23ok] |              |
-  | `not_fn`                        | ![][c17ok] | ![][c26ok]   |
-  | `bind_front`                    | ![][c20ok] | ![][c26ok17] |
-  | `bind_back`                     | ![][c23ok] | ![][c26ok17] |
-  | `identity`                      | ![][c20ok] |              |
-  | `unwrap_reference`              | ![][c20ok] |              |
-  | `unwrap_ref_decay`              | ![][c20ok] |              |
-  | `ranges::equal_to`...           | ![][c20ok] |              |
-  | `ranges::three_way`             | ![][c20no] |              |
-  | `move_only_function`            | ![][c23no] |              |
-  | `copyable_function`             | ![][c26no] |              |
-  | `function_ref`                  | ![][c26no] |              |
+  |                                 | Introduced | Revision                                      |
+  |---------------------------------|------------|-----------------------------------------------|
+  | `reference_wrapper`             |            | ![][c17ok] ![][c20ok] ![][c23ok] ![][c26ok] * |
+  | `default_searcher`              | ![][c17ok] | ![][c20ok]                                    |
+  | `boyer_moore_searcher`          | ![][c17no] |                                               |
+  | `boyer_moore_horspool_searcher` | ![][c17no] |                                               |
+  | `invoke`                        | ![][c17ok] |                                               |
+  | `not_fn`                        | ![][c17ok] | ![][c26ok]                                    |
+  | `bind_front`                    | ![][c20ok] | ![][c26ok17]                                  |
+  | `identity`                      | ![][c20ok] |                                               |
+  | `unwrap_reference`              | ![][c20ok] |                                               |
+  | `unwrap_ref_decay`              | ![][c20ok] |                                               |
+  | `ranges::equal_to`              | ![][c20ok] |                                               |
+  | `ranges::not_equal_to`          | ![][c20ok] |                                               |
+  | `ranges::greater`               | ![][c20ok] |                                               |
+  | `ranges::less`                  | ![][c20ok] |                                               |
+  | `ranges::greater_equal`         | ![][c20ok] |                                               |
+  | `ranges::less_equal`            | ![][c20ok] |                                               |
+  | `compare_three_way`             | ![][c20no] |                                               |
+  | `ranges::three_way`             | ![][c20no] |                                               |
+  | `invoke_r`                      | ![][c23ok] |                                               |
+  | `bind_back`                     | ![][c23ok] | ![][c26ok17]                                  |
+  | `move_only_function`            | ![][c23no] |                                               |
+  | `copyable_function`             | ![][c26no] |                                               |
+  | `function_ref`                  | ![][c26no] |                                               |
+
+* Notes
+  * `reference_wrapper`
+    * Non-standard member function `operator*()` is defined _**only for the purpose of mixed use with**_ `std::invoke`.
+    * Before C++20, `preview::reference_wrapper` cannot be used in deduced context of `std::reference_wrapper`. In sucn
+      case, non-standard member function `to_std()` can be used.
+      ```c++
+      template<typename T>
+      void foo(std::reference_wrapper<T> x) {}
+      
+      int main() {
+        int x = 10;
+        auto ref = preview::ref(x);
+        foo(ref); // Compile error before C++20
+        foo(ref.to_std());
+      
+        std::cout << std::boolalpha << (ref == 10) << std::endl;
+      }
+      ```
+
 
 #### `<hazard_pointer>`
 
@@ -696,7 +723,6 @@ Description
     * `projected`
       * Indirect layer doesn't work without using concepts. 
         Check `preview::projectable` before using `preview::projected` directly.
-
 
 #### `<latch>`
 
@@ -898,7 +924,6 @@ Description
   | `vprint_nonunicode`          | ![][c23no] |          |
   | `vprint_nonunicode_buffered` | ![][c23no] |          |
 
-
 #### `<optional>`
 
   |                       | Introduced  | Revision              |
@@ -1016,7 +1041,6 @@ Description
       * Implemented before standardization
       * Needs update
 
-
 #### `<rcu>`
 
   |                      | Introduced | Revision |
@@ -1053,10 +1077,11 @@ Description
 
 #### `<string>`
 
-  |                               | Introduced | Revision   |
-  |-------------------------------|------------|------------|
-  | `erase(std::basic_string)`    | ![][c20no] | ![][c26no] |
-  | `erase_if(std::basic_string)` | ![][c20no] | ![][c26no] |
+  |                                      | Introduced | Revision              |
+  |--------------------------------------|------------|-----------------------|
+  | `erase(std::basic_string)`           | ![][c20no] | ![][c26no]            |
+  | `erase_if(std::basic_string)`        | ![][c20no] | ![][c26no]            |
+  | `basic_string`                       |            | ![][c20no] ![][c23no] |
 
 #### `<string_view>`
 
@@ -1064,7 +1089,6 @@ Description
   |--------------------------------|------------|------------------------------------|
   | `basic_string_view`            | ![][c17ok] | ![][c20ok] ![][c23ok] ![][c26ok] * |
   | `std::hash<basic_string_view>` | ![][c17ok] |                                    |
-  | `swap(optional)`               | ![][c17ok] |                                    |
   | `operator""_sv`                | ![][c17ok] |                                    |
 
   * Notes
@@ -1132,10 +1156,14 @@ Description
 
 #### `<tuple>`
 
-  |                   | Introduced | Revision   |
-  |-------------------|------------|------------|
-  | `apply`           | ![][c17ok] | ![][c23ok] |
-  | `make_from_tuple` | ![][c17ok] | ![][c23ok] |
+  |                                      | Introduced | Revision   |
+  |--------------------------------------|------------|------------|
+  | `apply`                              | ![][c17ok] | ![][c23ok] |
+  | `make_from_tuple`                    | ![][c17ok] | ![][c23ok] |
+  | `tuple_like` `pair_like`             | ![][c23ok] |            |
+  | `basic_common_reference<tuple-like>` | ![][c23ok] |            |
+  | `common_type<tuple-like>`            | ![][c23ok] |            |
+  | `formatter<tuple-like>`              | ![][c23no] |            |
 
 #### `<type_traits>`
 
@@ -1165,6 +1193,9 @@ Description
   | `remove_cvref`                                  | ![][c20ok]     |                       |
   | `type_identity`                                 | ![][c20ok]     |                       |
   | `is_implicit_lifetime`                          | ![][c23no] N/A |                       |
+  | `is_scoped_enum`                                | ![][c23no] N/A |                       |
+  | `reference_converts_from_temporary`             | ![][c23no] N/A |                       |
+  | `reference_constructs_from_temporary`           | ![][c23no] N/A |                       |
   | `is_within_lifetime`                            | ![][c26no] N/A |                       |
   | `is_virtual_base_of`                            | ![][c26no]     |                       |
 
@@ -1194,7 +1225,6 @@ Description
         preview::common_type_t< std::tuple<int, int>, std::pair<int, double>>, 
         std::pair<int, double>>);
     ```
-
 
 #### `<utility>`
 
