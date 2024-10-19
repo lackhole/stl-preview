@@ -901,19 +901,21 @@ Description
 
 #### `<optional>`
 
-  |                       | Introduced  | Revision              |
-  |-----------------------|-------------|-----------------------|
-  | `optional`            | ![][c17ok]  | ![][c23ok] ![][c26no] |
-  | `bad_optional_access` | ![][c17ok]  |                       |
-  | `std::hash<optional>` | ![][c17ok]  |                       |
-  | `nullopt`             | ![][c17ok]* |                       |
-  | `nullopt_t`           | ![][c17ok]* |                       |
-  | `swap(optional)`      | ![][c17ok]  |                       |
-  | `make_optional`       | ![][c17ok]  |                       |
+  |                       | Introduced  | Revision               |
+  |-----------------------|-------------|------------------------|
+  | `optional`            | ![][c17ok]  | ![][c23ok] ![][c26ok]* |
+  | `bad_optional_access` | ![][c17ok]  |                        |
+  | `std::hash<optional>` | ![][c17ok]  |                        |
+  | `nullopt`             | ![][c17ok]* |                        |
+  | `nullopt_t`           | ![][c17ok]* |                        |
+  | `swap(optional)`      | ![][c17ok]  |                        |
+  | `make_optional`       | ![][c17ok]  |                        |
 
 * Notes
   * `nullopt`, `nullopt_t`
     * `std::nullopt` is used if available, `preview::nullopt` otherwise.
+  * C++26
+    * [P3168 (R2)](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2024/p3168r2.html)
 
 #### `<random>`
 

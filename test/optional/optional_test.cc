@@ -371,3 +371,24 @@ TEST(VERSIONED(optional), copy_over_move) {
   std::swap(op1, op2); // copy is selected for non-movable object
   EXPECT_EQ(NoMove::copied, 2);
 }
+
+TEST(VERSIONED(optional), ranges) {
+  preview::optional<int> o;
+  using I = decltype(o)::iterator;
+  using CI = decltype(o)::const_iterator;
+
+  EXPECT_TRUE_TYPE(preview::contiguous_iterator<I>);
+  EXPECT_TRUE_TYPE(preview::ranges::view<decltype(o)>);
+  EXPECT_EQ(o.begin(), o.begin());
+  EXPECT_EQ(o.begin(), o.end());
+  EXPECT_EQ(o.end(), o.end());
+  EXPECT_EQ(preview::ranges::size(o), 0);
+
+  o = 100;
+  EXPECT_EQ(o.begin(), o.begin());
+  EXPECT_NE(o.begin(), o.end());
+  EXPECT_EQ(o.end(), o.end());
+  EXPECT_EQ(o.begin() + 1, o.end());
+  EXPECT_EQ(o.begin(), o.end() - 1);
+  EXPECT_EQ(preview::ranges::size(o), 1);
+}
