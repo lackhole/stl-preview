@@ -49,12 +49,17 @@ struct can_bind_to_reference_helper {
   static auto test(int) -> decltype(FUN<T>(std::declval<U&>()), std::true_type{});
   template<typename U, typename T>
   static auto test(...) -> std::false_type;
+
+  template<typename U, typename T>
+  static auto test_noexcept(int) -> decltype(FUN<T>(std::declval<U&>()), bool_constant<noexcept(FUN<T>(std::declval<U&>()))>{});
+  template<typename U, typename T>
+  static auto test_noexcept(...) -> std::false_type;
 };
 
 template<typename U, typename T>
 struct can_bind_to_reference : decltype(can_bind_to_reference_helper::test<U, T>(0)) {};
 template<typename U, typename T>
-struct can_bind_to_reference_noexcept : bool_constant<noexcept(can_bind_to_reference_helper::FUN<T>(std::declval<U>()))> {};
+struct can_bind_to_reference_noexcept : bool_constant<noexcept(can_bind_to_reference_helper::test_noexcept<U, T>(0))> {};
 
 } // namespace detail
 
