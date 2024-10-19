@@ -79,7 +79,6 @@ class reference_wrapper
 
 #if PREVIEW_CONFORM_CXX20_STANDARD
   using base::base;
-  using base::operator=;
   using base::get;
   using base::operator type &;
   using base::operator();
