@@ -10,6 +10,7 @@
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__functional/less.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirect_strict_weak_order.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/borrowed_iterator_t.h"
@@ -40,7 +41,7 @@ struct min_element_niebloid {
   ::value, int> = 0>
   constexpr borrowed_iterator_t<R>
   operator()(R&& r, Comp comp = {}, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), comp, proj);
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(comp), preview::wrap_functor(proj));
   }
 };
 

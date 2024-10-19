@@ -5,7 +5,6 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_IN_FOR_EACH_H_
 #define PREVIEW_ALGORITHM_RANGES_IN_FOR_EACH_H_
 
-#include <functional>
 #include <type_traits>
 #include <utility>
 
@@ -14,6 +13,7 @@
 #include "preview/__algorithm/ranges/in_fun_result.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirectly_unary_invocable.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/borrowed_iterator_t.h"
@@ -42,7 +42,7 @@ struct for_each_niebloid {
       algo_check_unary_input_range<indirectly_unary_invocable, R, Proj, Fun>::value, int> = 0>
   constexpr for_each_result<borrowed_iterator_t<R>, Fun>
   operator()(R&& r, Fun f, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::move(f), std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), std::move(f), preview::wrap_functor(proj));
   }
 };
 

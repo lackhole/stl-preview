@@ -12,6 +12,7 @@
 #include "preview/__functional/less.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/input_iterator.h"
 #include "preview/__iterator/mergeable.h"
 #include "preview/__iterator/next.h"
@@ -89,8 +90,8 @@ struct set_intersection_niebloid {
   operator()(R1&& r1, R2&& r2, O result, Comp comp = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(r1), ranges::end(r1),
                    ranges::begin(r2), ranges::end(r2),
-                   std::move(result), std::move(comp),
-                   std::move(proj1), std::move(proj2));
+                   std::move(result),
+                   preview::wrap_functor(comp), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 };
 

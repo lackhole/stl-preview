@@ -107,17 +107,21 @@ struct ref_wrap_common_reference_exists_with<R, T, RQ, TQ, true>
     : ref_wrap_common_reference_exists_with_impl<R, T, RQ, TQ> {};
 
 template<class R, class T, template<class> class RQual, template<class> class TQual>
-struct basic_common_reference_ref_wrap {
+struct basic_common_reference_ref_wrap_t {
   using type = common_reference_t<typename R::type&, TQual<T>>;
 };
 
 template<class T, class U, template<class> class TQual, template<class> class UQual>
-struct basic_common_reference_base<T, U, TQual, UQual, kReferenceWrapper> : std::conditional_t<
+using basic_common_reference_ref_wrap = std::conditional_t<
     (ref_wrap_common_reference_exists_with<T, U, TQual<T>, UQual<U>>::value &&
      !ref_wrap_common_reference_exists_with<U, T, UQual<U>, TQual<T>>::value),
-    basic_common_reference_ref_wrap<T, U, TQual, UQual>,
-    basic_common_reference_ref_wrap<U, T, UQual, TQual>
-> {};
+    basic_common_reference_ref_wrap_t<T, U, TQual, UQual>,
+    basic_common_reference_ref_wrap_t<U, T, UQual, TQual>
+>;
+
+template<class T, class U, template<class> class TQual, template<class> class UQual>
+struct basic_common_reference_base<T, U, TQual, UQual, kReferenceWrapper>
+    : basic_common_reference_ref_wrap<T, U, TQual, UQual> {};
 
 } // namespace bcr_specialization
 } // namespace detail

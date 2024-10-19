@@ -5,7 +5,6 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_EQUAL_H_
 #define PREVIEW_ALGORITHM_RANGES_EQUAL_H_
 
-#include <functional>
 #include <initializer_list>
 #include <type_traits>
 
@@ -18,6 +17,7 @@
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/distance.h"
 #include "preview/__ranges/end.h"
@@ -82,7 +82,7 @@ struct equal_niebloid {
   PREVIEW_NODISCARD constexpr bool
   operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2),
-                   std::ref(pred), std::ref(proj1), std::ref(proj2));
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 
   template<
@@ -95,7 +95,7 @@ struct equal_niebloid {
   PREVIEW_NODISCARD constexpr bool
   operator()(std::initializer_list<T> il, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(il), ranges::end(il), ranges::begin(r2), ranges::end(r2),
-                   std::ref(pred), std::ref(proj1), std::ref(proj2));
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 
   template<
@@ -108,7 +108,7 @@ struct equal_niebloid {
   PREVIEW_NODISCARD constexpr bool
   operator()(R1&& r1, std::initializer_list<U> il, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(il), ranges::end(il),
-                   std::ref(pred), std::ref(proj1), std::ref(proj2));
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 
   template<
@@ -121,7 +121,7 @@ struct equal_niebloid {
   PREVIEW_NODISCARD constexpr bool
   operator()(std::initializer_list<T> il1, std::initializer_list<U> il2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(il1), ranges::end(il1), ranges::begin(il2), ranges::end(il2),
-                   std::ref(pred), std::ref(proj1), std::ref(proj2));
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 };
 

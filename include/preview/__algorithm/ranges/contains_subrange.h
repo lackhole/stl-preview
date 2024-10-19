@@ -12,6 +12,7 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirectly_comparable.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
@@ -54,7 +55,7 @@ struct contains_subrange_niebloid {
   >::value, int> = 0>
   constexpr bool operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2),
-                   std::move(pred), std::move(proj1), std::move(proj2));
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 };
 

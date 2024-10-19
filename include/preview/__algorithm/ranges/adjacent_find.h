@@ -5,13 +5,13 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_ADJACENT_FIND_H_
 #define PREVIEW_ALGORITHM_RANGES_ADJACENT_FIND_H_
 
-#include <functional>
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
 #include "preview/__iterator/next.h"
@@ -60,7 +60,7 @@ struct adjacent_find_niebloid {
           projected<iterator_t<R>, Proj>>
   >::value, int> = 0>
   constexpr borrowed_iterator_t<R> operator()(R&& r, Pred pred = {}, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::ref(pred), std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(pred), preview::wrap_functor(proj));
   }
 };
 

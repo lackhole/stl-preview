@@ -184,6 +184,12 @@ TEST(VERSIONED(Functional), reference_wrapper) {
   EXPECT_EQ(preview::invoke(&A::data, r), 15);
   EXPECT_EQ(preview::invoke(&A::mem_fn, r), 15);
 
+#if PREVIEW_CXX_VERSION >= 17
+  std::invoke(&A::data, r) -= 5;
+  EXPECT_EQ(std::invoke(&A::data, r), 10);
+  EXPECT_EQ(std::invoke(&A::mem_fn, r), 10);
+#endif
+
   {
     auto cr = preview::cref(x);
     A z{30};
@@ -224,12 +230,6 @@ TEST(VERSIONED(Functional), reference_wrapper) {
     EXPECT_LE(preview::cref(x), std::ref(y));   EXPECT_LE(std::ref(y),  preview::cref(z));
     EXPECT_LE(preview::cref(x), std::cref(y));  EXPECT_LE(std::cref(y), preview::cref(z));
   }
-
-#if PREVIEW_CXX_VERSION >= 17
-  std::invoke(&A::data, r) -= 5;
-  EXPECT_EQ(std::invoke(&A::data, r), 10);
-  EXPECT_EQ(std::invoke(&A::mem_fn, r), 10);
-#endif
 
 #if PREVIEW_CONFORM_CXX20_STANDARD
   (void)foo(r);

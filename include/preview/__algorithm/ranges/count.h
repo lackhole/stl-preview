@@ -13,6 +13,7 @@
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/projected_value_t.h"
@@ -47,7 +48,7 @@ struct count_niebloid {
       algo_check_binary_input_range<indirect_binary_predicate, R, const T*, Proj, ranges::equal_to>::value, int> = 0>
   constexpr range_difference_t<R>
   operator()(R&& r, const T& value, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), value, std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), value, preview::wrap_functor(proj));
   }
 };
 

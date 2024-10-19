@@ -12,6 +12,7 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirectly_comparable.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
@@ -49,7 +50,7 @@ struct contains_niebloid {
       indirect_binary_predicate<ranges::equal_to, projected<iterator_t<R>, Proj>, const T*>
   >::value, int> = 0>
   constexpr bool operator()(R&& r, const T& value, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::move(value), proj);
+    return (*this)(ranges::begin(r), ranges::end(r), value, preview::wrap_functor(proj));
   }
 };
 
