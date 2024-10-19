@@ -14,12 +14,15 @@
 # include "preview/__concepts/invocable.h"
 # include "preview/__concepts/move_constructible.h"
 # include "preview/__functional/invoke.h"
+# include "preview/__iterator/basic_const_iterator.h"
+# include "preview/__iterator/pointer_iterator.h"
 # include "preview/__memory/addressof.h"
 # include "preview/__memory/construct_at.h"
 # include "preview/__memory/destroy_at.h"
 # include "preview/__optional/bad_optional_access.h"
 # include "preview/__optional/nullopt_t.h"
 # include "preview/__optional/swap.h"
+# include "preview/__ranges/enable_view.h"
 # include "preview/__type_traits/detail/control_special.h"
 # include "preview/__type_traits/is_swappable.h"
 # include "preview/__type_traits/is_invocable.h"
@@ -249,7 +252,9 @@ class optional : private detail::optional_control_smf<T> {
   using base::base;
 
  public:
-  using value_type = T;
+  using value_type     = T;
+  using iterator       = detail::pointer_iterator<T, class optional_iterator_tag>;
+  using const_iterator = detail::pointer_iterator<const T, class optional_iterator_tag>;
 
   static_assert(!std::is_reference<T>::value,
                 "preview::optional : T must not be a reference type");
@@ -600,6 +605,20 @@ class optional : private detail::optional_control_smf<T> {
     this->construct_with(ilist, std::forward<Args>(args)...);
     return **this;
   }
+
+  constexpr iterator begin() noexcept {
+    return iterator{has_value() ? preview::addressof(**this) : nullptr};
+  }
+  constexpr const_iterator begin() const noexcept {
+    return const_iterator{has_value() ? preview::addressof(**this) : nullptr};
+  }
+
+  constexpr iterator end() noexcept {
+    return begin() + has_value();
+  }
+  constexpr const_iterator end() const noexcept {
+    return begin() + has_value();
+  }
 };
 
 # if PREVIEW_CXX_VERSION >= 17
@@ -808,6 +827,16 @@ constexpr inline bool operator>=(const T& value, const optional<U>& opt) {
   return bool(opt) ? value >= *opt : true;
 }
 
+
+// ranges support
+namespace ranges {
+
+template<typename T>
+struct enable_view<optional<T>> : std::true_type {};
+
+// TODO: Specialize format_kind
+
+} // namespace ranges
 } // namespace preview
 
 # endif // PREVIEW_OPTIONAL_OPTIONAL_H_
