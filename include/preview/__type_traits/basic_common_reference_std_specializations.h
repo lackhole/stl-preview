@@ -87,7 +87,8 @@ struct satisfy_pair_constraints<std::pair<T1, T2>, std::pair<U1, U2>, TQual, UQu
 
 template<typename T1, typename T2, typename U1, typename U2, template<typename> class TQual, template<typename> class UQual>
 struct basic_common_reference_base<std::pair<T1, T2>, std::pair<U1, U2>, TQual, UQual, kPair> {
-  using type = std::pair<common_reference_t<T1, U1>, common_reference_t<T2, U2>>;
+  using type = std::pair<common_reference_t<TQual<T1>, UQual<U1>>,
+                         common_reference_t<TQual<T2>, UQual<U2>>>;
 };
 
 
