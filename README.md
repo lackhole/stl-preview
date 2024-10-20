@@ -20,7 +20,7 @@ std::cout << map[0] << ' '
 
 // Not dirty-macro-magic! just simple alias. 
 // SFINAE can be easily made without macro using good-old-school mechanism
-template<typename T, preview_requires(preview::integral<T>)>
+template<typename T, PREVIEW_REQUIRES(preview::integral<T>)>
 void foo(T) {}
 
 // Readable error message!

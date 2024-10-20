@@ -5,6 +5,7 @@
 #ifndef PREVIEW_CONCEPTS_V2_REQUIRE_H_
 #define PREVIEW_CONCEPTS_V2_REQUIRE_H_
 
+#include "preview/__concepts_v2/detail/config.h"
 #include "preview/__concepts_v2/detail/constraints_not_satisfied.h"
 #include "preview/__type_traits/is_invocable.h"
 
@@ -22,14 +23,14 @@ constexpr auto resolve_require_2(T x, std::false_type) {
 }
 
 template<typename T>
-constexpr auto resolve_require_1(T x, std::true_type) {
+constexpr auto resolve_require_1(T x, std::true_type /* is_invocable<concepts::expand_error_fn, T> */) {
   return resolve_require_2(x, conjunction<
       concepts::derived_from_template<T, concepts::constraints_not_satisfied>,
       negation<is_specialization<T, concepts::constraints_not_satisfied>>>{});
 }
 
 template<typename T>
-constexpr auto resolve_require_1(T x, std::false_type) {
+constexpr auto resolve_require_1(T x, std::false_type /* is_invocable<concepts::expand_error_fn, T> */) {
   return x;
 }
 
@@ -50,6 +51,20 @@ constexpr auto resolve_require(concepts::constraints_not_satisfied<Error, concep
 
 } // namespace preview
 
-#define preview_require(...) typename decltype(preview::resolve_require(__VA_ARGS__))::valid = true
+#define PREVIEW_REQUIRES(...) typename decltype(preview::resolve_require(__VA_ARGS__))::valid = true
+
+#if defined(PREVIEW_USE_LEGACY_CONCEPT)
+
+#define PREVIEW_CONSTRAINT(...) typename
+#define PREVIEW_FUNCTION_REQUIRES(...) \
+    , PREVIEW_REQUIRES(__VA_ARGS__) >
+
+#else
+
+#define PREVIEW_CONSTRAINT(...) __VA_ARGS__
+#define PREVIEW_FUNCTION_REQUIRES(...) \
+    > requires(__VA_ARGS__)
+
+#endif
 
 #endif // PREVIEW_CONCEPTS_V2_REQUIRE_H_

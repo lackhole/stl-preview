@@ -7,14 +7,21 @@
 
 #include <type_traits>
 
-#include "preview/__concepts_v2/detail/concept_base.h"
+#include "preview/__concepts_v2/concept_base.h"
 
 namespace preview {
-namespace concepts {
-template<typename T> struct floating_point : concept_base<floating_point<T>, std::is_floating_point<T>> {};
-}
 
-template<typename T> PREVIEW_INLINE_VARIABLE constexpr concepts::floating_point<T> floating_point;
+#if defined(PREVIEW_USE_LEGACY_CONCEPT)
+
+template<typename T> struct floating_point_c : concepts::concept_base<floating_point_c<T>, std::is_floating_point<T>> {};
+template<typename T> PREVIEW_INLINE_VARIABLE constexpr floating_point_c<T> floating_point;
+
+#else
+
+template<typename T>
+concept floating_point = std::is_floating_point_v<T>;
+
+#endif
 
 } // namespace preview
 

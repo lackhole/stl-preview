@@ -3,21 +3,27 @@
 
 #include <type_traits>
 
-#include "preview/__concepts_v2/detail/concept_base.h"
+#include "preview/__concepts_v2/concept_base.h"
 #include "preview/__concepts_v2/destructible.h"
 
 namespace preview {
-namespace concepts {
+
+#if defined(PREVIEW_USE_LEGACY_CONCEPT)
 
 template<typename T, typename... Args>
-struct constructible_from : concept_base<constructible_from<T, Args...>, decltype(
-    destructible<T>{} && std::is_constructible<T, Args...>{}
+struct constructible_from_c : concepts::concept_base<constructible_from_c<T, Args...>, decltype(
+    destructible<T> && std::is_constructible<T, Args...>{}
 )> {};
 
-} // namespace concepts
+template<typename T, typename... Args>
+PREVIEW_INLINE_VARIABLE constexpr constructible_from_c<T, Args...> constructible_from{};
+
+#else
 
 template<typename T, typename... Args>
-PREVIEW_INLINE_VARIABLE constexpr concepts::constructible_from<T, Args...> constructible_from;
+concept constructible_from = destructible<T> && std::is_constructible_v<T, Args...>;
+
+#endif
 
 } // namespace preview
 
