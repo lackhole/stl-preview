@@ -35,7 +35,7 @@ struct satisfy_tuple_like_constraints_impl_3<TTuple, UTuple, TQual, UQual, std::
 > {};
 
 template<typename TTuple, typename UTuple, template<typename> class TQual, template<typename> class UQual,
-         bool = /* false */ (std::tuple_size<TTuple>::value == std::tuple_size<UTuple>::value)>
+         bool = /* false */ (std::tuple_size<remove_cvref_t<TTuple>>::value == std::tuple_size<remove_cvref_t<UTuple>>::value)>
 struct satisfy_tuple_like_constraints_impl_2 : std::false_type {};
 
 template<typename TTuple, typename UTuple, template<typename> class TQual, template<typename> class UQual>
@@ -65,8 +65,8 @@ struct basic_common_reference_base_tuple_like;
 template<typename TTuple, typename UTuple, template<typename> class TQual, template<typename> class UQual, std::size_t... I>
 struct basic_common_reference_base_tuple_like<TTuple, UTuple, TQual, UQual, std::index_sequence<I...>> {
   using type = std::tuple<
-      common_reference_t<std::tuple_element_t<I, TTuple>,
-                         std::tuple_element_t<I, UTuple>>
+      common_reference_t<TQual<std::tuple_element_t<I, TTuple>>,
+                         UQual<std::tuple_element_t<I, UTuple>>>
       ...
   >;
 };
