@@ -19,6 +19,7 @@
 # include "preview/__functional/less_equal.h"
 # include "preview/__functional/not_equal_to.h"
 # include "preview/__functional/not_fn.h"
+# include "preview/__functional/reference_wrapper.h"
 # include "preview/__functional/wrap_functor.h"
 # include "preview/__type_traits/unwrap_reference.h"
 

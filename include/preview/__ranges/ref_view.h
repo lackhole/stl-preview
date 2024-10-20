@@ -10,6 +10,7 @@
 
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/different_from.h"
+#include "preview/__functional/reference_wrapper.h"
 #include "preview/__memory/addressof.h"
 #include "preview/__ranges/contiguous_range.h"
 #include "preview/__ranges/enable_borrowed_range.h"
@@ -26,19 +27,6 @@
 
 namespace preview {
 namespace ranges {
-namespace detail {
-namespace ref_view_fn {
-
-template<typename R> static void fun(R&);
-template<typename R> static void fun(R&&) = delete;
-
-template<typename R, typename T, typename = void>
-struct fallback_to_lref : std::false_type {};
-template<typename R, typename T>
-struct fallback_to_lref<R, T, void_t<decltype(fun<R>(std::declval<T>()))>> : std::true_type {};
-
-} // namespace ref_view_fn
-} // namespace detail
 
 template<typename R>
 class ref_view : public view_interface<ref_view<R>> {
@@ -49,7 +37,7 @@ class ref_view : public view_interface<ref_view<R>> {
   template<typename T, std::enable_if_t<conjunction<
       different_from<T, ref_view>,
       convertible_to<T, R&>,
-      detail::ref_view_fn::fallback_to_lref<R, T>
+      preview::detail::can_bind_to_reference<T, R>
   >::value, int> = 0>
   PREVIEW_CONSTEXPR_AFTER_CXX17 ref_view(T&& t) noexcept
       : r_(preview::addressof(static_cast<R&>(std::forward<T>(t)))) {}

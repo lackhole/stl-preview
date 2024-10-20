@@ -8,6 +8,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "preview/__functional/reference_wrapper.h"
+
 namespace preview {
 
 template<typename T>
@@ -17,6 +19,11 @@ struct unwrap_reference {
 
 template<typename T>
 struct unwrap_reference<std::reference_wrapper<T>> {
+  using type = T&;
+};
+
+template<typename T>
+struct unwrap_reference<preview::reference_wrapper<T>> {
   using type = T&;
 };
 

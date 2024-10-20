@@ -8,6 +8,8 @@
 #include <functional>
 #include <type_traits>
 
+#include "preview/__functional/is_reference_wrapper.h"
+#include "preview/__functional/reference_wrapper.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/remove_cvref.h"
@@ -22,7 +24,12 @@ constexpr F wrap_functor_impl(F& f, std::true_type) {
 
 template<typename F>
 constexpr auto wrap_functor_impl(F& f, std::false_type) {
-  return std::ref(f);
+  // std::ref will result in ambiguous call in before Android NDK 22
+#if PREVIEW_CONFORM_CXX20_STANDARD
+  return std::reference_wrapper<F>(f);
+#else
+  return preview::reference_wrapper<F>(f);
+#endif
 }
 
 } // namespace detail
@@ -31,8 +38,21 @@ constexpr auto wrap_functor_impl(F& f, std::false_type) {
 template<typename F>
 constexpr auto wrap_functor(F& f) {
   using FT = remove_cvref_t<F>;
-  using tag_t = conjunction<std::is_trivially_copy_constructible<FT>, bool_constant<(sizeof(FT) <= 64)>>;
-  return preview::detail::wrap_functor_impl(f, tag_t{});
+  static_assert(!is_reference_wrapper<FT>::value, "Invalid type");
+  using cheap_trivial_copy = conjunction<
+      std::is_trivially_copy_constructible<FT>,
+      bool_constant<(sizeof(FT) <= (sizeof(void*)) * 2)> >;
+  return preview::detail::wrap_functor_impl(f, cheap_trivial_copy{});
+}
+
+template<typename F>
+constexpr auto wrap_functor(preview::reference_wrapper<F> f) {
+  return f;
+}
+
+template<typename F>
+constexpr auto wrap_functor(std::reference_wrapper<F> f) {
+  return f;
 }
 
 } // namespace preview

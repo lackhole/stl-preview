@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "preview/__concepts/convertible_to.h"
+#include "preview/__type_traits/basic_common_reference.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/common_type.h"
 #include "preview/__type_traits/copy_cvref.h"
@@ -19,10 +20,6 @@
 #include "preview/__type_traits/detail/test_ternary.h"
 
 namespace preview {
-
-// forward declare
-template<typename T, typename U, template<typename> class TQual, template<typename> class UQual>
-struct basic_common_reference;
 
 template<typename...>
 struct common_reference;
@@ -154,5 +151,7 @@ template<typename... T>
 using common_reference_t = typename common_reference<T...>::type;
 
 } // namespace preview
+
+#include "preview/__type_traits/basic_common_reference_std_specializations.h"
 
 #endif // PREVIEW_TYPE_TRAITS_COMMON_REFERENCE_H_

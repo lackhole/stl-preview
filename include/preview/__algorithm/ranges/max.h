@@ -14,6 +14,7 @@
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__functional/less.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirect_strict_weak_order.h"
 #include "preview/__iterator/indirectly_copyable_storable.h"
 #include "preview/__iterator/projected.h"
@@ -46,7 +47,7 @@ struct max_niebloid {
   template<typename R, typename Proj, typename Comp>
   constexpr range_value_t<R>
   max_range(R&& r, Comp comp, Proj proj, std::true_type /* forward_range */) const {
-    return static_cast<range_value_t<R>>(*ranges::max_element(r, std::ref(comp), std::ref(proj)));
+    return static_cast<range_value_t<R>>(*ranges::max_element(r, preview::wrap_functor(comp), preview::wrap_functor(proj)));
   }
 
   template<typename R, typename Proj, typename Comp>
@@ -77,14 +78,14 @@ struct max_niebloid {
       >::value, int> = 0>
   constexpr T
   operator()(std::initializer_list<T> r, Comp comp = {}, Proj proj = {}) const {
-    return *ranges::max_element(r, std::ref(comp), std::ref(proj));
+    return *ranges::max_element(r, preview::wrap_functor(comp), preview::wrap_functor(proj));
   }
 
   template<typename R, typename Proj = identity, typename Comp = less,
       std::enable_if_t<check_range<R, Proj, Comp>::value, int> = 0>
   constexpr range_value_t<R>
   operator()(R&& r, Comp comp = {}, Proj proj = {}) const {
-    return this->max_range(std::forward<R>(r), std::ref(comp), std::ref(proj), forward_range<R>{});
+    return this->max_range(std::forward<R>(r), preview::wrap_functor(comp), preview::wrap_functor(proj), forward_range<R>{});
   }
 };
 } // namespace detail

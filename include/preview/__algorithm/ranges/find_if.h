@@ -5,12 +5,12 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_FIND_IF_H_
 #define PREVIEW_ALGORITHM_RANGES_FIND_IF_H_
 
-#include <functional>
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
 #include "preview/__iterator/projected.h"
 #include "preview/__ranges/begin.h"
@@ -46,7 +46,7 @@ struct find_if_niebloid {
   >::value, int> = 0>
   constexpr borrowed_iterator_t<R>
   operator()(R&& r, Pred pred, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::ref(pred), std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(pred), preview::wrap_functor(proj));
   }
 };
 

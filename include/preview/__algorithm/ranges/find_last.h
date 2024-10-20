@@ -20,6 +20,7 @@
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/borrowed_subrange_t.h"
 #include "preview/__ranges/end.h"
@@ -106,7 +107,7 @@ struct find_last_niebloid {
       indirect_binary_predicate<equal_to, projected<I, Proj>, const T*>
   >::value, int> = 0>
   constexpr subrange<I> operator()(I first, S last, const T& value, Proj proj = {}) const {
-    return call(std::move(first), std::move(last), value, std::ref(proj), constant_last_gettable<I, S>{});
+    return call(std::move(first), std::move(last), value, preview::wrap_functor(proj), constant_last_gettable<I, S>{});
   }
 
   template<typename R, typename Proj = identity, typename T = projected_value_t<iterator_t<R>, Proj>, std::enable_if_t<conjunction<
@@ -115,7 +116,7 @@ struct find_last_niebloid {
       indirect_binary_predicate<equal_to, projected<iterator_t<R>, Proj>, const T*>
   >::value, int> = 0>
   constexpr borrowed_subrange_t<R> operator()(R&& r, const T& value, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), value, std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), value, preview::wrap_functor(proj));
   }
 };
 
@@ -164,7 +165,7 @@ struct find_last_if_niebloid {
       indirect_unary_predicate<Pred, projected<I, Proj>>
   >::value, int> = 0>
   constexpr subrange<I> operator()(I first, S last, Pred pred, Proj proj = {}) const {
-    return call(std::move(first), std::move(last), std::ref(pred), std::ref(proj), constant_last_gettable<I, S>{});
+    return call(std::move(first), std::move(last), preview::wrap_functor(pred), preview::wrap_functor(proj), constant_last_gettable<I, S>{});
   }
 
   template<typename R, typename Proj = identity, typename Pred, std::enable_if_t<conjunction<
@@ -173,7 +174,7 @@ struct find_last_if_niebloid {
       indirect_unary_predicate<Pred, projected<iterator_t<R>, Proj>>
   >::value, int> = 0>
   constexpr borrowed_subrange_t<R> operator()(R&& r, Pred pred, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::ref(pred), std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(pred), preview::wrap_functor(proj));
   }
 };
 
@@ -222,7 +223,7 @@ struct find_last_if_not_niebloid {
       indirect_unary_predicate<Pred, projected<I, Proj>>
   >::value, int> = 0>
   constexpr subrange<I> operator()(I first, S last, Pred pred, Proj proj = {}) const {
-    return call(std::move(first), std::move(last), std::ref(pred), std::ref(proj), constant_last_gettable<I, S>{});
+    return call(std::move(first), std::move(last), preview::wrap_functor(pred), preview::wrap_functor(proj), constant_last_gettable<I, S>{});
   }
 
   template<typename R, typename Proj = identity, typename Pred, std::enable_if_t<conjunction<
@@ -231,7 +232,7 @@ struct find_last_if_not_niebloid {
       indirect_unary_predicate<Pred, projected<iterator_t<R>, Proj>>
   >::value, int> = 0>
   constexpr borrowed_subrange_t<R> operator()(R&& r, Pred pred, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::ref(pred), std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(pred), preview::wrap_functor(proj));
   }
 };
 

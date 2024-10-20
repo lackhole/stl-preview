@@ -16,6 +16,7 @@
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__functional/less.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/next.h"
 #include "preview/__iterator/random_access_iterator.h"
 #include "preview/__iterator/sentinel_for.h"
@@ -42,8 +43,8 @@ struct sort_niebloid {
       return first;
 
     auto last_iter = ranges::next(first, last);
-    ranges::make_heap(first, last_iter, std::ref(comp), std::ref(proj));
-    ranges::sort_heap(first, last_iter, std::ref(comp), std::ref(proj));
+    ranges::make_heap(first, last_iter, preview::wrap_functor(comp), preview::wrap_functor(proj));
+    ranges::sort_heap(first, last_iter, preview::wrap_functor(comp), preview::wrap_functor(proj));
 
     return last_iter;
   }
@@ -53,7 +54,7 @@ struct sort_niebloid {
       sortable<iterator_t<R>, Comp, Proj>
   >::value, int> = 0>
   constexpr borrowed_iterator_t<R> operator()(R&& r, Comp comp = {}, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::move(comp), std::move(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), preview::wrap_functor(comp), preview::wrap_functor(proj));
   }
 };
 

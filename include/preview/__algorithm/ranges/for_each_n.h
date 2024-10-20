@@ -5,7 +5,6 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_IN_FOR_EACH_N_H_
 #define PREVIEW_ALGORITHM_RANGES_IN_FOR_EACH_N_H_
 
-#include <functional>
 #include <type_traits>
 #include <utility>
 

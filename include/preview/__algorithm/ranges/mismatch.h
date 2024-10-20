@@ -13,6 +13,7 @@
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirectly_comparable.h"
 #include "preview/__iterator/input_iterator.h"
 #include "preview/__iterator/sentinel_for.h"
@@ -62,7 +63,7 @@ struct mismatch_niebloid {
   operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
     return (*this)(
         ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2),
-        std::ref(pred), std::ref(proj1), std::ref(proj2));
+        preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 };
 

@@ -5,7 +5,6 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_FOLD_LEFT_H_
 #define PREVIEW_ALGORITHM_RANGES_FOLD_LEFT_H_
 
-#include <functional>
 #include <type_traits>
 #include <utility>
 
@@ -15,6 +14,7 @@
 #include "preview/__concepts/invocable.h"
 #include "preview/__concepts/movable.h"
 #include "preview/__core/inline_variable.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirectly_readable.h"
 #include "preview/__iterator/input_iterator.h"
 #include "preview/__iterator/iter_reference_t.h"
@@ -95,7 +95,7 @@ struct fold_left_niebloid {
 
   template<typename R, typename T, typename F, std::enable_if_t<check_range<R, T, F>::value, int> = 0>
   constexpr auto operator()(R&& r, T init, F f) const {
-    return (*this)(ranges::begin(r), ranges::end(r), std::move(init), std::ref(f));
+    return (*this)(ranges::begin(r), ranges::end(r), std::move(init), preview::wrap_functor(f));
   }
 };
 

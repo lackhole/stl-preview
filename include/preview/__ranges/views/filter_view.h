@@ -6,7 +6,6 @@
 #define PREVIEW_RANGES_VIEWS_FILTER_VIEW_H_
 
 #include <cassert>
-#include <functional>
 #include <memory>
 #include <type_traits>
 #include <utility>
@@ -17,6 +16,7 @@
 #include "preview/__concepts/equality_comparable.h"
 #include "preview/__core/std_version.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/indirect_unary_predicate.h"
 #include "preview/__iterator/indirectly_swappable.h"
@@ -59,7 +59,7 @@ class filter_view_cache<V, true> {
   template<typename I, typename This, typename Base, typename Pred>
   constexpr I begin(This& thiz, Base& base, Pred& pred) {
     if (!begin_.has_value()) {
-      begin_.emplace(ranges::find_if(base, std::ref(*pred)));
+      begin_.emplace(ranges::find_if(base, preview::wrap_functor(*pred)));
     }
     return I{thiz, begin_.value()};
   }
@@ -73,7 +73,7 @@ class filter_view_cache<V, false> {
  public:
   template<typename I, typename Self, typename Base, typename Pred>
   constexpr I begin(Self& self, Base& base, Pred& pred) {
-    return I{self, ranges::find_if(base, std::ref(*pred))};
+    return I{self, ranges::find_if(base, preview::wrap_functor(*pred))};
   }
 };
 
@@ -174,7 +174,7 @@ class filter_view : public view_interface<filter_view<V, Pred>>, detail::filter_
       current_ = ranges::find_if(
           std::move(++current_),
           ranges::end(parent_->base_),
-          std::ref(*parent_->pred_)
+          preview::wrap_functor(*parent_->pred_)
       );
       return *this;
     }

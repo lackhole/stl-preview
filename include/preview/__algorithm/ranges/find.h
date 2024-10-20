@@ -5,13 +5,13 @@
 #ifndef PREVIEW_ALGORITHM_RANGES_FIND_H_
 #define PREVIEW_ALGORITHM_RANGES_FIND_H_
 
-#include <functional>
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
 #include "preview/__functional/invoke.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/indirect_binary_predicate.h"
 #include "preview/__iterator/projected.h"
 #include "preview/__iterator/projected_value_t.h"
@@ -48,7 +48,7 @@ struct find_niebloid {
   >::value, int> = 0>
   constexpr borrowed_iterator_t<R>
   operator()(R&& r, const T& value, Proj proj = {}) const {
-    return (*this)(ranges::begin(r), ranges::end(r), value, std::ref(proj));
+    return (*this)(ranges::begin(r), ranges::end(r), value, preview::wrap_functor(proj));
   }
 };
 

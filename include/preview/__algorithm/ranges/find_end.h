@@ -13,6 +13,7 @@
 #include "preview/__core/inline_variable.h"
 #include "preview/__functional/equal_to.h"
 #include "preview/__functional/identity.h"
+#include "preview/__functional/wrap_functor.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirectly_comparable.h"
 #include "preview/__iterator/next.h"
@@ -44,12 +45,14 @@ struct find_end_niebloid {
       return {last_it, last_it};
     }
 
-    auto result = ranges::search(std::move(first1),last1, first2, last2, pred, proj1, proj2);
+    auto result = ranges::search(std::move(first1), last1, first2, last2,
+                                 preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
     if (result.empty())
       return result;
 
     for (;;) {
-      auto new_result = ranges::search(std::next(result.begin()), last1, first2, last2, pred, proj1, proj2);
+      auto new_result = ranges::search(std::next(result.begin()), last1, first2, last2,
+                                       preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
       if (new_result.empty())
         return result;
       result = std::move(new_result);
@@ -63,7 +66,8 @@ struct find_end_niebloid {
                indirectly_comparable<iterator_t<R1>, iterator_t<R2>, Pred, Proj1, Proj2>
            >::value, int> = 0>
   constexpr borrowed_subrange_t<R1> operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
-    return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2), std::move(pred), std::move(proj1), std::move(proj2));
+    return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2),
+                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 };
 
