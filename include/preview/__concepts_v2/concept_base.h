@@ -6,12 +6,15 @@
 #define PREVIEW_CONCEPTS_V2_DETAIL_CONCEPT_BASE_H_
 
 #include "preview/__core/inline_variable.h"
+#include "preview/__concepts_v2/detail/config.h"
 #include "preview/__concepts_v2/detail/constraints_not_satisfied.h"
 #include "preview/__concepts_v2/detail/sized_true.h"
 #include "preview/__type_traits/bool_constant.h"
 
 namespace preview {
 namespace concepts {
+
+using namespace PREVIEW_CONCEPT_LEXICAL_NAMESPACE;
 
 template<bool B> struct valid_tag {};
 template<> struct valid_tag<true> { using valid = bool; };
@@ -93,25 +96,25 @@ struct concept_base : Base, valid_tag<Base::value> {
   // concept && concept
   template<typename C2, typename B2>
   friend constexpr auto operator&&(concept_base x, concept_base<C2, B2> y) noexcept {
-    return conj_c_c(x, y, bool_constant<Base::value>{}, bool_constant<B2::value>{});
+    return conj_c_c(x, y, preview::bool_constant<Base::value>{}, preview::bool_constant<B2::value>{});
   }
 
   // concept && true
   template<std::size_t N>
   friend constexpr auto operator&&(concept_base, sized_true<N>) noexcept {
-    return conj_c_t(concept_base{}, sized_true<N>{}, bool_constant<Base::value>{});
+    return conj_c_t(concept_base{}, sized_true<N>{}, preview::bool_constant<Base::value>{});
   }
 
   // true && concept
   template<std::size_t N>
   friend constexpr auto operator&&(sized_true<N>, concept_base) noexcept {
-    return conj_t_c(sized_true<N>{}, concept_base{}, bool_constant<Base::value>{});
+    return conj_t_c(sized_true<N>{}, concept_base{}, preview::bool_constant<Base::value>{});
   }
 
   // concept && false
   template<typename Error, std::size_t I, std::size_t N, typename... ErrorInfo>
   friend constexpr auto operator&&(concept_base, constraints_not_satisfied<Error, at<I, N>, ErrorInfo...> e) noexcept {
-    return conj_c_f(concept_base{}, e, bool_constant<Base::value>{});
+    return conj_c_f(concept_base{}, e, preview::bool_constant<Base::value>{});
   }
 
   // false && concept
@@ -190,7 +193,7 @@ struct concept_base : Base, valid_tag<Base::value> {
 
 
   /// negation
-  friend constexpr auto operator!(concept_base) noexcept { return negation(bool_constant<Base::value>{}); }
+  friend constexpr auto operator!(concept_base) noexcept { return negation(preview::bool_constant<Base::value>{}); }
 };
 
 } // namespace concepts

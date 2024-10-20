@@ -8,10 +8,9 @@
 #include <cstddef>
 #include <type_traits>
 
-#include "preview/__concepts_v2/detail/constraints_not_satisfied.h"
+#include "preview/__concepts_v2/detail/config.h"
 
-namespace preview {
-namespace concepts {
+PREVIEW_CONCEPT_LEXICAL_NAMESPACE_OPEN
 
 template<std::size_t N>
 struct sized_true : std::true_type {
@@ -55,7 +54,6 @@ struct sized_true : std::true_type {
 template<typename E, std::size_t I, std::size_t N, typename...Info>
 constexpr sized_true<N> operator!(constraints_not_satisfied<E, at<I, N>, Info...>) noexcept { return {}; }
 
-} // namespace concepts
-} // namespace preview
+PREVIEW_CONCEPT_LEXICAL_NAMESPACE_CLOSE
 
 #endif // PREVIEW_CONCEPTS_V2_DETAIL_SIZED_TRUE_H_

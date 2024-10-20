@@ -10,14 +10,15 @@
 #include <type_traits>
 
 #include "preview/__core/inline_variable.h"
+#include "preview/__concepts_v2/detail/config.h"
 #include "preview/__concepts_v2/detail/forward_declare.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/is_invocable.h"
 #include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/negation.h"
 
-namespace preview {
-namespace concepts {
+// Use shorter namespace to reduce error message length
+PREVIEW_CONCEPT_LEXICAL_NAMESPACE_OPEN
 
 template<typename Constraints, typename... Info>
 struct constraints_not_satisfied : std::false_type {};
@@ -54,40 +55,41 @@ using concat_error_t = typename concat_error<CNS1, CNS2>::type;
 // TODO: Optimize
 struct expand_error_fn {
   template<typename Constraint, typename... Info>
-  constexpr auto operator()(constraints_not_satisfied<Constraint, Info...> e) const noexcept {
-    return call(e, is_invocable<expand_error_fn, Constraint>{});
+  auto operator()(constraints_not_satisfied<Constraint, Info...> e) const noexcept {
+    return call(e, preview::is_invocable<expand_error_fn, Constraint>{});
   }
 
   // Ignore already expanded error
   template<typename Constraint, std::size_t I, std::size_t N, typename... Why, typename... Rest>
-  constexpr auto operator()(constraints_not_satisfied<Constraint, at<I, N>, because<Why...>, Rest...> e) const noexcept {
+  auto operator()(constraints_not_satisfied<Constraint, at<I, N>, because<Why...>, Rest...> e) const noexcept {
     return e;
   }
   // This case doesn't exist yest
   template<typename Constraint, typename... Why, typename... Rest>
-  constexpr auto operator()(constraints_not_satisfied<Constraint, because<Why...>, Rest...> e) const noexcept {
+  auto operator()(constraints_not_satisfied<Constraint, because<Why...>, Rest...> e) const noexcept {
     return e;
   }
 
   // direct-wrapper of type_traits (e.g., integral = is_integral_v)
-  template<typename Derived, typename Base, std::enable_if_t<conjunction<
-      derived_from_bool_constant<Base>,
-      negation<is_concept<Base>>,
-      negation<derived_from_template<Base, constraints_not_satisfied>>
+  template<typename Derived, typename Base, std::enable_if_t<preview::conjunction<
+      std::is_base_of<std::false_type, Derived>,
+      preview::concepts::derived_from_bool_constant<Base>,
+      preview::negation<preview::concepts::is_concept<Base>>,
+      preview::negation<preview::concepts::derived_from_template<Base, constraints_not_satisfied>>
   >::value, int> = 0>
-  constexpr auto operator()(concept_base<Derived, Base>) const noexcept {
+  auto operator()(preview::concepts::concept_base<Derived, Base>) const noexcept {
     // TODO: Simplify
     return constraints_not_satisfied<Derived, at<0, 1>, because<Base, is_false>>{};
   }
 
  private:
   template<typename Error, typename... Info>
-  constexpr auto call(constraints_not_satisfied<Error, Info...>, std::true_type) const noexcept {
+  auto call(constraints_not_satisfied<Error, Info...>, std::true_type) const noexcept {
     auto e = (*this)(Error{});
     return constraints_not_satisfied<Error, Info..., because<decltype(e)>>{};
   }
   template<typename Error, typename... Info>
-  constexpr auto call(constraints_not_satisfied<Error, Info...> e, std::false_type) const noexcept {
+  auto call(constraints_not_satisfied<Error, Info...> e, std::false_type) const noexcept {
     return e;
   }
 };
@@ -315,7 +317,6 @@ struct constraints_not_satisfied<
     and_, C3, at<I3, N3>, because<Why3...>,
     Rest... > : std::false_type {};
 
-} // namespace concepts
-} // namespace preview
+PREVIEW_CONCEPT_LEXICAL_NAMESPACE_CLOSE
 
 #endif // PREVIEW_CONCEPTS_V2_DETAIL_CONSTRAINTS_NOT_SATISFIED_H_
