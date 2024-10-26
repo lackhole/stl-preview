@@ -53,6 +53,27 @@ struct integer_sequence_slice_left_impl<std::integer_sequence<T, I0, I1, I2, I3,
   using type = std::integer_sequence<T, J..., I0, I1, I2, I3>;
 };
 
+template<typename Seq, typename Out = std::integer_sequence<typename Seq::value_type>>
+struct integer_sequence_reverse_impl;
+
+template<typename T,  T ...J>
+struct integer_sequence_reverse_impl<std::integer_sequence<T>, std::integer_sequence<T, J...>> {
+  using type = std::integer_sequence<T, J...>;
+};
+
+template<typename T, T I0, T ...I, T ...J>
+struct integer_sequence_reverse_impl<std::integer_sequence<T, I0, I...>, std::integer_sequence<T, J...>>
+    : integer_sequence_reverse_impl<std::integer_sequence<T, I...>, std::integer_sequence<T, I0, J...>> {};
+template<typename T, T I0, T I1, T ...I, T ...J>
+struct integer_sequence_reverse_impl<std::integer_sequence<T, I0, I1, I...>, std::integer_sequence<T, J...>>
+    : integer_sequence_reverse_impl<std::integer_sequence<T, I...>, std::integer_sequence<T, I1, I0, J...>> {};
+template<typename T, T I0, T I1, T I2, T ...I, T ...J>
+struct integer_sequence_reverse_impl<std::integer_sequence<T, I0, I1, I2, I...>, std::integer_sequence<T, J...>>
+    : integer_sequence_reverse_impl<std::integer_sequence<T, I...>, std::integer_sequence<T, I2, I1, I0, J...>> {};
+template<typename T, T I0, T I1, T I2, T I3, T ...I, T ...J>
+struct integer_sequence_reverse_impl<std::integer_sequence<T, I0, I1, I2, I3, I...>, std::integer_sequence<T, J...>>
+    : integer_sequence_reverse_impl<std::integer_sequence<T, I...>, std::integer_sequence<T, I3, I2, I1, I0, J...>> {};
+
 } // namespace detail
 
 template<typename T, T Begin, T Bound>
@@ -77,6 +98,9 @@ struct integer_sequence_count<std::integer_sequence<T, I0, Is...>, X>
 // alias of integer_sequence<T, Ti...> where i is [0, N) (N < original-length)
 template<typename Seq, std::size_t N>
 using integer_sequence_slice_left = typename detail::integer_sequence_slice_left_impl<Seq, N>::type;
+
+template<typename Seq>
+using integer_sequence_reverse = typename detail::integer_sequence_reverse_impl<Seq>::type;
 
 } // namespace preview
 

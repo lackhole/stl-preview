@@ -34,6 +34,12 @@ namespace detail {
 
 // ---------- helpers ----------
 
+template<typename T, T... I>
+struct static_array {
+  static constexpr std::size_t size = sizeof...(I);
+  static constexpr T value[size] = {I...};
+};
+
 template<typename Seq1, typename Seq2>
 struct extents_same_dynamic_positions;
 
@@ -45,9 +51,8 @@ template<typename Seq, typename Out = std::index_sequence<0>, std::size_t DRank 
 struct extents_dynamic_index;
 
 template<std::size_t... DExtents, std::size_t DRank>
-struct extents_dynamic_index<std::index_sequence<>, std::index_sequence<DExtents...>, DRank> {
-  static constexpr std::size_t value[sizeof...(DExtents)] = {DExtents...};
-};
+struct extents_dynamic_index<std::index_sequence<>, std::index_sequence<DExtents...>, DRank>
+    : static_array<std::size_t, DExtents...> {};
 
 template<std::size_t Extent, std::size_t... Extents, std::size_t... DExtents, std::size_t DRank>
 struct extents_dynamic_index<std::index_sequence<Extent, Extents...>, std::index_sequence<DExtents...>, DRank>
@@ -61,9 +66,8 @@ template<typename Seq, typename Out = std::index_sequence<>, std::size_t Index =
 struct extents_dynamic_index_inv;
 
 template<std::size_t... IndexInv, std::size_t Index>
-struct extents_dynamic_index_inv<std::index_sequence<>, std::index_sequence<IndexInv...>, Index> {
-  static constexpr std::size_t value[sizeof...(IndexInv)] = {IndexInv...};
-};
+struct extents_dynamic_index_inv<std::index_sequence<>, std::index_sequence<IndexInv...>, Index>
+    : static_array<std::size_t, IndexInv...> {};
 
 template<std::size_t Extent, std::size_t... Extents, std::size_t... IndexInv, std::size_t Index>
 struct extents_dynamic_index_inv<std::index_sequence<Extent, Extents...>, std::index_sequence<IndexInv...>, Index>
@@ -73,6 +77,30 @@ struct extents_dynamic_index_inv<std::index_sequence<Extent, Extents...>, std::i
         extents_dynamic_index_inv<std::index_sequence<Extents...>, std::index_sequence<IndexInv...>, Index + 1>
     > {};
 
+template<typename Seq, typename Out = std::index_sequence<1>, std::size_t Prod = 1>
+struct extents_fwd_prod_of_extents;
+
+template<std::size_t... Prods, std::size_t Prod>
+struct extents_fwd_prod_of_extents<std::index_sequence<>, std::index_sequence<Prods...>, Prod>
+    : static_array<std::size_t, Prods...> {};
+
+template<std::size_t Extent, std::size_t... Extents, std::size_t... Prods, std::size_t Prod>
+struct extents_fwd_prod_of_extents<std::index_sequence<Extent, Extents...>, std::index_sequence<Prods...>, Prod>
+    : extents_fwd_prod_of_extents<std::index_sequence<Extents...>, std::index_sequence<Prods..., Prod * Extent>, Prod * Extent> {};
+
+template<typename Seq, typename Out = std::index_sequence<1>, std::size_t Prod = 1>
+struct extents_rev_prod_of_extents_impl;
+
+template<std::size_t E0, std::size_t... Prods, std::size_t Prod>
+struct extents_rev_prod_of_extents_impl<std::index_sequence<E0>, std::index_sequence<Prods...>, Prod>
+    : static_array<std::size_t, Prods...> {};
+
+template<std::size_t Extent, std::size_t... Extents, std::size_t... Prods, std::size_t Prod>
+struct extents_rev_prod_of_extents_impl<std::index_sequence<Extent, Extents...>, std::index_sequence<Prods...>, Prod>
+    : extents_rev_prod_of_extents_impl<std::index_sequence<Extents...>, std::index_sequence<Prod * Extent, Prods...>, Prod * Extent> {};
+
+template<typename Seq>
+struct extents_rev_prod_of_extents : extents_rev_prod_of_extents_impl<integer_sequence_reverse<Seq>> {};
 
 // ---------- extents_storage ----------
 
@@ -125,6 +153,22 @@ struct extents_storage {
   }
   static constexpr rank_type dynamic_index_inv(rank_type i) noexcept {
     return dynamic_index_inv_t::value[i];
+  }
+
+  constexpr std::size_t fwd_prod_of_extents(rank_type i) const noexcept {
+    std::size_t p = 1;
+    for (rank_type r = 0; r < i; ++r) {
+      p *= extent(r);
+    }
+    return p;
+  }
+
+  constexpr std::size_t rev_prod_of_extents(rank_type i) const noexcept {
+    std::size_t p = 1;
+    for (rank_type r = i + 1; r < kRank; ++r) {
+      p *= extent(r);
+    }
+    return p;
   }
 
  private:
@@ -180,6 +224,14 @@ struct extents_storage<IndexType, 0, Extents...> {
     return 0;
   }
 
+  constexpr std::size_t fwd_prod_of_extents(rank_type i) const noexcept {
+    return extents_fwd_prod_of_extents<std::index_sequence<Extents...>>::value[i];
+  }
+
+  constexpr std::size_t rev_prod_of_extents(rank_type i) const noexcept {
+    return extents_rev_prod_of_extents<std::index_sequence<Extents...>>::value[i];
+  }
+
  private:
   template<typename Other>
   constexpr bool my_static_extent_is_equal_to_other_extent(const Other& other) const noexcept {
@@ -200,6 +252,18 @@ struct extents_storage<IndexType, 0, Extents...> {
   }
 };
 
+struct extents_prod_helper {
+  template<typename Extents>
+  static constexpr std::size_t fwd_prod_of_extents(const Extents& e, std::size_t r) noexcept {
+    return e.fwd_prod_of_extents(r);
+  }
+
+  template<typename Extents>
+  static constexpr std::size_t rev_prod_of_extents(const Extents& e, std::size_t r) noexcept {
+    return e.rev_prod_of_extents(r);
+  }
+};
+
 } // namespace detail
 
 template<typename IndexType, std::size_t... Extents>
@@ -216,6 +280,11 @@ class extents
 
   template<typename OtherIndexType, std::size_t... OtherExtents>
   friend class extents;
+
+  using storage_base::fwd_prod_of_extents;
+  using storage_base::rev_prod_of_extents;
+
+  friend struct detail::extents_prod_helper;
 
  public:
   using index_type = IndexType;
