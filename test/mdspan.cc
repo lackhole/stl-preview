@@ -2,6 +2,7 @@
 
 #include "gtest.h"
 
+#include "preview/algorithm.h"
 #include "preview/array.h"
 #include "preview/ranges.h"
 #include "preview/span.h"
@@ -69,4 +70,20 @@ TEST(VERSIONED(Mdspan), extents) {
 
   preview::extents<int, 1, 2, dynamic_extent, 4, dynamic_extent> e7(d3);
   EXPECT_EQ(d1, e7);
+
+  namespace detail = preview::detail;
+  using seq = std::index_sequence<2, 3, 4, 5>;
+
+  EXPECT_TRUE(preview::ranges::equal(detail::extents_fwd_prod_of_extents<seq>::value, {1, 2, 6, 24, 120}));
+  EXPECT_TRUE(preview::ranges::equal(detail::extents_rev_prod_of_extents<seq>::value, {60, 20, 5, 1}));
+}
+
+struct foo : preview::layout_left_padded<3>::mapping<preview::extents<int, 3>> {};
+
+TEST(VERSIONED(MdSpan), layout) {
+  namespace detail = preview::detail;
+
+//  static_assert(detail::is_layout_left_padded_mapping_of<int>::value == false, "");
+//  static_assert(detail::is_layout_left_padded_mapping_of<preview::layout_left_padded<3>::mapping<preview::extents<int, 3>>>::value == true, "");
+//  static_assert(detail::is_layout_left_padded_mapping_of<foo>::value == false, "");
 }
