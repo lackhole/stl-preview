@@ -33,6 +33,7 @@
 #include "preview/__type_traits/is_explicitly_constructible.h"
 #include "preview/__type_traits/is_explicitly_convertible.h"
 #include "preview/__type_traits/is_implicitly_constructible.h"
+#include "preview/__type_traits/is_implicitly_default_constructible.h"
 #include "preview/__type_traits/is_initializer_list.h"
 #include "preview/__type_traits/is_invocable.h"
 #include "preview/__type_traits/is_list_initializable.h"
