@@ -276,8 +276,7 @@ class transform_view : public view_interface<transform_view<V, F>> {
     }
 
     friend constexpr bool operator==(const transform_view::iterator<Const>& x, const sentinel& y) {
-      using namespace preview::rel_ops;
-      return x.current_ == y.end_;
+      return y.equal_with(x);
     }
 
     friend constexpr bool operator==(const sentinel& y, const transform_view::iterator<Const>& x) {
@@ -305,6 +304,11 @@ class transform_view : public view_interface<transform_view<V, F>> {
     }
 
    private:
+    constexpr bool equal_with(const iterator<Const>& x) const {
+      using namespace preview::rel_ops;
+      return x.current_ == end_;
+    }
+
     sentinel_t<Base> end_;
   };
 

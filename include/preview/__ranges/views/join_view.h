@@ -429,7 +429,7 @@ class join_view : public detail::join_view_inner_base<join_view<V>, V> {
         sentinel_for<sentinel_t<Base>, iterator_t<maybe_const<OtherConst, V>>>
     ::value, int> = 0>
     friend constexpr bool operator==(const iterator<OtherConst>& x, const sentinel& y) {
-      return x.outer() == y.end_;
+      return y.equal_with(x);
     }
 
     template<bool OtherConst, std::enable_if_t<
@@ -454,6 +454,10 @@ class join_view : public detail::join_view_inner_base<join_view<V>, V> {
     }
 
    private:
+    constexpr bool equal_with(const iterator<Const>& x) const {
+      return x.outer() == end_;
+    }
+
     sentinel_t<Base> end_{};
   };
 

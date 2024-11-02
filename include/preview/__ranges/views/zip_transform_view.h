@@ -310,7 +310,7 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
 
     template<bool OtherConst, std::enable_if_t<sentinel_for<zentinel<Const>, ziperator<OtherConst>>::value, int> = 0>
     friend constexpr bool operator==(const iterator<OtherConst>& x, const sentinel& y) {
-      return y.equal_to(x);
+      return y.equal_with(x);
     }
 
     template<bool OtherConst, std::enable_if_t<sentinel_for<zentinel<Const>, ziperator<OtherConst>>::value, int> = 0>
@@ -345,7 +345,7 @@ class zip_transform_view : public view_interface<zip_transform_view<Views...>> {
         : inner_(std::move(inner)) {}
 
     template<bool OtherConst>
-    constexpr bool equal_to(const iterator<OtherConst>& x) const {
+    constexpr bool equal_with(const iterator<OtherConst>& x) const {
       return x.inner_ == inner_;
     }
 
