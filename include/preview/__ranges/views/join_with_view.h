@@ -484,7 +484,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
         : end_(std::move(i.end_)) {}
 
     friend constexpr bool operator==(const iterator<Const>& x, const sentinel& y) {
-      return y.equal(x);
+      return y.equal_with(x);
     }
 
     friend constexpr bool operator!=(const iterator<Const>& x, const sentinel& y) {
@@ -492,7 +492,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
     }
 
     friend constexpr bool operator==(const sentinel& y, const iterator<Const>& x) {
-      return y.equal(x);
+      return y.equal_with(x);
     }
 
     friend constexpr bool operator!=(const sentinel& y, const iterator<Const>& x) {
@@ -503,7 +503,7 @@ class join_with_view : public detail::join_with_view_base<V, Pattern, join_with_
     constexpr explicit sentinel(Parent& parent)
         : end_(ranges::end(parent.base_)) {}
 
-    constexpr bool equal(const iterator<Const>& x) const {
+    constexpr bool equal_with(const iterator<Const>& x) const {
       using namespace preview::rel_ops;
       return x.get_outer() == end_;
     }

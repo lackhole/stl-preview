@@ -153,7 +153,7 @@ class split_view : public view_interface<split_view<V, Pattern>> {
         : end_(ranges::end(parent.base_)) {}
 
     friend constexpr bool operator==(const iterator& x, const sentinel& y) {
-      return y.compare_with_iterator(x);
+      return y.equal_with(x);
     }
 
     friend constexpr bool operator!=(const iterator& x, const sentinel& y) {
@@ -169,7 +169,7 @@ class split_view : public view_interface<split_view<V, Pattern>> {
     }
 
    private:
-    constexpr bool compare_with_iterator(const iterator& x) const {
+    constexpr bool equal_with(const iterator& x) const {
       using namespace preview::rel_ops;
       return x.cur_ == end_ && !x.trailing_empty_;
     }

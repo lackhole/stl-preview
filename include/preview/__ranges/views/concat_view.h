@@ -239,6 +239,10 @@ struct concat_view : view_interface<concat_view<Rngs...>> {
                               preview::detail::variant_raw_get(to.its_._base().storage(), in_place_index<N>));
     }
 
+    constexpr bool equal_with(const sentinel<IsConst>& pos) const {
+      return its_.index() == cranges - 1 && std::get<cranges - 1>(its_) == pos.end_;
+    }
+
    public:
     iterator() = default;
 
@@ -281,7 +285,7 @@ struct concat_view : view_interface<concat_view<Rngs...>> {
     }
 
     friend constexpr bool operator==(const iterator& x, const sentinel<IsConst>& y) {
-      return x.equal(y);
+      return x.equal_with(y);
     }
 
     friend constexpr bool operator!=(const iterator& x, const sentinel<IsConst>& y) {
@@ -294,10 +298,6 @@ struct concat_view : view_interface<concat_view<Rngs...>> {
 
     friend constexpr bool operator!=(const sentinel<IsConst>& y, const iterator& x) {
       return !(x == y);
-    }
-
-    constexpr bool equal(const sentinel<IsConst>& pos) const {
-      return its_.index() == cranges - 1 && std::get<cranges - 1>(its_) == pos.end_;
     }
 
     constexpr iterator& operator++() {
