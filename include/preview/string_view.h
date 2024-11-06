@@ -685,18 +685,15 @@ struct string_view_concatenator {
     using pointer = const CharT*;
     using reference = const value_type&;
 
-    string_view_concatenator* base{};
-    pointer ptr{};
-
     constexpr iterator() = default;
 
     constexpr iterator(string_view_concatenator* base, pointer ptr)
-        : base(base)
-        , ptr(ptr) {}
+        : base_(base)
+        , ptr_(ptr) {}
 
     constexpr iterator& operator++() {
-      if (++ptr == base->lhs_end) {
-        ptr = base->rhs_begin;
+      if (++ptr_ == base_->lhs_end) {
+        ptr_ = base_->rhs_begin;
       }
       return *this;
     }
@@ -706,17 +703,17 @@ struct string_view_concatenator {
       return temp;
     }
     constexpr iterator& operator+=(difference_type n) {
-      if (ptr < base->lhs_end && base->lhs_begin <= ptr) {
-        auto new_pos = ptr + n;
-        if (new_pos < base->lhs_end) {
-          ptr = new_pos;
+      if (ptr_ < base_->lhs_end && base_->lhs_begin <= ptr_) {
+        auto new_pos = ptr_ + n;
+        if (new_pos < base_->lhs_end) {
+          ptr_ = new_pos;
         } else {
-          ptr = base->rhs_begin + (new_pos - base->lhs_end);
+          ptr_ = base_->rhs_begin + (new_pos - base_->lhs_end);
         }
       } else {
         // ptr exceeds the range
-        assert(ptr + n < base->rhs_end);
-        ptr += n;
+        assert(ptr_ + n < base_->rhs_end);
+        ptr_ += n;
       }
       return *this;
     }
@@ -730,10 +727,10 @@ struct string_view_concatenator {
     }
 
     constexpr iterator& operator--() {
-      if (ptr == base->rhs_begin) {
-        ptr = base->lhs_end - 1;
+      if (ptr_ == base_->rhs_begin) {
+        ptr_ = base_->lhs_end - 1;
       } else {
-        --ptr;
+        --ptr_;
       }
       return *this;
     }
@@ -745,14 +742,14 @@ struct string_view_concatenator {
     }
 
     constexpr iterator& operator-=(difference_type n) {
-      auto new_pos = ptr - n;
-      if (base->lhs_begin <= new_pos && new_pos < base->lhs_end) {
-        ptr = new_pos;
+      auto new_pos = ptr_ - n;
+      if (base_->lhs_begin <= new_pos && new_pos < base_->lhs_end) {
+        ptr_ = new_pos;
       } else {
-        ptr = base->rhs_begin + (new_pos - base->lhs_end);
+        ptr_ = base_->rhs_begin + (new_pos - base_->lhs_end);
 
-        // ptr exceeds the range
-        assert(base->rhs_begin <= ptr && ptr < base->rhs_end);
+        // ptr_ exceeds the range
+        assert(base_->rhs_begin <= ptr_ && ptr_ < base_->rhs_end);
       }
       return *this;
     }
@@ -766,14 +763,14 @@ struct string_view_concatenator {
     }
 
     friend constexpr difference_type operator-(const iterator& x, const iterator& y) {
-      assert(x.base == y.base);
+      assert(x.base_ == y.base_);
 
       if (x.is_left()) {
-        if (y.is_left()) return x.ptr - y.ptr; // both in lhs
-        else return (x.ptr - x.base->lhs_end) + (x.base->rhs_begin - y.ptr); // lhs - rhs
+        if (y.is_left()) return x.ptr_ - y.ptr_; // both in lhs
+        else return (x.ptr_ - x.base_->lhs_end) + (x.base_->rhs_begin - y.ptr_); // lhs - rhs
       } else {
-        if (y.is_left()) return (x.ptr - x.base->rhs_begin) + (x.base->lhs_end - y.ptr); // rhs - lhs
-        else return x.ptr - y.ptr; // both in rhs
+        if (y.is_left()) return (x.ptr_ - x.base_->rhs_begin) + (x.base_->lhs_end - y.ptr_); // rhs - lhs
+        else return x.ptr_ - y.ptr_; // both in rhs
       }
     }
 
@@ -781,26 +778,26 @@ struct string_view_concatenator {
       return *(*this + n);
     }
     constexpr reference operator*() const {
-      return *ptr;
+      return *ptr_;
     }
     constexpr pointer operator->() const {
-      return ptr;
+      return ptr_;
     }
 
     friend constexpr bool operator==(const iterator& lhs, const iterator& rhs) {
-      return lhs.ptr == rhs.ptr;
+      return lhs.ptr_ == rhs.ptr_;
     }
     friend constexpr bool operator!=(const iterator& lhs, const iterator& rhs) {
-      return lhs.ptr != rhs.ptr;
+      return lhs.ptr_ != rhs.ptr_;
     }
 
     friend constexpr bool operator<(const iterator& x, const iterator& y) {
       if (x.is_left()) {
-        if (y.is_left()) return x.ptr < y.ptr;
+        if (y.is_left()) return x.ptr_ < y.ptr_;
         else return true;
       } else {
         if (y.is_left()) return false;
-        else return x.ptr < y.ptr;
+        else return x.ptr_ < y.ptr_;
       }
     }
     friend constexpr bool operator<=(const iterator& x, const iterator& y) {
@@ -814,8 +811,12 @@ struct string_view_concatenator {
     }
 
     constexpr bool is_left() const noexcept {
-      return base->lhs_begin <= ptr && ptr < base->lhs_end;
+      return base_->lhs_begin <= ptr_ && ptr_ < base_->lhs_end;
     }
+
+   private:
+    string_view_concatenator* base_{};
+    pointer ptr_{};
   };
 
   iterator begin() { return {this, lhs_begin}; }
