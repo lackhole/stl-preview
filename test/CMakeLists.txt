@@ -153,7 +153,6 @@ function(preview_add_multi_version_test name_prefix test_src)
             target_compile_options(${target_name}
                 PUBLIC "-fexceptions"
             )
-            gtest_discover_tests(${target_name} DISCOVERY_TIMEOUT 60)
         elseif (MSVC)
             target_compile_options(${target_name}
                 PRIVATE "/bigobj"

@@ -20,5 +20,6 @@
 #include "preview/__utility/to_underlying.h"
 #include "preview/__utility/to_unsigned_like.h"
 #include "preview/__utility/type_sequence.h"
+#include "preview/__utility/unreachable.h"
 
 #endif // PREVIEW_UTILITY_H_
