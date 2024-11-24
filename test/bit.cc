@@ -60,3 +60,26 @@ TEST(VERSIONED(bit), byteswap_signed) {
   constexpr std::int64_t qword_same{ 0x44'44'44'44'44'44'44'44 };
   EXPECT_EQ(preview::byteswap<std::int64_t>(qword_same), qword_same);
 }
+
+#if PREVIEW_CXX >= 17
+  #define IF_CONSTEXPR if constexpr
+#else
+  #define IF_CONSTEXPR if
+#endif
+
+TEST(VERSIONED(bit), little_endian) {
+  const std::uint32_t n{ 0x01'23'45'67 };
+  const std::uint8_t* const ptr{ reinterpret_cast<const std::uint8_t*>(&n) };
+
+  IF_CONSTEXPR (preview::endian::native == preview::endian::little) {
+    EXPECT_EQ(ptr[0], 0x67);
+    EXPECT_EQ(ptr[1], 0x45);
+    EXPECT_EQ(ptr[2], 0x23);
+    EXPECT_EQ(ptr[3], 0x01);
+  } else IF_CONSTEXPR (preview::endian::native == preview::endian::big) {
+    EXPECT_EQ(ptr[0], 0x01);
+    EXPECT_EQ(ptr[1], 0x23);
+    EXPECT_EQ(ptr[2], 0x45);
+    EXPECT_EQ(ptr[3], 0x67);
+  }
+}
