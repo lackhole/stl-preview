@@ -8,9 +8,11 @@
 #include <map>
 #include <numeric>
 #include <string>
+#include <random>
 #include <unordered_map>
 #include <vector>
 
+#include "preview/array.h"
 #include "preview/core.h"
 #include "preview/functional.h"
 #include "preview/ranges.h"
@@ -558,4 +560,85 @@ TEST(VERSIONED(AlgorithmRanges), search_n) {
   std::vector<std::complex<double>> nums2{{4, 2}, {4, 2}, {1, 3}};
   auto it = ranges::search_n(nums2, 2, {4, 2});
   EXPECT_EQ(it.size(), 2);
+}
+
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+TEST(VERSIONED(AlgorithmRanges), minmax_element) {
+  {
+    // leftmost minimum   v
+    const auto v  = {3, 9, 1, 4, 1, 2, 5, 9};
+    // rightmost maximum               ^
+
+#if PREVIEW_CXX_VERSION >= 17
+    const auto [min, max] = ranges::minmax_element(v);
+#else
+    const auto p = ranges::minmax_element(v);
+    const auto min = p.min;
+    const auto max = p.max;
+#endif
+    EXPECT_EQ(min, v.begin() + 2);
+    EXPECT_EQ(max, v.begin() + 7);
+  }
+  {
+    static constexpr int v[] = {3, 9, 1, 4, 1, 2, 5, 9};
+    constexpr auto minmax = ranges::minmax_element(v);
+    static_assert(minmax.min == preview::ranges::begin(v) + 2, "");
+    static_assert(minmax.max == preview::ranges::begin(v) + 7, "");
+  }
+  {
+    const int v[]  = {3, 9, 1, 4, 1, 2, 5, 9};
+    const auto r = v | views::take(5);
+#if PREVIEW_CXX_VERSION >= 17
+    const auto [min, max] = ranges::minmax_element(r);
+#else
+    const auto p = ranges::minmax_element(r);
+    const auto min = p.min;
+    const auto max = p.max;
+#endif
+    EXPECT_EQ(min, r.begin() + 2);
+    EXPECT_EQ(max, r.begin() + 1);
+  }
+}
+
+TEST(VERSIONED(AlgorithmRanges), minmax) {
+  {
+    constexpr auto v = preview::to_array({3, 1, 4, 1, 5, 9, 2, 6, 5});
+#if PREVIEW_CXX_VERSION >= 17
+    auto [min, max] = ranges::minmax(v);
+#else
+    auto p = ranges::minmax(v);
+    auto min = p.min;
+    auto max = p.max;
+#endif
+    EXPECT_EQ(min, 1);
+    EXPECT_EQ(max, 9);
+  }
+
+  {
+    std::random_device rd;
+    std::mt19937_64 generator(rd());
+    std::uniform_int_distribution<> distribution(0, 9);
+
+    for (int i = 0; i < 100; ++i) {
+      const int x1 = distribution(generator);
+      const int x2 = distribution(generator);
+#if PREVIEW_CXX_VERSION >= 17
+      auto [min, max] = ranges::minmax(x1, x2);
+#else
+      auto p = ranges::minmax(x1, x2);
+      auto min = p.min;
+      auto max = p.max;
+#endif
+      ASSERT_EQ(min, (std::min)(x1, x2));
+      ASSERT_EQ(max, (std::max)(x1, x2));
+    }
+  }
 }
