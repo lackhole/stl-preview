@@ -39,6 +39,18 @@ struct minmax_element_niebloid {
   template<typename I, typename Proj, typename Comp>
   struct check_range<I, Proj, Comp, true> : indirect_strict_weak_order<Comp, projected<I, Proj>> {};
 
+  // lambda is not constexpr until C++17
+  template<typename Proj, typename Comp>
+  struct minmax_element_less {
+    Proj& proj;
+    Comp& comp;
+
+    template<typename I>
+    constexpr auto operator()(const I& x, const I& y) const {
+      return preview::invoke(comp, preview::invoke(proj, *x), preview::invoke(proj, *y));
+    }
+  };
+
  public:
   template<typename I, typename S, typename Proj = identity, typename Comp = ranges::less, std::enable_if_t<conjunction<
       forward_iterator<I>,
@@ -54,9 +66,7 @@ struct minmax_element_niebloid {
       return {min_, max_};
     }
 
-    auto less = [&comp, &proj](auto& x, auto& y) {
-      return preview::invoke(comp, preview::invoke(proj, *x), preview::invoke(proj, *y));
-    };
+    minmax_element_less<Proj, Comp> less{proj, comp};
 
     if (less(first, min_))
       min_ = first;

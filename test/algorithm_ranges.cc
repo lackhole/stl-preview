@@ -577,7 +577,13 @@ TEST(VERSIONED(AlgorithmRanges), minmax_element) {
     const auto v  = {3, 9, 1, 4, 1, 2, 5, 9};
     // rightmost maximum               ^
 
+#if PREVIEW_CXX_VERSION >= 17
     const auto [min, max] = ranges::minmax_element(v);
+#else
+    const auto p = ranges::minmax_element(v);
+    const auto min = p.min;
+    const auto max = p.max;
+#endif
     EXPECT_EQ(min, v.begin() + 2);
     EXPECT_EQ(max, v.begin() + 7);
   }
@@ -590,7 +596,13 @@ TEST(VERSIONED(AlgorithmRanges), minmax_element) {
   {
     const int v[]  = {3, 9, 1, 4, 1, 2, 5, 9};
     const auto r = v | views::take(5);
+#if PREVIEW_CXX_VERSION >= 17
     const auto [min, max] = ranges::minmax_element(r);
+#else
+    const auto p = ranges::minmax_element(r);
+    const auto min = p.min;
+    const auto max = p.max;
+#endif
     EXPECT_EQ(min, r.begin() + 2);
     EXPECT_EQ(max, r.begin() + 1);
   }
@@ -599,7 +611,13 @@ TEST(VERSIONED(AlgorithmRanges), minmax_element) {
 TEST(VERSIONED(AlgorithmRanges), minmax) {
   {
     constexpr auto v = preview::to_array({3, 1, 4, 1, 5, 9, 2, 6, 5});
+#if PREVIEW_CXX_VERSION >= 17
     auto [min, max] = ranges::minmax(v);
+#else
+    auto p = ranges::minmax(v);
+    auto min = p.min;
+    auto max = p.max;
+#endif
     EXPECT_EQ(min, 1);
     EXPECT_EQ(max, 9);
   }
@@ -612,7 +630,13 @@ TEST(VERSIONED(AlgorithmRanges), minmax) {
     for (int i = 0; i < 100; ++i) {
       const int x1 = distribution(generator);
       const int x2 = distribution(generator);
+#if PREVIEW_CXX_VERSION >= 17
       auto [min, max] = ranges::minmax(x1, x2);
+#else
+      auto p = ranges::minmax(x1, x2);
+      auto min = p.min;
+      auto max = p.max;
+#endif
       ASSERT_EQ(min, (std::min)(x1, x2));
       ASSERT_EQ(max, (std::max)(x1, x2));
     }
