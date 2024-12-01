@@ -46,6 +46,8 @@
 #include "preview/__algorithm/ranges/max_element.h"
 #include "preview/__algorithm/ranges/min.h"
 #include "preview/__algorithm/ranges/min_element.h"
+#include "preview/__algorithm/ranges/minmax.h"
+#include "preview/__algorithm/ranges/minmax_element.h"
 #include "preview/__algorithm/ranges/min_max_result.h"
 #include "preview/__algorithm/ranges/mismatch.h"
 #include "preview/__algorithm/ranges/none_of.h"

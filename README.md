@@ -108,9 +108,9 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/312/694-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/231/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
+|                                     | ![](https://img.shields.io/badge/314/694-grey)![][p045] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/233/429-grey)![][p054] | ![](https://img.shields.io/badge/59/144-grey)![][p041] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/53/115-grey)![][p046]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/45/96-grey)![][p047]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
+| [algorithm](#algorithm)             | ![](https://img.shields.io/badge/55/115-grey)![][p048]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/47/96-grey)![][p049]   | ![](https://img.shields.io/badge/8/18-grey)![][p044]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/2/14-grey)![][p014]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
@@ -294,8 +294,8 @@ Description
   | `ranges::max_element`               | ![][c20ok] |            |
   | `ranges::min`                       | ![][c20ok] |            |
   | `ranges::min_element`               | ![][c20ok] |            |
-  | `ranges::minmax`                    | ![][c20no] |            |
-  | `ranges::minmax_element`            | ![][c20no] |            |
+  | `ranges::minmax`                    | ![][c20ok] |            |
+  | `ranges::minmax_element`            | ![][c20ok] |            |
   | `ranges::clamp`                     | ![][c20no] |            |
   | `ranges::equal`                     | ![][c20ok] |            |
   | `ranges::lexicographical_compare`   | ![][c20ok] |            |
