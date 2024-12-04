@@ -1,11 +1,11 @@
 set(AllTypes1Byte_Source
 "int main() {
-    static_asset(sizeof(char) == 1) &&
-    static_asset(sizeof(short) == 1) &&
-    static_asset(sizeof(int) == 1) &&
-    static_asset(sizeof(long) == 1) &&
-    static_asset(sizeof(long long) == 1) &&
-    static_asset(sizeof(bool) == 1);
+    static_asset(sizeof(char) == 1, \"\") &&
+    static_asset(sizeof(short) == 1, \"\") &&
+    static_asset(sizeof(int) == 1, \"\") &&
+    static_asset(sizeof(long) == 1, \"\") &&
+    static_asset(sizeof(long long) == 1, \"\") &&
+    static_asset(sizeof(bool) == 1, \"\");
 }")
 
 check_cxx_source_compiles(AllTypes1Byte_Source PREVIEW_ARE_ALL_TYPES_1_BYTE)
