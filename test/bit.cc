@@ -67,7 +67,7 @@ TEST(VERSIONED(bit), byteswap_signed) {
   #define IF_CONSTEXPR if
 #endif
 
-TEST(VERSIONED(bit), little_endian) {
+TEST(VERSIONED(bit), endianness) {
   const std::uint32_t n{ 0x01'23'45'67 };
   const std::uint8_t* const ptr{ reinterpret_cast<const std::uint8_t*>(&n) };
 

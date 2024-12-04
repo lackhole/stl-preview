@@ -21,14 +21,13 @@ file(WRITE ${CMAKE_BINARY_DIR}/CheckEndian.cpp
 int main(int argc, char* argv[]) {
     const std::uint32_t val{ 0x01'23'45'67 };
     const std::uint8_t* ptr{ reinterpret_cast<const std::uint8_t*>(&val) };
-    std::ofstream out{ argv[1] };
 
     if (ptr[0] == 0x01 && ptr[1] == 0x23 && ptr[2] == 0x45 && ptr[3] == 0x67) {
-        out << ${PREVIEW_BIG_ENDIAN} << std::endl;
+        return ${PREVIEW_BIG_ENDIAN};
     } else if (ptr[0] == 0x67 && ptr[1] == 0x45 && ptr[2] == 0x23 && ptr[3] == 0x01) {
-        out << ${PREVIEW_LITTLE_ENDIAN} << std::endl;
+        return ${PREVIEW_LITTLE_ENDIAN};
     } else {
-        out << ${PREVIEW_OTHER_ENDIAN} << std::endl;
+        return ${PREVIEW_OTHER_ENDIAN};
     }
 }")
 
@@ -43,12 +42,10 @@ else()
 endif()
 
 try_run(
-    runres compileres ${CMAKE_BINARY_DIR}
+    PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
     SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
     ARGS ${CMAKE_BINARY_DIR}/endian.txt
 )
-
-file(READ ${CMAKE_BINARY_DIR}/endian.txt PREVIEW_ENDIAN)
 
 if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
     message(STATUS "Big endian")
