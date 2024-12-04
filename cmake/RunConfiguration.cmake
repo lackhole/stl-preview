@@ -2,6 +2,7 @@ include(CheckCXXSourceCompiles)
 include(CheckCXXCompilerFlag)
 include(CheckCXXSymbolExists)
 
+include(config/CheckEndianness)
 include(config/HaveBuiltinBitCast)
 include(config/HaveBuiltinConstexprAddressof)
 include(config/HaveContiguousIteratorTag)

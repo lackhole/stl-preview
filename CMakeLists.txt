@@ -8,7 +8,7 @@ set(PREVIEW_DEFAULT_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}/${PREVIEW
 
 project(preview CXX)
 
-option(PREVIEW_TEST "Build test" OFF)
+option(PREVIEW_TEST "Build test" ON)
 
 add_library(preview INTERFACE)
 target_include_directories(preview INTERFACE "${PREVIEW_INCLUDE_DIR}")

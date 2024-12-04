@@ -7,5 +7,6 @@
 
 #include "preview/__bit/bit_cast.h"
 #include "preview/__bit/byteswap.h"
+#include "preview/__bit/endian.h"
 
 #endif // PREVIEW_BIT_H_
