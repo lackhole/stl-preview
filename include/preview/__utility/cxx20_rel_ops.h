@@ -17,6 +17,7 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma clang diagnostic ignored "-Wfloat-equal"
 #endif
 
 // automatically generates comparison operators based on user-defined `operator==` and `operator<` in C++20 way
