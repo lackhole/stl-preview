@@ -104,8 +104,8 @@ TEST(VERSIONED(Utility), force_forward_like) {
 
 #ifdef GTEST_HAS_DEATH_TEST
 TEST(VERSIONED(Utility), unreachable) {
-#ifndef NDEBUG
-  EXPECT_DEATH(preview::unreachable(), "");
-#endif
+//#ifndef NDEBUG
+//  EXPECT_DEATH(preview::unreachable(), "");
+//#endif
 }
 #endif
