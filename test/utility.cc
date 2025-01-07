@@ -101,3 +101,11 @@ TEST(VERSIONED(Utility), force_forward_like) {
   EXPECT_EQ(preview::force_forward_like<decltype((my_state))>(cref_my_state.from_opt())(), kTypeLvalueReference);
   EXPECT_EQ(preview::force_forward_like<decltype((my_state))>(cref_my_state[0])(),         kTypeLvalueReference);
 }
+
+#ifdef GTEST_HAS_DEATH_TEST
+TEST(VERSIONED(Utility), unreachable) {
+//#ifndef NDEBUG
+//  EXPECT_DEATH(preview::unreachable(), "");
+//#endif
+}
+#endif
