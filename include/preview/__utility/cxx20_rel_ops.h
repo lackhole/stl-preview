@@ -50,14 +50,14 @@ struct less_than_comparable_precxx20<
 
 } // namespace detail_adl_check
 
-#if __cplusplus < 202002L
+#if PREVIEW_CXX_VERSION < 20
 
 // synthesized from `U == T`
-template<typename T, typename U, std::enable_if_t<conjunction<
-    negation<std::is_same<T, U>>,
-    negation<detail_adl_check::equality_comparable_precxx20<const T&, const U&>>,
-    detail_adl_check::equality_comparable_precxx20<const U&, const T&>
->::value, int> = 0>
+template<typename T, typename U, std::enable_if_t<
+    !std::is_same<T, U>::value &&
+    !detail_adl_check::equality_comparable_precxx20<const T&, const U&>::value &&
+    detail_adl_check::equality_comparable_precxx20<const U&, const T&>::value
+, int> = 0>
 constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
   return b == a;
 }
