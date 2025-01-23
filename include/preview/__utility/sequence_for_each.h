@@ -31,7 +31,7 @@ struct sequence_for_each_invocable<std::integer_sequence<T, v...>, F, Args...>
 
 
 // performs f(std::integral_constant<T, i>{}, args...) for i in v...
-template<typename T, T... v, typename F, typename... Args, std::enable_if_t<(sizeof...(v) > 1), int> = 0>
+template<typename T, T... v, typename F, typename... Args>
 constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::integer_sequence<T, v...>, F>::value>
 sequence_for_each(std::integer_sequence<T, v...>, F&& f, Args&&... args)
     noexcept(conjunction<
