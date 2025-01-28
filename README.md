@@ -88,6 +88,11 @@ int main() {
 | MinGW       | 13.1.0                             | 14.2.0                             |
 | Intel C++   | ?                                  | icx 2024.2                         |
 
+## Media
+CppCon2024 
+* [C++17/20/23/26 for old C++ Developers - STL Preview](media/cppcon_poster.pdf)
+* Best Poster Award
+
 ## Build & Install
 ### CMake
 Copy this repository under your project and use `add_subdirectory`
