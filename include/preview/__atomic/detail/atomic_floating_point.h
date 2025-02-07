@@ -5,17 +5,17 @@
 #ifndef PREVIEW_ATOMIC_DETAIL_ATOMIC_FLOATING_POINT_H_
 #define PREVIEW_ATOMIC_DETAIL_ATOMIC_FLOATING_POINT_H_
 
-#include "preview/__atomic/detail/atomic_base.h"
+#include "preview/__atomic/detail/cxx20_atomic_base.h"
 
 namespace preview {
 namespace detail {
 
 template<typename T>
-struct atomic_floating_point : atomic_base<T> {
+struct atomic_floating_point : public cxx20_atomic_base<T> {
   using value_type      = T;
   using difference_type = value_type;
 
-  using atomic_base<T>::atomic_base;
+  using cxx20_atomic_base<T>::cxx20_atomic_base;
 };
 
 } // namespace detail

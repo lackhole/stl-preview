@@ -182,6 +182,12 @@ function(preview_add_multi_version_test name_prefix test_src)
         endif ()
         list(APPEND cmake_args "-DCMAKE_CXX_STANDARD=${std}")
         list(APPEND cmake_args "-DPREVIEW_TEST=0")
+        if (NOT "${CMAKE_CXX_COMPILER}" STREQUAL "${CMAKE_CXX_HOST_COMPILER}")
+            list(APPEND cmake_args "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}")
+        endif ()
+        if (NOT "${CMAKE_C_COMPILER}" STREQUAL "${CMAKE_C_HOST_COMPILER}")
+            list(APPEND cmake_args "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}")
+        endif ()
 
         # configure-only (to generate test-specific config.h)
         ExternalProject_Add(preview-configure-${target_name}

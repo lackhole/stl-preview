@@ -5,9 +5,7 @@
 #ifndef PREVIEW_ATOMIC_ATOMIC_H_
 #define PREVIEW_ATOMIC_ATOMIC_H_
 
-#include <atomic>
 #include <type_traits>
-
 
 #include "preview/__atomic/detail/atomic_floating_point.h"
 #include "preview/__atomic/detail/atomic_generic.h"
@@ -39,6 +37,19 @@ class atomic : public detail::atomic_base_t<T> {
   using base = detail::atomic_base_t<T>;
 public:
   using base::base;
+
+  inline T operator=(T desired) noexcept {
+    this->store(desired);
+    return desired;
+  }
+
+  inline T operator=(T desired) volatile noexcept {
+    this->store(desired);
+    return desired;
+  }
+
+  atomic<T>& operator=(const atomic<T>& other) = delete;
+  atomic<T>& operator=(const atomic<T>& other) volatile = delete;
 };
 
 } // namespace preview
