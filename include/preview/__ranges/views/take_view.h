@@ -34,6 +34,11 @@
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
+
 namespace preview {
 namespace ranges {
 
@@ -296,5 +301,9 @@ take_view(R&&, ranges::range_difference_t<R>) -> take_view<views::all_t<R>>;
 template<typename T>
 PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::take_view<T>)
     = preview::ranges::enable_borrowed_range<T>;
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_RANGES_VIEWS_TAKE_VIEW_H_
