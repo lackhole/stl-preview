@@ -24,6 +24,11 @@
 #include "preview/__type_traits/detail/tag.h"
 #include "preview/__type_traits/remove_cvref.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
+
 namespace preview {
 namespace ranges {
 namespace views {
@@ -88,5 +93,9 @@ PREVIEW_INLINE_VARIABLE constexpr detail::counted_niebloid counted{};
 } // namespace views
 } // namespace ranges
 } // namespace preview
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_RANGES_VIEWS_COUNTED_H_

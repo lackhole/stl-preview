@@ -27,6 +27,11 @@
 #include "preview/__ranges/views/all.h"
 #include "preview/__type_traits/conjunction.h"
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
+
 namespace preview {
 namespace ranges {
 namespace detail {
@@ -161,5 +166,9 @@ drop_view(R&&, range_difference_t<R>) -> drop_view<views::all_t<R>>;
 template<typename T>
 PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::drop_view<T>)
     = preview::ranges::enable_borrowed_range<T>;
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_RANGES_VIEWS_DROP_VIEW_H_
