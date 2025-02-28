@@ -16,9 +16,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [windows-latest, windows-2019]
         build_type: [Debug, Release]
-        compiler_version: [14.1, 14.2, 14.3] # VS 2017, 2019, 2022
         arch: [x64, x86]
     env:
       VC_VARS: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
@@ -31,7 +30,7 @@ jobs:
 
     - name: Configure CMake
       run: |
-        call "${{ env.VC_VARS }}" ${{ matrix.arch }} -vcvars_ver=${{ matrix.compiler_version }}
+        call "${{ env.VC_VARS }}" ${{ matrix.arch }}
         cmake -B build ^
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
           -DPREVIEW_TEST=ON
