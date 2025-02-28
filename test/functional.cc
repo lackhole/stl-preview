@@ -6,7 +6,7 @@
 
 #include "preview/string_view.h"
 
-#include "gtest.h"
+#include "test_utils.h"
 
 int minus(int a, int b) {
   return a - b;

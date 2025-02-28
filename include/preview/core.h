@@ -9,6 +9,6 @@
 #include "preview/__core/no_unique_address.h"
 #include "preview/__core/nodiscard.h"
 #include "preview/__core/noreturn.h"
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 
 #endif // PREVIEW_CORE_H_

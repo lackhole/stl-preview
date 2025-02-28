@@ -1,5 +1,5 @@
 #include "preview/utility.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <memory>
 #include <vector>

@@ -1,5 +1,5 @@
 #include "preview/numeric.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <list>
 #include <random>

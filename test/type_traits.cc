@@ -1,5 +1,5 @@
 #include "preview/type_traits.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 struct common_a {};
 struct common_b {};
