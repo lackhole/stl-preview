@@ -77,6 +77,8 @@ int main() {
 ## Compiler Support
 [![Build Status](https://github.com/lackhole/stl-preview/actions/workflows/cmake-multi-platform.yml/badge.svg)](https://github.com/lackhole/stl-preview/actions/workflows/cmake-multi-platform.yml)
 
+Note: Requires C++14 or later
+
 | Compiler    | Minimum version tested             | Maximum version tested             |
 |-------------|------------------------------------|------------------------------------|
 | MSVC        | 19.16.27051.0 (Visual Studio 2017) | 19.40.33811.0 (Visual Studio 2022) |

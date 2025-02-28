@@ -18,7 +18,7 @@
 #include "preview/ranges.h"
 #include "preview/utility.h"
 
-#include "gtest.h"
+#include "test_utils.h"
 
 
 #if PREVIEW_CXX_VERSION >= 20 && \

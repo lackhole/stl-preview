@@ -1,5 +1,5 @@
-#ifndef PREVIEW_CORE_STD_VERSION_H_
-#define PREVIEW_CORE_STD_VERSION_H_
+#ifndef PREVIEW_CORE_CXX_VERSION_H_
+#define PREVIEW_CORE_CXX_VERSION_H_
 
 #ifndef __cplusplus
 #error "__cplusplus is not defined"
@@ -19,4 +19,4 @@
 #  endif
 #endif
 
-#endif // PREVIEW_CORE_STD_VERSION_H_
+#endif // PREVIEW_CORE_CXX_VERSION_H_

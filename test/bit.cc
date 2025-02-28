@@ -1,5 +1,5 @@
 #include "preview/bit.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <cstdint>
 

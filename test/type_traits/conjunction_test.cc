@@ -6,7 +6,7 @@
 
 #include <type_traits>
 
-#include "../gtest.h"
+#include "../test_utils.h"
 
 template<typename T>
 struct NumberOnly {

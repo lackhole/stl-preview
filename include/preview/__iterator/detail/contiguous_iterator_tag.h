@@ -8,14 +8,13 @@
 #include <iterator>
 #include <type_traits>
 
-#include "preview/__core/inline_variable.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/void_t.h"
 
 namespace preview {
 namespace detail {
 
-struct pseudo_contiguous_iterator_tag : public std::random_access_iterator_tag {};
+struct pseudo_contiguous_iterator_tag : std::random_access_iterator_tag {};
 
 template<typename T, typename = void>
 struct has_typename_iterator_concept : std::false_type {};
@@ -36,11 +35,7 @@ struct contiguous_iterator_tag_helper<IteratorTraits, true> {
 
 } // namespace detail
 
-#if PREVIEW_HAVE_CONTIGUOUS_ITERATOR_TAG
-using contiguous_iterator_tag = std::contiguous_iterator_tag;
-#else
 using contiguous_iterator_tag = detail::contiguous_iterator_tag_helper<>::type;
-#endif
 
 // Evaluates to `true` if `std::contiguous_iterator_tag` exists, `false` otherwise
 struct have_std_contiguous_iterator_tag

@@ -9,7 +9,7 @@
 
 #include <type_traits>
 
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 
 #define VERSION_CAT2(x, y) x ## _CXXSTD_ ## y
 #define VERSION_CAT(x, y) VERSION_CAT2(x, y)

@@ -3,7 +3,7 @@
 //
 
 #include "preview/optional.h"
-#include "../gtest.h"
+#include "../test_utils.h"
 
 #if PREVIEW_CXX_VERSION >= 17 && !PREVIEW_ANDROID
 #include <charconv>

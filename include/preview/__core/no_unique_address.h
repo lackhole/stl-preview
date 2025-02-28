@@ -5,7 +5,7 @@
 #ifndef PREVIEW_CORE_NO_UNIQUE_ADDRESS_H_
 #define PREVIEW_CORE_NO_UNIQUE_ADDRESS_H_
 
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 
 // TODO: Check using CheckCxxSourceCompiles
 #if PREVIEW_CXX_VERSION < 20 || defined(__INTEL_COMPILER) || defined(__INTEL_LLVM_COMPILER)
