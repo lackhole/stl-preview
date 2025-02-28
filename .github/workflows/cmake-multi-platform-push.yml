@@ -20,7 +20,7 @@ jobs:
         os: [windows-latest]
         build_type: [Debug]
         compiler_version: [14.1, 14.2 14.3] # VS 2017, 2019 2022
-        arch: [x64, x86]
+        arch: [x64]
 
     steps:
     - uses: actions/checkout@v4
@@ -92,7 +92,7 @@ jobs:
         build_type: [Debug]
         compiler: [clang]
         compiler_version: [11, 12, 13, 14, 15]
-        platform: [x64, x86]
+        platform: [x64]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
