@@ -1,34 +1,26 @@
-name: CMake on multiple platforms
+name: CMake on multiple platforms(Push)
 
 on:
-  push:
-    branches:
-      - '**'
   pull_request:
     branches:
       - '**'
-  workflow_dispatch:
 
 jobs:
   windows:
     runs-on: ${{ matrix.os }}
-
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}
-#      cancel-in-progress: true
-
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest]
-        build_type: [Debug, Release]
-        compiler_version: [14.1, 14.2, 14.3] # VS 2017, 2019, 2022
-        arch: [x64, x86]
     env:
       VC_VARS: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
     defaults:
       run:
         shell: cmd
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        build_type: [Debug]
+        compiler_version: [14.1, 14.2 14.3] # VS 2017, 2019 2022
+        arch: [x64, x86]
 
     steps:
     - uses: actions/checkout@v4
@@ -52,15 +44,11 @@ jobs:
   ubuntu-gcc:
     runs-on: ${{ matrix.os }}
 
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-#      cancel-in-progress: true
-
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        build_type: [Debug, Release]
+        build_type: [Debug]
         compiler: [gcc]
         compiler_version: [9, 10, 11, 12, 13]
         include:
@@ -97,15 +85,11 @@ jobs:
   ubuntu-clang:
     runs-on: ${{ matrix.os }}
 
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-#      cancel-in-progress: true
-
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-22.04]
-        build_type: [Debug, Release]
+        build_type: [Debug]
         compiler: [clang]
         compiler_version: [11, 12, 13, 14, 15]
         platform: [x64, x86]
@@ -144,15 +128,11 @@ jobs:
   android-ndk:
     runs-on: ${{ matrix.os }}
 
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-#      cancel-in-progress: true
-
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        build_type: [Debug, Release]
+        build_type: [Debug]
         compiler: [ndk]
         compiler_version: [18, 19, 20, 21, 22, 23, 24, 25, 26]
 
@@ -192,17 +172,13 @@ jobs:
   emscripten:
     runs-on: ${{ matrix.os }}
 
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}-${{ matrix.compiler_version }}
-#      cancel-in-progress: true
-
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        build_type: [Debug, Release]
+        build_type: [Debug]
         compiler: [emscripten]
-        compiler_version: [3.1.20, 3.1.40, 3.1.60, latest]
+        compiler_version: [3.1.20, latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -235,15 +211,11 @@ jobs:
   macos-appleclang:
     runs-on: ${{ matrix.os }}
 
-#    concurrency:
-#      group: ${{ github.head_ref || github.ref_name }}-${{ github.workflow }}-${{ matrix.os }}-${{ matrix.build_type }}-${{ matrix.compiler }}
-#      cancel-in-progress: true
-
     strategy:
       fail-fast: false
       matrix:
         os: [macos-13, macos-14, macos-15]
-        build_type: [Debug, Release]
+        build_type: [Debug]
         compiler: [clang]
         include:
           - cc_compiler: clang
