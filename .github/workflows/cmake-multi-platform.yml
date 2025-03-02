@@ -134,6 +134,47 @@ jobs:
       working-directory: build
       run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
+  ubuntu-clang-latest:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+        build_type: [Debug, Release]
+        compiler: [clang]
+#        compiler_version: [16.0.6, 17.0.6, 18.1.8, 19.1.7]
+        compiler_version: [16, 17, 18, 19]
+        platform: [x64, x86]
+        include:
+          - cc_compiler: clang
+          - cxx_compiler: clang++
+
+    steps:
+    - name: Install Clang
+      run: |
+        wget -qO- https://apt.llvm.org/llvm.sh
+        sudo bash -s -- ${{ matrix.compiler_version }}
+
+    - name: Configure CMake
+      env:
+        CC: clang-${{ matrix.compiler_version }}
+        CXX: clang-${{ matrix.compiler_version }}
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
   android-ndk:
     runs-on: ${{ matrix.os }}
 
