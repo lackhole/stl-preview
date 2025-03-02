@@ -17,6 +17,7 @@
 #include "preview/__atomic/detail/atomic_weak_ptr.h"
 #include "preview/__type_traits/conditional.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/is_complete.h"
 #include "preview/__type_traits/negation.h"
 
 #if defined(_MSC_VER)
@@ -40,11 +41,9 @@ template<typename T>
 using atomic_shared_ptr_base_t =
 #if defined(__cpp_lib_atomic_shared_ptr) && __cpp_lib_atomic_shared_ptr >= 201711L
     std::atomic<std::shared_ptr<T>>;
-#elif PREVIEW_CXX_VERSION >= 20
+#elif PREVIEW_CONFORM_CXX20_STANDARD
     conditional_t<
-        is_cxx20_atomic<typename T::element_type>,
-            std::atomic<std::shared_ptr<T>>,
-            atomic_shared_ptr<T>
+        is_complete<std::atomic<std::shared_ptr<T>>>, std::atomic<std::shared_ptr<T>>, atomic_shared_ptr<T>
     >;
 #else
     atomic_shared_ptr<T>;
