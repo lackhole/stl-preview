@@ -113,7 +113,7 @@ macro(PREVIEW_CHECK_CXX_SOURCE_COMPILES_UNTIL_CXX cxx_version source out)
     PREVIEW_CHECK_CXX_SOURCE_COMPILES_SINCE_UNTIL_CXX(14 ${cxx_version} "${source}" ${out} ${ARGN})
 endmacro()
 
-macro(PREVIEW_RUN_CONFIGURATION)
+macro(PREVIEW_RUN_COMPILE_CHECKS)
     message("Configuration flags: ${flags}")
 
     HaveBuiltinBitCast(PREVIEW_HAVE_BUILTIN_BIT_CAST ${flags})

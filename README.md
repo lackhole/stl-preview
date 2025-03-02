@@ -120,6 +120,7 @@ Implementation available in C++14 ~ :
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/56/115-grey)![][p049]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/47/96-grey)![][p049]   | ![](https://img.shields.io/badge/9/18-grey)![][p050]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
+| [atomic](#atomic)                   | ![](https://img.shields.io/badge/10/19-grey)![][p032]   |   |                                                        | ![](https://img.shields.io/badge/6/15-grey)![][p040]    |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/2/14-grey)![][p014]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
@@ -139,7 +140,6 @@ Implementation available in C++14 ~ :
 | [utility](#utility)                 | ![](https://img.shields.io/badge/8/8-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]     | ![](https://img.shields.io/badge/3/3-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [variant](#variant)                 | ![](https://img.shields.io/badge/9/9-grey)![][p100]     |   | ![](https://img.shields.io/badge/9/9-grey)![][p100]    |                                                         |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
-| [atomic](#atomic)                   | ![](https://img.shields.io/badge/0/17-grey)![][p000]    |   |                                                        | ![](https://img.shields.io/badge/0/13-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/4-grey)![][p000]    |
 | [barrier](#barrier)                 | ![](https://img.shields.io/badge/0/1-grey)![][p000]     |   |                                                        | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |                                                        |                                                        |
 | [charconv](#charconv)               | ![](https://img.shields.io/badge/0/5-grey)![][p000]     |   | ![](https://img.shields.io/badge/0/14-grey)![][p000]   |                                                         | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |                                                        |
 | [chrono](#chrono)                   | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |   | ![](https://img.shields.io/badge/0/2-grey)![][p000]    | ![](https://img.shields.io/badge/0/47-grey)![][p000]    |                                                        | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
@@ -334,25 +334,32 @@ Description
 
 #### `<atomic>`
 
-  |                             | Introduced | Revision |
-  |-----------------------------|------------|----------|
-  | `atomic_ref`                | ![][c20no] |          | 
-  | `atomic_signed_lock_free`   | ![][c20no] |          | 
-  | `atomic_unsigned_lock_free` | ![][c20no] |          | 
-  | `atomic_wait`               | ![][c20no] |          | 
-  | `atomic_wait_explicit`      | ![][c20no] |          | 
-  | `atomic_notify_one`         | ![][c20no] |          | 
-  | `atomic_notify_all`         | ![][c20no] |          | 
-  | `atomic_flag_test`          | ![][c20no] |          | 
-  | `atomic_flag_test_explicit` | ![][c20no] |          | 
-  | `atomic_flag_wait`          | ![][c20no] |          | 
-  | `atomic_flag_wait_explicit` | ![][c20no] |          | 
-  | `atomic_flag_notify_one`    | ![][c20no] |          | 
-  | `atomic_flag_notifly_all`   | ![][c20no] |          | 
-  | `atomic_fetch_max`          | ![][c26no] |          | 
-  | `atomic_fetch_max_explicit` | ![][c26no] |          | 
-  | `atomic_fetch_min`          | ![][c26no] |          | 
-  | `atomic_fetch_min_explicit` | ![][c26no] |          | 
+  |                             | Introduced | Revision   |
+  |-----------------------------|------------|------------|
+  | `atomic_fetch_add`          | ![][c11]   | ![][c20ok] | 
+  | `atomic_fetch_sub`          | ![][c11]   | ![][c20ok] | 
+  | `atomic_ref`                | ![][c20no] |            | 
+  | `atomic_signed_lock_free`   | ![][c20no] |            | 
+  | `atomic_unsigned_lock_free` | ![][c20no] |            | 
+  | `atomic_wait`               | ![][c20ok] | *          | 
+  | `atomic_wait_explicit`      | ![][c20ok] | *          | 
+  | `atomic_notify_one`         | ![][c20ok] | *          | 
+  | `atomic_notify_all`         | ![][c20ok] | *          | 
+  | `atomic_flag_test`          | ![][c20no] |            | 
+  | `atomic_flag_test_explicit` | ![][c20no] |            | 
+  | `atomic_flag_wait`          | ![][c20no] |            | 
+  | `atomic_flag_wait_explicit` | ![][c20no] |            | 
+  | `atomic_flag_notify_one`    | ![][c20no] |            | 
+  | `atomic_flag_notifly_all`   | ![][c20no] |            | 
+  | `atomic_fetch_max`          | ![][c26ok] | *          | 
+  | `atomic_fetch_max_explicit` | ![][c26ok] | *          | 
+  | `atomic_fetch_min`          | ![][c26ok] | *          | 
+  | `atomic_fetch_min_explicit` | ![][c26ok] | *          | 
+
+* Notes
+  * `wait`, `notify_one`, and `notify_all` requires Boost.Atomic before C++20 (downloaded automatically).
+    * Set `PREVIEW_PREFER_STL_ATOMIC` and `PREVIEW_BOOST_ROOT` to change the behavior.
+  * `fetch_max` and `fetch_min` are based on [P0493R5](https://wg21.link/p0493r5)
 
 #### `<barrier>`
 
@@ -1279,18 +1286,22 @@ Description
 
 [c17no]: https://img.shields.io/badge/C++17-red
 [c17ok]: https://img.shields.io/badge/C++14-C++17-0055AA
+[c17ok14]: https://img.shields.io/badge/C++14-C++17-0055AA
 
 [c20no]: https://img.shields.io/badge/C++20-red
 [c20ok]: https://img.shields.io/badge/C++14-C++20-4477BB
+[c20ok14]: https://img.shields.io/badge/C++14-C++20-4477BB
 [c20ok17]: https://img.shields.io/badge/C++17-C++20-4477BB
 
 [c23no]: https://img.shields.io/badge/C++23-red
 [c23ok]: https://img.shields.io/badge/C++14-C++23-skyblue
+[c23ok14]: https://img.shields.io/badge/C++14-C++23-skyblue
 [c23ok17]: https://img.shields.io/badge/C++17-C++23-skyblue
 [c23ok20]: https://img.shields.io/badge/C++20-C++23-skyblue
 
 [c26no]: https://img.shields.io/badge/C++26-red
 [c26ok]: https://img.shields.io/badge/C++14-C++26-CCEEFF
+[c26ok14]: https://img.shields.io/badge/C++14-C++26-CCEEFF
 [c26ok17]: https://img.shields.io/badge/C++17-C++26-77EEFF
 [c26ok20]: https://img.shields.io/badge/C++20-C++26-77EEFF
 [c26ok23]: https://img.shields.io/badge/C++23-C++26-77EEFF

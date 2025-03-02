@@ -6,7 +6,10 @@ function(preview_add_test name source)
     add_test(NAME ${name} COMMAND ${name})
 
     if (NOT ANDROID)
-        gtest_discover_tests(${name} DISCOVERY_TIMEOUT 60)
+        gtest_discover_tests(${name}
+            DISCOVERY_TIMEOUT 60
+            ${ARGN}
+        )
     endif ()
 
     if (ANDROID)
