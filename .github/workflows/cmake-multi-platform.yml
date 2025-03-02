@@ -151,6 +151,8 @@ jobs:
           - cxx_compiler: clang++
 
     steps:
+    - uses: actions/checkout@v4
+      
     - name: Install Clang
       run: |
         wget -qO- https://apt.llvm.org/llvm.sh
