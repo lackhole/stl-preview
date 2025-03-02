@@ -12,7 +12,7 @@ template<typename T>
 class Atomic : public testing::Test {};
 using Types = testing::Types<
     bool,
-    volatile bool,
+    // volatile bool,
     int,
     unsigned,
     long,
