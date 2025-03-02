@@ -11,9 +11,9 @@ namespace preview {
 namespace detail {
 
 template<typename T>
-struct atomic_floating_point : cxx20_atomic_base<T> {
+struct atomic_floating_point : cxx20_atomic_base<T, is_cxx20_floating_point_atomic<std::atomic<T>>> {
  private:
-  using base = cxx20_atomic_base<T>;
+  using base = cxx20_atomic_base<T, is_cxx20_floating_point_atomic<std::atomic<T>>>;
 
  public:
   using value_type = T;

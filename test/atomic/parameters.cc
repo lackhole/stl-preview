@@ -9,6 +9,9 @@
 #include "../test_utils.h"
 
 template<typename T>
+using using_boost_atomic = std::is_base_of<preview::detail::boost_atomic_adaptor<typename T::value_type>, T>;
+
+template<typename T>
 class Atomic : public testing::Test {};
 using Types = testing::Types<
     bool,
@@ -28,8 +31,8 @@ TYPED_TEST_SUITE(Atomic, Types, CVQualifiedNameGenerator);
 
 VERSIONED_TYPED_TEST(Atomic, Parameters) {
   std::cout
-      << "Using boost.atomic<" << ::testing::internal::GetTypeName<TypeParam>() << ">: "
-      << std::boolalpha << std::is_base_of<preview::detail::boost_atomic_adaptor<TypeParam>, preview::atomic<TypeParam>>::value
+      << "preview::atomic<" << ::testing::internal::GetTypeName<TypeParam>() << "> implementation: "
+      << (using_boost_atomic<preview::atomic<TypeParam>>::value ? "Boost.Atomic" : "std::atomic")
       << std::endl;
 
   std::cout
