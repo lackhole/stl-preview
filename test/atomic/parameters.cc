@@ -29,11 +29,11 @@ TYPED_TEST_SUITE(Atomic, Types, CVQualifiedNameGenerator);
 VERSIONED_TYPED_TEST(Atomic, Parameters) {
   std::cout
       << "Using boost.atomic<" << ::testing::internal::GetTypeName<TypeParam>() << ">: "
-      << std::boolalpha << !std::is_base_of<std::atomic<TypeParam>, preview::atomic<TypeParam>>::value
+      << std::boolalpha << std::is_base_of<preview::detail::boost_atomic_adaptor<TypeParam>, preview::atomic<TypeParam>>::value
       << std::endl;
 
-    std::cout
-        << "Using boost.atomic<" << ::testing::internal::GetTypeName<TypeParam>() << ">::is_always_lock_free: "
+  std::cout
+      << "preview::atomic<" << ::testing::internal::GetTypeName<TypeParam>() << ">::is_always_lock_free: "
       << std::boolalpha << preview::atomic<TypeParam>::is_always_lock_free
       << std::endl;
 

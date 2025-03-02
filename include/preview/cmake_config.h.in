@@ -6,7 +6,8 @@
 
 #if PREVIEW_CXX_VERSION >= 20 && \
          (!defined(__clang_major__) || (defined(__clang_major__) && __clang_major__ > 11)) && \
-         (!defined(PREVIEW_NDK_VERSION_MAJOR) || PREVIEW_NDK_VERSION_MAJOR >= 26)
+         (!defined(PREVIEW_NDK_VERSION_MAJOR) || PREVIEW_NDK_VERSION_MAJOR >= 26) && \
+         (!defined(__GNUC__) || (defined(__GNUC__) && __GNUC__ >= 12))
 #  define PREVIEW_CONFORM_CXX20_STANDARD 1
 #else
 #  define PREVIEW_CONFORM_CXX20_STANDARD 0
