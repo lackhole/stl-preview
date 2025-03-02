@@ -359,6 +359,9 @@ Description
 * Notes
   * `wait`, `notify_one`, and `notify_all` requires Boost.Atomic before C++20 (downloaded automatically).
     * Set `PREVIEW_PREFER_STL_ATOMIC` and `PREVIEW_BOOST_ROOT` to change the behavior.
+    * In AppleClang, atomic wait/notify operations are supported before C++20, thus using `std::atomic` directly.
+      But `atomic::fetch_add` and `atomic::fetch_sub` are not provided for floating-point types so `boost::atomic` is 
+      used.
   * `fetch_max` and `fetch_min` are based on [P0493R5](https://wg21.link/p0493r5)
 
 #### `<barrier>`

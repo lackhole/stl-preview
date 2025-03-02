@@ -16,10 +16,6 @@
 
 namespace preview {
 namespace detail {
-template<typename T, typename = void>
-struct has_member_function_fetch_add : std::false_type {};
-template<typename T>
-struct has_member_function_fetch_add<T, void_t<decltype(std::declval<T&>().fetch_add(std::declval<typename T::difference_type>()))>> : std::true_type {};
 
 // BOOST_FORCEINLINE constexpr boost::memory_order to_boost_order_impl(std::memory_order order, std::true_type) noexcept {
 //   static constexpr boost::memory_order boost_order[] = {
