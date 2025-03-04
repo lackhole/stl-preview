@@ -11,6 +11,8 @@
 
 #include "../test_utils.h"
 
+#ifdef TYPED_TEST_SUITE
+
 template<typename T>
 class FetchMinMax : public testing::Test {};
 using Types = testing::Types<
@@ -70,3 +72,5 @@ VERSIONED_TYPED_TEST(FetchMinMax, fetch_min) {
   }
   std::cout << "x = " << x << '\n';
 }
+
+#endif
