@@ -9,7 +9,17 @@
 using namespace std::literals;
 using namespace preview::literals;
 
+template<typename CharT, typename Traits>
+void foo(std::basic_string_view<CharT, Traits> sv) {
 
+}
+
+TEST(VERSIONED(StringView), StringViewToString) {
+  std::string_view std_sv;
+  preview::string_view preview_sv;
+
+//  foo(preview_sv);
+}
 
 // ---------- C++26 ----------
 

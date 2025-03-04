@@ -57,11 +57,6 @@ constexpr void try_reserve(C& c, R&& r) {
 template<typename C, typename R, std::enable_if_t<conjunction<sized_range<R>, reservable_container<C>>::value == false, int> = 0>
 constexpr void try_reserve(C&, R&&) {}
 
-template<typename R, typename T, bool = input_range<R>::value /* true */>
-struct container_compatible_range : convertible_to<range_reference_t<R>, T> {};
-template<typename R, typename T>
-struct container_compatible_range<R, T, false> : std::false_type {};
-
 using preview::detail::tag_1;
 using preview::detail::tag_2;
 using preview::detail::tag_3;
