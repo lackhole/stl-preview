@@ -9,6 +9,10 @@ include(config/HaveBuiltinConstexprAddressof)
 include(config/HaveAtomicWaitAndNotify)
 include(config/HaveStringView)
 
+if ("${PREVIEW_INCLUDE_DIR}" STREQUAL "")
+    message(FATAL_ERROR "PREVIEW_INCLUDE_DIR must be set")
+endif ()
+
 set(PREVIEW_CONFIG_INPUT_FILE "${PREVIEW_INCLUDE_DIR}/preview/cmake_config.h.in")
 
 # Override CMAKE_CXX_STANDARD to the specified value.
