@@ -8,6 +8,8 @@
 
 #include "../test_utils.h"
 
+#ifdef TYPED_TEST_SUITE
+
 template<typename T>
 using using_std_atomic = std::is_base_of<std::atomic<typename T::value_type>, T>;
 
@@ -42,3 +44,5 @@ VERSIONED_TYPED_TEST(Atomic, Parameters) {
 
   SUCCEED();
 }
+
+#endif
