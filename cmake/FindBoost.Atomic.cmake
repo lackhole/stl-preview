@@ -21,6 +21,9 @@ else()
         USES_TERMINAL_CONFIGURE TRUE
         USES_TERMINAL_BUILD TRUE
     )
+    if (EMSCRIPTEN)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread" CACHE INTERNAL "")
+    endif ()
     if (CMAKE_VERSION VERSION_LESS 3.14)
         FetchContent_GetProperties(Boost)
         if (NOT Boost_POPULATED)
