@@ -4,11 +4,65 @@
 
 #include <bitset>
 #include <string>
-#include <sstream>
+
+#if PREVIEW_CXX_VERSION >= 17
+#include <string_view>
+#include <fstream>
+#endif
+
+#if !defined(__ANDROID__)
+#include <filesystem>
+#endif
 
 using namespace std::literals;
 using namespace preview::literals;
 
+#if PREVIEW_CXX_VERSION >= 17
+
+struct templated_std_basic_string_view_fn {
+  template<typename CharT, typename Traits>
+  constexpr void operator()(std::basic_string_view<CharT, Traits>) const {}
+};
+
+TEST(VERSIONED(StringView), STLConversion_TemplatedBasicStringView) {
+  EXPECT_TRUE_TYPE(preview::is_invocable<templated_std_basic_string_view_fn, preview::string_view>);
+}
+
+#if !defined(__ANDROID__)
+
+TEST(VERSIONED(StringView), STLConversion_Path) {
+  EXPECT_EQ(
+      (std::is_constructible_v<std::filesystem::path, std::string_view>),
+      (std::is_constructible_v<std::filesystem::path, preview::string_view>));
+  EXPECT_EQ(
+      (std::is_convertible_v<std::filesystem::path, std::string_view>),
+      (std::is_convertible_v<std::filesystem::path, preview::string_view>));
+}
+
+#endif
+
+TEST(VERSIONED(StringView), STLConversion_FStream) {
+  EXPECT_EQ(
+      (std::is_constructible_v<std::fstream, std::string_view>),
+      (std::is_constructible_v<std::fstream, preview::string_view>));
+  EXPECT_EQ(
+      (std::is_convertible_v<std::fstream, std::string_view>),
+      (std::is_convertible_v<std::fstream, preview::string_view>));
+}
+
+struct BothConstructible {
+  template<typename CharT, typename Traits>
+  BothConstructible(std::basic_string_view<CharT, Traits>) {}
+  template<typename CharT, typename Traits>
+  BothConstructible(preview::basic_string_view<CharT, Traits>) {}
+};
+
+TEST(VERSIONED(StringView), STLConversion_Ambiguity) {
+  BothConstructible(std::string_view{});
+  BothConstructible(preview::string_view{});
+}
+
+#endif
 
 
 // ---------- C++26 ----------
