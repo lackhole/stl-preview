@@ -43,8 +43,9 @@ VERSIONED_TYPED_TEST(FetchMinMax, fetch_max) {
     });
   }
 
-  for (auto &thread : threads) {
-    thread.join();
+  for (auto& thread : threads) {
+    if (thread.joinable())
+      thread.join();
   }
   std::cout << "x = " << x << '\n';
 }
@@ -68,7 +69,8 @@ VERSIONED_TYPED_TEST(FetchMinMax, fetch_min) {
   }
 
   for (auto &thread : threads) {
-    thread.join();
+    if (thread.joinable())
+      thread.join();
   }
   std::cout << "x = " << x << '\n';
 }
