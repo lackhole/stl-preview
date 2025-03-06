@@ -137,13 +137,11 @@ class basic_string_view {
     return std::basic_string_view<CharT, Traits>(data(), size());
   }
 
-  template<typename T, std::enable_if_t<is_explicitly_constructible_v<T, std::basic_string_view<CharT, Traits>>, int> = 0>
+  template<typename T, std::enable_if_t<conjunction_v<
+      negation<std::is_same<std::basic_string_view<CharT, Traits>, std::decay_t<T>>>,
+      is_explicitly_constructible<T, std::basic_string_view<CharT, Traits>>
+  >, int> = 0>
   constexpr explicit operator T () const {
-    return T(std::basic_string_view<CharT, Traits>(data(), size()));
-  }
-
-  template<typename T, std::enable_if_t<is_implicitly_constructible_v<T, std::basic_string_view<CharT, Traits>>, int> = 0>
-  constexpr operator T () const {
     return T(std::basic_string_view<CharT, Traits>(data(), size()));
   }
 #endif
