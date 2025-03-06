@@ -18,7 +18,6 @@
 #include <ostream>
 
 #include "preview/core.h"
-#include "preview/__type_traits/has_conversion_operator.h"
 
 #if PREVIEW_CXX_VERSION >= 17
 #include <string_view>
@@ -46,7 +45,10 @@
 #include "preview/__ranges/size.h"
 #include "preview/__ranges/sized_range.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__type_traits/has_conversion_operator.h"
 #include "preview/__type_traits/has_typename_type.h"
+#include "preview/__type_traits/is_explicitly_constructible.h"
+#include "preview/__type_traits/is_implicitly_constructible.h"
 #include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/type_identity.h"
@@ -133,6 +135,16 @@ class basic_string_view {
 #else
   constexpr operator std::basic_string_view<CharT, Traits>() const {
     return std::basic_string_view<CharT, Traits>(data(), size());
+  }
+
+  template<typename T, std::enable_if_t<is_explicitly_constructible_v<T, std::basic_string_view<CharT, Traits>>, int> = 0>
+  constexpr explicit operator T () const {
+    return T(std::basic_string_view<CharT, Traits>(data(), size()));
+  }
+
+  template<typename T, std::enable_if_t<is_implicitly_constructible_v<T, std::basic_string_view<CharT, Traits>>, int> = 0>
+  constexpr operator T () const {
+    return T(std::basic_string_view<CharT, Traits>(data(), size()));
   }
 #endif
 
