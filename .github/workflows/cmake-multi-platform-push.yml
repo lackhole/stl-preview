@@ -1,0 +1,243 @@
+name: CMake on multiple platforms(Push)
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  windows:
+    runs-on: ${{ matrix.os }}
+    env:
+      VC_VARS: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat
+    defaults:
+      run:
+        shell: cmd
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, windows-2019]
+        build_type: [Debug]
+        arch: [x64]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: |
+        call "${{ env.VC_VARS }}" ${{ matrix.arch }}
+        cmake -B build ^
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
+          -DPREVIEW_TEST=ON
+
+    - name: Build
+      run: |
+        call "${{ env.VC_VARS }}"
+        cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
+  ubuntu-gcc:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug]
+        compiler: [gcc]
+        compiler_version: [9, 10, 11, 12, 13]
+        include:
+          - cc_compiler: gcc
+          - cxx_compiler: g++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up GCC
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: ${{ matrix.compiler_version }}
+
+    - name: Configure CMake
+      env:
+        CC: gcc
+        CXX: g++
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
+  ubuntu-clang:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04]
+        build_type: [Debug]
+        compiler: [clang]
+        compiler_version: [11, 12, 13, 14, 15]
+        platform: [x64]
+        include:
+          - cc_compiler: clang
+          - cxx_compiler: clang++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Clang
+      uses: egor-tensin/setup-clang@v1
+      with:
+        version: ${{ matrix.compiler_version }}
+        platform: ${{ matrix.platform }}
+
+    - name: Configure CMake
+      env:
+        CC: cc
+        CXX: c++
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
+  android-ndk:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug]
+        compiler: [ndk]
+        compiler_version: [18, 19, 20, 21, 22, 23, 24, 25, 26]
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r${{ matrix.compiler_version }}
+        add-to-path: false
+
+    - run: |
+        echo $ANDROID_HOME
+        echo ${{ steps.setup-ndk.outputs.ndk-path }}
+
+    - run: |
+        ls $ANDROID_HOME/ndk
+
+    - run: |
+        ls ${{ steps.setup-ndk.outputs.ndk-path }}
+
+    - name: Configure CMake
+      run: >
+        cmake -B build
+        -DCMAKE_TOOLCHAIN_FILE=${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+#
+#    - name: Test
+#      working-directory: build
+#      run: ctest --build-config ${{ matrix.build_type }}
+
+  emscripten:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        build_type: [Debug]
+        compiler: [emscripten]
+        compiler_version: [3.1.20, latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Emscripten
+      run: |
+        git clone https://github.com/emscripten-core/emsdk.git
+        cd emsdk
+        ./emsdk install ${{ matrix.compiler_version }}
+        ./emsdk activate ${{ matrix.compiler_version }}
+
+    - name: Configure CMake
+      run: |
+        source emsdk/emsdk_env.sh
+        emcmake cmake -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DPREVIEW_TEST=ON \
+            -DCMAKE_CROSSCOMPILING_EMULATOR=node \
+            -S ${{ github.workspace }}
+
+    - name: Build
+      run: |
+        source emsdk/emsdk_env.sh
+        emmake cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+
+  macos-appleclang:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-13, macos-14, macos-15]
+        build_type: [Debug]
+        compiler: [clang]
+        include:
+          - cc_compiler: clang
+          - cxx_compiler: clang++
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      env:
+        CC: ${{ matrix.cc_compiler }}
+        CXX: ${{ matrix.cxx_compiler }}
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DPREVIEW_TEST=ON
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build_type }} -j
+
+    - name: Test
+      working-directory: build
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
