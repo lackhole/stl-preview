@@ -225,7 +225,7 @@ jobs:
 
     - name: Test
       working-directory: build
-      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
+      run: ctest --build-config ${{ matrix.build_type }} --output-on-failure --timeout 60
 
   macos-appleclang:
     runs-on: ${{ matrix.os }}
