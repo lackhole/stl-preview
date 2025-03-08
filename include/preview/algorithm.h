@@ -58,6 +58,7 @@
 #include "preview/__algorithm/ranges/set_intersection.h"
 #include "preview/__algorithm/ranges/sort.h"
 #include "preview/__algorithm/ranges/sort_heap.h"
+#include "preview/__algorithm/ranges/starts_with.h"
 #include "preview/__algorithm/ranges/swap_ranges.h"
 
 #endif // PREVIEW_ALGORITHM_H_

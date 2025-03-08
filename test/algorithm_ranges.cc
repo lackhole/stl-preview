@@ -1,6 +1,7 @@
 #include "preview/algorithm.h"
 
 #include <algorithm>
+#include <cctype>
 #include <complex>
 #include <cstdlib>
 #include <forward_list>
@@ -16,6 +17,7 @@
 #include "preview/core.h"
 #include "preview/functional.h"
 #include "preview/ranges.h"
+#include "preview/span.h"
 #include "preview/utility.h"
 
 #include "test_utils.h"
@@ -641,4 +643,26 @@ TEST(VERSIONED(AlgorithmRanges), minmax) {
       ASSERT_EQ(max, (std::max)(x1, x2));
     }
   }
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), starts_with) {
+  EXPECT_FALSE(ranges::starts_with("hello world", "hello"));
+  EXPECT_TRUE(ranges::starts_with("hello world", "hello"_sv));
+  EXPECT_TRUE(ranges::starts_with("hello world"_sv, "hello"_sv));
+#if PREVIEW_CXX_VERSION >= 17
+  EXPECT_TRUE(ranges::starts_with("hello world", "hello"sv));
+  EXPECT_TRUE(ranges::starts_with("hello world"sv, "hello"sv));
+#endif
+
+  EXPECT_TRUE(ranges::starts_with(std::vector<int>{1, 2, 3}, preview::span<const int>{1, 2, 3}));
+  EXPECT_FALSE(ranges::starts_with(std::list<int>{1, 2, 3}, preview::to_array({1, 2, 3, 4})));
+
+  EXPECT_TRUE(ranges::starts_with(views::iota(0) | views::take(10), views::iota(0, 5)));
+
+  std::map<int, std::string> map{{1, "one"}, {2, "two"}, {3, "three"}};
+  EXPECT_TRUE(ranges::starts_with(map, std::map<int, std::string>{{1, "one"}}));
+  EXPECT_TRUE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key));
+
+  EXPECT_FALSE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key, [](auto x) { return x * x; }));
 }
