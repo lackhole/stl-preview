@@ -43,10 +43,10 @@ inline void atomic_flag_clear(         atomic_flag* obj) noexcept { obj->clear()
 inline void atomic_flag_clear_explicit(volatile atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
 inline void atomic_flag_clear_explicit(         atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
 
-inline void atomic_flag_wait(volatile atomic_flag* obj, bool old) noexcept { obj->wait(old); }
-inline void atomic_flag_wait(         atomic_flag* obj, bool old) noexcept { obj->wait(old); }
-inline void atomic_flag_wait_explicit(volatile atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
-inline void atomic_flag_wait_explicit(         atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
+inline void atomic_flag_wait(const volatile atomic_flag* obj, bool old) noexcept { obj->wait(old); }
+inline void atomic_flag_wait(const          atomic_flag* obj, bool old) noexcept { obj->wait(old); }
+inline void atomic_flag_wait_explicit(const volatile atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
+inline void atomic_flag_wait_explicit(const          atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
 
 inline void atomic_flag_notify_one(atomic_flag* object) noexcept { return object->notify_one(); }
 inline void atomic_flag_notify_one(volatile atomic_flag* object) noexcept { return object->notify_one(); }
