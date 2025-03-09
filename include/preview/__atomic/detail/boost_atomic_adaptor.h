@@ -263,23 +263,23 @@ struct boost_atomic_flag_adaptor : private boost::atomic_flag {
     base::wait(old, preview::detail::to_boost_order(order));
   }
 
-  BOOST_FORCEINLINE void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
+  BOOST_FORCEINLINE constexpr void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
     base::wait(old, preview::detail::to_boost_order(order));
-  }
-
-  BOOST_FORCEINLINE void notify_one() noexcept {
-    base::notify_one();
   }
 
   BOOST_FORCEINLINE void notify_one() volatile noexcept {
     base::notify_one();
   }
 
-  BOOST_FORCEINLINE void notify_all() noexcept {
+  BOOST_FORCEINLINE constexpr void notify_one() noexcept {
     base::notify_one();
   }
 
   BOOST_FORCEINLINE void notify_all() volatile noexcept {
+    base::notify_one();
+  }
+
+  BOOST_FORCEINLINE constexpr void notify_all() noexcept {
     base::notify_one();
   }
 };

@@ -115,12 +115,12 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/316/694-grey)![][p046] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/233/429-grey)![][p054] | ![](https://img.shields.io/badge/61/144-grey)![][p042] | ![](https://img.shields.io/badge/18/135-grey)![][p013] |
+|                                     | ![](https://img.shields.io/badge/339/703-grey)![][p048] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/247/432-grey)![][p057] | ![](https://img.shields.io/badge/60/144-grey)![][p042] | ![](https://img.shields.io/badge/22/136-grey)![][p016] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/56/115-grey)![][p049]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/47/96-grey)![][p049]   | ![](https://img.shields.io/badge/9/18-grey)![][p050]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [array](#array)                     | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
-| [atomic](#atomic)                   | ![](https://img.shields.io/badge/10/19-grey)![][p032]   |   |                                                        | ![](https://img.shields.io/badge/6/15-grey)![][p040]    |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |
+| [atomic](#atomic)                   | ![](https://img.shields.io/badge/23/26-grey)![][p088]   |   |                                                        | ![](https://img.shields.io/badge/13/16-grey)![][p081]   |                                                        | ![](https://img.shields.io/badge/4/5-grey)![][p080]    |
 | [bit](#bit)                         | ![](https://img.shields.io/badge/2/14-grey)![][p014]    |   |                                                        | ![](https://img.shields.io/badge/1/13-grey)![][p008]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [concepts](#concepts)               | ![](https://img.shields.io/badge/30/30-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/30/30-grey)![][p100]   | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |                                                        |
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
@@ -334,34 +334,37 @@ Description
 
 #### `<atomic>`
 
-  |                             | Introduced | Revision   |
-  |-----------------------------|------------|------------|
-  | `atomic_fetch_add`          | ![][c11]   | ![][c20ok] | 
-  | `atomic_fetch_sub`          | ![][c11]   | ![][c20ok] | 
-  | `atomic_ref`                | ![][c20no] |            | 
-  | `atomic_signed_lock_free`   | ![][c20no] |            | 
-  | `atomic_unsigned_lock_free` | ![][c20no] |            | 
-  | `atomic_wait`               | ![][c20ok] | *          | 
-  | `atomic_wait_explicit`      | ![][c20ok] | *          | 
-  | `atomic_notify_one`         | ![][c20ok] | *          | 
-  | `atomic_notify_all`         | ![][c20ok] | *          | 
-  | `atomic_flag_test`          | ![][c20no] |            | 
-  | `atomic_flag_test_explicit` | ![][c20no] |            | 
-  | `atomic_flag_wait`          | ![][c20no] |            | 
-  | `atomic_flag_wait_explicit` | ![][c20no] |            | 
-  | `atomic_flag_notify_one`    | ![][c20no] |            | 
-  | `atomic_flag_notifly_all`   | ![][c20no] |            | 
-  | `atomic_fetch_max`          | ![][c26ok] | *          | 
-  | `atomic_fetch_max_explicit` | ![][c26ok] | *          | 
-  | `atomic_fetch_min`          | ![][c26ok] | *          | 
-  | `atomic_fetch_min_explicit` | ![][c26ok] | *          | 
+  |                             | Introduced | Revision              |
+  |-----------------------------|------------|-----------------------|
+  | `atomic_fetch_add`          | ![][c11]   | ![][c20ok]            | 
+  | `atomic_fetch_sub`          | ![][c11]   | ![][c20ok]            | 
+  | `atomic_flag`               | ![][c11]   | ![][c20ok] ![][c26no] | 
+  | `atomic_ref`                | ![][c20no] |                       | 
+  | `atomic_signed_lock_free`   | ![][c20no] |                       | 
+  | `atomic_unsigned_lock_free` | ![][c20no] |                       | 
+  | `atomic_wait`               | ![][c20ok] | *                     | 
+  | `atomic_wait_explicit`      | ![][c20ok] | *                     | 
+  | `atomic_notify_one`         | ![][c20ok] | *                     | 
+  | `atomic_notify_all`         | ![][c20ok] | *                     | 
+  | `atomic_flag_test`          | ![][c20ok] |                       | 
+  | `atomic_flag_test_explicit` | ![][c20ok] |                       | 
+  | `atomic_flag_wait`          | ![][c20ok] |                       | 
+  | `atomic_flag_wait_explicit` | ![][c20ok] |                       | 
+  | `atomic_flag_notify_one`    | ![][c20ok] |                       | 
+  | `atomic_flag_notifly_all`   | ![][c20ok] |                       | 
+  | `atomic_fetch_max`          | ![][c26ok] | *                     | 
+  | `atomic_fetch_max_explicit` | ![][c26ok] | *                     | 
+  | `atomic_fetch_min`          | ![][c26ok] | *                     | 
+  | `atomic_fetch_min_explicit` | ![][c26ok] | *                     | 
 
 * Notes
-  * `wait`, `notify_one`, and `notify_all` requires Boost.Atomic before C++20 (downloaded automatically).
+  * `wait`, `notify_one`, and `notify_all` requires Boost.Atomic if not provided by `std::atomic<T>`
+    * Boost library is downloaded and built automatically if `PREVIEW_BOOST_ROOT` is not set.
     * Set `PREVIEW_PREFER_STL_ATOMIC` and `PREVIEW_BOOST_ROOT` to change the behavior.
-    * In AppleClang, atomic wait/notify operations are supported before C++20, thus using `std::atomic` directly.
-      But `atomic::fetch_add` and `atomic::fetch_sub` are not provided for floating-point types so `boost::atomic` is 
-      used.
+    * `std::atomic` and `boost::atomic` may coexist(
+      * i.e., AppleClang does not provide `fetch_add` and `fetch_sub` for floating-point types.
+        In such case, `preview::atomic<int>` is based on `std::atomic<int>` but `preview::atomic<float>` 
+        is based on `boost::atomic<float>`.
   * `fetch_max` and `fetch_min` are based on [P0493R5](https://wg21.link/p0493r5)
 
 #### `<barrier>`
