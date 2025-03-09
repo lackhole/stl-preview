@@ -28,31 +28,31 @@ struct atomic_flag : public detail::cxx20_atomic_flag_base {
   using base::notify_all;
 };
 
-inline bool atomic_flag_test(const volatile atomic_flag* object) noexcept { return object->test(); }
-inline bool atomic_flag_test(const          atomic_flag* object) noexcept { return object->test(); }
-inline bool atomic_flag_test_explicit(const volatile atomic_flag* object, std::memory_order order) noexcept { return object->test(order); }
-inline bool atomic_flag_test_explicit(const          atomic_flag* object, std::memory_order order) noexcept { return object->test(order); }
-
-inline bool atomic_flag_test_and_set(volatile atomic_flag* obj) noexcept { return obj->test_and_set(); }
-inline bool atomic_flag_test_and_set(         atomic_flag* obj) noexcept { return obj->test_and_set(); }
-inline bool atomic_flag_test_and_set_explicit(volatile atomic_flag* obj, std::memory_order order) noexcept { return obj->test_and_set(order); }
-inline bool atomic_flag_test_and_set_explicit(         atomic_flag* obj, std::memory_order order) noexcept { return obj->test_and_set(order); }
-
-inline void atomic_flag_clear(volatile atomic_flag* obj) noexcept { obj->clear(); }
-inline void atomic_flag_clear(         atomic_flag* obj) noexcept { obj->clear(); }
-inline void atomic_flag_clear_explicit(volatile atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
-inline void atomic_flag_clear_explicit(         atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
-
-inline void atomic_flag_wait(const volatile atomic_flag* obj, bool old) noexcept { obj->wait(old); }
-inline void atomic_flag_wait(const          atomic_flag* obj, bool old) noexcept { obj->wait(old); }
-inline void atomic_flag_wait_explicit(const volatile atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
-inline void atomic_flag_wait_explicit(const          atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
-
-inline void atomic_flag_notify_one(atomic_flag* object) noexcept { return object->notify_one(); }
-inline void atomic_flag_notify_one(volatile atomic_flag* object) noexcept { return object->notify_one(); }
-
-inline void atomic_flag_notify_all(atomic_flag* object) noexcept { return object->notify_all(); }
-inline void atomic_flag_notify_all(volatile atomic_flag* object) noexcept { return object->notify_all(); }
+//inline bool atomic_flag_test(const volatile atomic_flag* object) noexcept { return object->test(); }
+//inline bool atomic_flag_test(const          atomic_flag* object) noexcept { return object->test(); }
+//inline bool atomic_flag_test_explicit(const volatile atomic_flag* object, std::memory_order order) noexcept { return object->test(order); }
+//inline bool atomic_flag_test_explicit(const          atomic_flag* object, std::memory_order order) noexcept { return object->test(order); }
+//
+//inline bool atomic_flag_test_and_set(volatile atomic_flag* obj) noexcept { return obj->test_and_set(); }
+//inline bool atomic_flag_test_and_set(         atomic_flag* obj) noexcept { return obj->test_and_set(); }
+//inline bool atomic_flag_test_and_set_explicit(volatile atomic_flag* obj, std::memory_order order) noexcept { return obj->test_and_set(order); }
+//inline bool atomic_flag_test_and_set_explicit(         atomic_flag* obj, std::memory_order order) noexcept { return obj->test_and_set(order); }
+//
+//inline void atomic_flag_clear(volatile atomic_flag* obj) noexcept { obj->clear(); }
+//inline void atomic_flag_clear(         atomic_flag* obj) noexcept { obj->clear(); }
+//inline void atomic_flag_clear_explicit(volatile atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
+//inline void atomic_flag_clear_explicit(         atomic_flag* obj, std::memory_order order) noexcept { obj->clear(order); }
+//
+//inline void atomic_flag_wait(const volatile atomic_flag* obj, bool old) noexcept { obj->wait(old); }
+//inline void atomic_flag_wait(const          atomic_flag* obj, bool old) noexcept { obj->wait(old); }
+//inline void atomic_flag_wait_explicit(const volatile atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
+//inline void atomic_flag_wait_explicit(const          atomic_flag* obj, bool old, std::memory_order order) noexcept { obj->wait(old, order); }
+//
+//inline void atomic_flag_notify_one(atomic_flag* object) noexcept { return object->notify_one(); }
+//inline void atomic_flag_notify_one(volatile atomic_flag* object) noexcept { return object->notify_one(); }
+//
+//inline void atomic_flag_notify_all(atomic_flag* object) noexcept { return object->notify_all(); }
+//inline void atomic_flag_notify_all(volatile atomic_flag* object) noexcept { return object->notify_all(); }
 
 } // namespace preview
 
