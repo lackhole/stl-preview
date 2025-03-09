@@ -10,18 +10,22 @@
 namespace preview {
 
 struct atomic_flag : public detail::cxx20_atomic_flag_base {
-  using detail::cxx20_atomic_flag_base::cxx20_atomic_flag_base;
+ private:
+  using base = detail::cxx20_atomic_flag_base;
 
+ public:
+  constexpr atomic_flag() noexcept
+      : base() {}
   atomic_flag(const atomic_flag&) = delete;
   atomic_flag& operator=(const atomic_flag&) = delete;
   atomic_flag& operator=(const atomic_flag&) volatile = delete;
 
-  using detail::cxx20_atomic_flag_base::clear;
-  using detail::cxx20_atomic_flag_base::test_and_set;
-  using detail::cxx20_atomic_flag_base::test;
-  using detail::cxx20_atomic_flag_base::wait;
-  using detail::cxx20_atomic_flag_base::notify_one;
-  using detail::cxx20_atomic_flag_base::notify_all;
+  using base::clear;
+  using base::test_and_set;
+  using base::test;
+  using base::wait;
+  using base::notify_one;
+  using base::notify_all;
 };
 
 inline bool atomic_flag_test(const volatile atomic_flag* object) noexcept { return object->test(); }

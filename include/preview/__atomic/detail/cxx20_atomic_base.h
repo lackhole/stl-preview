@@ -34,10 +34,10 @@ constexpr std::memory_order memory_order_drop_release(std::memory_order order) n
            order;
 }
 
-template<typename T, typename = void>
+template<typename T, typename Value, typename = void>
 struct has_member_function_wait : std::false_type {};
-template<typename T>
-struct has_member_function_wait<T, void_t<decltype(std::declval<T>().wait(std::declval<typename T::value_type>()))>> : std::true_type {};
+template<typename T, typename Value>
+struct has_member_function_wait<T, Value, void_t<decltype(std::declval<T>().wait(std::declval<Value>()))>> : std::true_type {};
 
 template<typename T, typename = void>
 struct has_member_function_notify_one : std::false_type {};
@@ -78,9 +78,9 @@ struct has_member_function_fetch_min<
 template<typename T>
 struct is_cxx17_atomic : has_static_member_is_always_lock_free<T> {};
 
-template<typename T>
+template<typename T, typename Value = typename T::value_type>
 struct has_wait_and_notify : conjunction<
-    has_member_function_wait<T>,
+    has_member_function_wait<T, Value>,
     has_member_function_notify_one<T>,
     has_member_function_notify_all<T>
 > {};
@@ -124,7 +124,7 @@ using cxx20_atomic_base =
 using cxx20_atomic_flag_base =
 #if PREVIEW_USE_BOOST_ATOMIC
 #  if PREVIEW_PREFER_STL_ATOMIC
-    std::conditional_t<has_wait_and_notify<std::atomic_flag>::value, std::atomic_flag, boost_atomic_flag_adaptor>;
+    std::conditional_t<has_wait_and_notify<std::atomic_flag, bool>::value, std::atomic_flag, boost_atomic_flag_adaptor>;
 #  else
     boost_atomic_flag_adaptor;
 #  endif

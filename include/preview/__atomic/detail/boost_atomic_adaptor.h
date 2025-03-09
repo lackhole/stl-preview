@@ -228,7 +228,8 @@ struct boost_atomic_flag_adaptor : private boost::atomic_flag {
   // using base::notify_all;
 
  public:
-  using base::base;
+  constexpr boost_atomic_flag_adaptor() noexcept
+      : base() {}
 
   boost_atomic_flag_adaptor(const boost_atomic_flag_adaptor&) = delete;
   boost_atomic_flag_adaptor& operator=( const boost_atomic_flag_adaptor& ) = delete;
