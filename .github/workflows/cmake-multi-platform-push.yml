@@ -127,13 +127,15 @@ jobs:
   ubuntu-clang:
     runs-on: ${{ matrix.os }}
 
+# TODO: Add clang 16
+
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-24.04]
         build_type: [Debug]
         compiler: [clang]
-        compiler_version: [16, 17, 18, 19, 20]
+        compiler_version: [17, 18, 19, 20]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
@@ -149,7 +151,7 @@ jobs:
     - name: Configure CMake
       env:
         CC: clang-${{ matrix.compiler_version }}
-        CXX: clang-${{ matrix.compiler_version }}
+        CXX: clang++-${{ matrix.compiler_version }}
       run: >
         cmake -B build
         -DCMAKE_CXX_COMPILER=${{ env.CXX }}

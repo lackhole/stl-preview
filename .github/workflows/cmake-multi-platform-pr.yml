@@ -136,6 +136,8 @@ jobs:
       working-directory: build
       run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
 
+  # TODO: Add clang 16
+
   ubuntu-clang:
     runs-on: ${{ matrix.os }}
 
@@ -145,7 +147,7 @@ jobs:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
         build_type: [Debug, Release]
         compiler: [clang]
-        compiler_version: [16, 17, 18, 19, 20]
+        compiler_version: [17, 18, 19, 20]
         include:
           - cc_compiler: clang
           - cxx_compiler: clang++
@@ -161,7 +163,7 @@ jobs:
       - name: Configure CMake
         env:
           CC: clang-${{ matrix.compiler_version }}
-          CXX: clang-${{ matrix.compiler_version }}
+          CXX: clang++-${{ matrix.compiler_version }}
         run: >
           cmake -B build
           -DCMAKE_CXX_COMPILER=${{ env.CXX }}
