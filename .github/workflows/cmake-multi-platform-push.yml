@@ -144,7 +144,7 @@ jobs:
     - name: Set up Clang
       run: |
         sudo apt update
-        wget -qO- https://apt.llvm.org/llvm.sh | bash -s -- ${{ matrix.compiler_version }}
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- ${{ matrix.compiler_version }}
 
     - name: Configure CMake
       env:
