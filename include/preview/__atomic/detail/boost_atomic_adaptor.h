@@ -10,6 +10,7 @@
 
 #include "boost/atomic.hpp"
 
+#include "preview/__core/constexpr.h"
 #include "preview/__type_traits/has_typename_difference_type.h"
 #include "preview/__type_traits/void_t.h"
 #include "preview/__utility/unreachable.h"
@@ -263,7 +264,7 @@ struct boost_atomic_flag_adaptor : private boost::atomic_flag {
     base::wait(old, preview::detail::to_boost_order(order));
   }
 
-  BOOST_FORCEINLINE constexpr void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
+  BOOST_FORCEINLINE PREVIEW_CONSTEXPR_AFTER_CXX26 void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
     base::wait(old, preview::detail::to_boost_order(order));
   }
 
@@ -271,7 +272,7 @@ struct boost_atomic_flag_adaptor : private boost::atomic_flag {
     base::notify_one();
   }
 
-  BOOST_FORCEINLINE constexpr void notify_one() noexcept {
+  BOOST_FORCEINLINE PREVIEW_CONSTEXPR_AFTER_CXX26 void notify_one() noexcept {
     base::notify_one();
   }
 
@@ -279,7 +280,7 @@ struct boost_atomic_flag_adaptor : private boost::atomic_flag {
     base::notify_one();
   }
 
-  BOOST_FORCEINLINE constexpr void notify_all() noexcept {
+  BOOST_FORCEINLINE PREVIEW_CONSTEXPR_AFTER_CXX26 void notify_all() noexcept {
     base::notify_one();
   }
 };

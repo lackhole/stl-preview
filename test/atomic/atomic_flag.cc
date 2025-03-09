@@ -5,6 +5,7 @@
 #include "preview/atomic.h"
 
 #include <memory>
+#include <thread>
 #include <vector>
 
 #include "../test_utils.h"
@@ -28,7 +29,7 @@ TEST(VERSIONED(Atomic), atomic_flag_wait_notify) {
   std::vector<std::thread> threads(5);
   for (auto& thread : threads) {
     thread = std::thread([&] {
-      f.wait(false, std::memory_order_relaxed);
+      f.wait(true, std::memory_order_relaxed);
       wakeup.fetch_add(1, std::memory_order_relaxed);
     });
   }
