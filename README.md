@@ -351,7 +351,7 @@ Description
   | `atomic_flag_wait`          | ![][c20ok] |                       | 
   | `atomic_flag_wait_explicit` | ![][c20ok] |                       | 
   | `atomic_flag_notify_one`    | ![][c20ok] |                       | 
-  | `atomic_flag_notifly_all`   | ![][c20ok] |                       | 
+  | `atomic_flag_notify_all`    | ![][c20ok] |                       | 
   | `atomic_fetch_max`          | ![][c26ok] | *                     | 
   | `atomic_fetch_max_explicit` | ![][c26ok] | *                     | 
   | `atomic_fetch_min`          | ![][c26ok] | *                     | 
