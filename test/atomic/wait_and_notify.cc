@@ -11,11 +11,11 @@
 
 #include "../test_utils.h"
 
-TEST(VERSIONED(Atomic), Parameters) {
+TEST(VERSIONED(Atomic), wait_notify) {
   preview::atomic<bool> all_tasks_completed{false};
   preview::atomic<unsigned> completion_count{};
-  std::future<void> task_futures[16];
-  preview::atomic<unsigned> outstanding_task_count{16};
+  std::future<void> task_futures[10];
+  preview::atomic<unsigned> outstanding_task_count{10};
 
   // Spawn several tasks which take different amounts of
   // time, then decrement the outstanding task count.

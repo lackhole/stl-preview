@@ -217,6 +217,72 @@ struct boost_atomic_adaptor : boost_atomic_adaptor_fetch_add_sub_base<T> {
   }
 };
 
+struct boost_atomic_flag_adaptor : private boost::atomic_flag {
+ private:
+  using base = boost::atomic_flag;
+  // using base::clear;
+  // using base::test_and_set;
+  // using base::test;
+  // using base::wait;
+  // using base::notify_one;
+  // using base::notify_all;
+
+ public:
+  using base::base;
+
+  boost_atomic_flag_adaptor(const boost_atomic_flag_adaptor&) = delete;
+  boost_atomic_flag_adaptor& operator=( const boost_atomic_flag_adaptor& ) = delete;
+  boost_atomic_flag_adaptor& operator=( const boost_atomic_flag_adaptor& ) volatile = delete;
+
+  BOOST_FORCEINLINE void clear(std::memory_order order = std::memory_order_seq_cst) volatile noexcept {
+    base::clear(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE void clear(std::memory_order order = std::memory_order_seq_cst) noexcept {
+    base::clear(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE bool test_and_set(std::memory_order order = std::memory_order_seq_cst) volatile noexcept {
+    return base::test_and_set(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE bool test_and_set(std::memory_order order = std::memory_order_seq_cst) noexcept {
+    return base::test_and_set(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE bool test(std::memory_order order = std::memory_order_seq_cst) const volatile noexcept {
+    return base::test(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE bool test(std::memory_order order = std::memory_order_seq_cst) const noexcept {
+    return base::test(preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const volatile noexcept {
+    base::wait(old, preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE void wait(bool old, std::memory_order order = std::memory_order_seq_cst) const noexcept {
+    base::wait(old, preview::detail::to_boost_order(order));
+  }
+
+  BOOST_FORCEINLINE void notify_one() noexcept {
+    base::notify_one();
+  }
+
+  BOOST_FORCEINLINE void notify_one() volatile noexcept {
+    base::notify_one();
+  }
+
+  BOOST_FORCEINLINE void notify_all() noexcept {
+    base::notify_one();
+  }
+
+  BOOST_FORCEINLINE void notify_all() volatile noexcept {
+    base::notify_one();
+  }
+};
+
 } // namespace detail
 } // namespace preview
 

@@ -6,6 +6,6 @@
 #define PREVIEW_ATOMIC_H_
 
 #include "preview/__atomic/atomic.h"
-#include "preview/__atomic/atomic_functions.h"
+#include "preview/__atomic/atomic_flag.h"
 
 #endif // PREVIEW_ATOMIC_H_

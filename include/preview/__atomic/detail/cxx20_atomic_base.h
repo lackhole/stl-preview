@@ -121,6 +121,17 @@ using cxx20_atomic_base =
     std::atomic<T>;
 #endif
 
+using cxx20_atomic_flag_base =
+#if PREVIEW_USE_BOOST_ATOMIC
+#  if PREVIEW_PREFER_STL_ATOMIC
+    std::conditional_t<has_wait_and_notify<std::atomic_flag>::value, std::atomic_flag, boost_atomic_flag_adaptor>;
+#  else
+    boost_atomic_flag_adaptor;
+#  endif
+#else
+    std::atomic_flag;
+#endif
+
 } // namespace detail
 } // namespace preview
 
