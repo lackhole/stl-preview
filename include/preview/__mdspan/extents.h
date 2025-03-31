@@ -13,6 +13,7 @@
 
 #include "preview/core.h"
 #include "preview/span.h"
+#include "preview/__concepts/integer_like.h"
 #include "preview/__type_traits/bool_constant.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
@@ -36,6 +37,8 @@ namespace detail {
 
 template<typename T, T... I>
 struct static_array {
+//  static constexpr std::size_t size = sizeof...(I);
+//  static constexpr T value(std::size_t i) { return integer_sequence_get_v}
   static constexpr std::size_t size = sizeof...(I);
   static constexpr T value[size] = {I...};
 };
@@ -105,7 +108,11 @@ struct extents_rev_prod_of_extents : extents_rev_prod_of_extents_impl<integer_se
 // ---------- extents_storage ----------
 
 template<typename IndexType, std::size_t RankDynamic /* > 0 */, std::size_t... Extents>
-struct extents_storage {
+class extents_storage {
+  template<typename OtherIndexType, std::size_t OtherRankDynamic, std::size_t... OtherExtents>
+  friend class extents_storage;
+
+ public:
   using rank_type = std::size_t;
 
   static constexpr rank_type   kRank           = sizeof...(Extents);
@@ -117,11 +124,11 @@ struct extents_storage {
       extents_same_dynamic_positions<std::index_sequence<Extents...>, std::index_sequence<OtherExtents...>>
   ::value, int> = 0>
   constexpr extents_storage(const extents_storage<OtherIndexType, OtherRankDynamic, OtherExtents...>& other) noexcept
-      : dynamic_extents_(other.dynamic_extents_) {}
+      : extents_storage(other.dynamic_extents_, std::make_index_sequence<RankDynamic>{}, std::true_type{}) {}
 
   template<typename OtherIndexType, std::size_t OtherRankDynamic, std::size_t... OtherExtents, std::size_t... I>
   constexpr explicit extents_storage(const extents_storage<OtherIndexType, OtherRankDynamic, OtherExtents...>& other, std::index_sequence<I...>) noexcept
-      : dynamic_extents_{other.extent(dynamic_index_inv(I))...} {}
+      : dynamic_extents_{static_cast<IndexType>(other.extent(dynamic_index_inv(I)))...} {}
 
   template<typename OtherIndexType, std::size_t OtherRankDynamic, std::size_t... OtherExtents, std::enable_if_t<
       negation<extents_same_dynamic_positions<std::index_sequence<Extents...>, std::index_sequence<OtherExtents...>>>
@@ -130,19 +137,19 @@ struct extents_storage {
       : extents_storage(other, std::make_index_sequence<RankDynamic>{}) {}
 
   template<typename SpanOrArray, std::size_t... d>
-  constexpr explicit extents_storage(SpanOrArray&& exts, std::index_sequence<d...>, std::true_type /* N == rank_dynamic() */)
-      : dynamic_extents_{preview::as_const(exts[d])...} {}
+  constexpr explicit extents_storage(SpanOrArray&& exts, std::index_sequence<d...>, std::true_type /* N == rank_dynamic() */) noexcept
+      : dynamic_extents_{static_cast<IndexType>(preview::as_const(exts[d]))...} {}
 
   template<typename SpanOrArray, std::size_t... d>
-  constexpr explicit extents_storage(SpanOrArray&& exts, std::index_sequence<d...>, std::false_type /* N == rank_dynamic() */)
-      : dynamic_extents_{preview::as_const(exts[dynamic_index_inv(d)])...} {}
+  constexpr explicit extents_storage(SpanOrArray&& exts, std::index_sequence<d...>, std::false_type /* N == rank_dynamic() */) noexcept
+      : dynamic_extents_{static_cast<IndexType>(preview::as_const(exts[dynamic_index_inv(d)]))...} {}
 
   template<typename OtherIndexType, std::size_t N>
-  constexpr extents_storage(span<OtherIndexType, N> exts)
+  constexpr extents_storage(span<OtherIndexType, N> exts) noexcept
       : extents_storage(exts, std::make_index_sequence<RankDynamic>{}, bool_constant<N == RankDynamic>{}){}
 
   template<typename OtherIndexType, std::size_t N, std::size_t... I>
-  constexpr extents_storage(const std::array<OtherIndexType, N>& exts)
+  constexpr extents_storage(const std::array<OtherIndexType, N>& exts) noexcept
       : extents_storage(exts, std::make_index_sequence<RankDynamic>{}, bool_constant<N == RankDynamic>{}){}
 
   constexpr IndexType extent(rank_type i) const noexcept {
@@ -171,6 +178,12 @@ struct extents_storage {
     return p;
   }
 
+  constexpr IndexType extent_dynamic(rank_type i) const noexcept {
+    return dynamic_extents_[i];
+  }
+ protected:
+  static constexpr bool index_space_is_representable() noexcept { return true; }
+
  private:
   using extents_sequence    = std::index_sequence<Extents...>;
   using dynamic_index_t     = extents_dynamic_index<extents_sequence>;
@@ -178,8 +191,9 @@ struct extents_storage {
 
   template<typename Other>
   constexpr bool my_static_extent_is_equal_to_other_extent(const Other& other) const noexcept {
+    using namespace preview::rel_ops;
     for (rank_type r = 0; r < kRank; ++r) {
-      if (kExtents[r] != dynamic_extent && kExtents[r] != other.extent(r))
+      if (kExtents[r] != dynamic_extent && kExtents[r] != static_cast<IndexType>(other.extent(r)))
         return false;
     }
     return true;
@@ -189,7 +203,8 @@ struct extents_storage {
 };
 
 template<typename IndexType, std::size_t... Extents>
-struct extents_storage<IndexType, 0, Extents...> {
+class extents_storage<IndexType, 0, Extents...> {
+ public:
   using rank_type = std::size_t;
 
   static constexpr rank_type   kRank           = sizeof...(Extents);
@@ -197,23 +212,23 @@ struct extents_storage<IndexType, 0, Extents...> {
 
   constexpr extents_storage() noexcept = default;
 
-  template<typename OtherIndexType, std::size_t RankDynamic, std::size_t... OtherExtents, std::enable_if_t<RankDynamic != 0, int> = 0>
+  template<typename OtherIndexType, std::size_t RankDynamic, std::size_t... OtherExtents>
   constexpr extents_storage(const extents_storage<OtherIndexType, RankDynamic, OtherExtents...>& other) noexcept {
     // Preconditions
     PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_extent(other));
   }
 
   template<typename OtherIndexType, std::size_t N>
-  constexpr extents_storage(PREVIEW_MAYBE_UNUSED span<OtherIndexType, N> exts) {
+  constexpr extents_storage(PREVIEW_MAYBE_UNUSED span<OtherIndexType, N> exts) noexcept {
     // Preconditions
-    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(exts));
+    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript<N>(exts));
     PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
   }
 
   template<typename OtherIndexType, std::size_t N>
-  constexpr extents_storage(PREVIEW_MAYBE_UNUSED const std::array<OtherIndexType, N>& exts) {
+  constexpr extents_storage(PREVIEW_MAYBE_UNUSED const std::array<OtherIndexType, N>& exts) noexcept {
     // Preconditions
-    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(exts));
+    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript<N>(exts));
     PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
   }
 
@@ -231,28 +246,45 @@ struct extents_storage<IndexType, 0, Extents...> {
   constexpr std::size_t rev_prod_of_extents(rank_type i) const noexcept {
     return extents_rev_prod_of_extents<std::index_sequence<Extents...>>::value[i];
   }
+ protected:
+  static constexpr bool index_space_is_representable() noexcept {
+    IndexType space = 1;
+    for (rank_type r = 0; r < kRank; ++r) {
+      if (kExtents[r] != 0)
+        space *= kExtents[r];
+    }
+    for (rank_type r = 0; r < kRank; ++r) {
+      if (kExtents[r] != 0)
+        space /= kExtents[r];
+    }
+    return space == 1;
+  }
 
  private:
   template<typename Other>
   constexpr bool my_static_extent_is_equal_to_other_extent(const Other& other) const noexcept {
+    using namespace preview::rel_ops;
     for (rank_type r = 0; r < kRank; ++r) {
-      if (kExtents[r] != dynamic_extent && kExtents[r] != other.extent(r))
+      if (kExtents[r] != dynamic_extent && kExtents[r] != static_cast<IndexType>(other.extent(r)))
         return false;
     }
     return true;
   }
 
-  template<typename Other>
+  template<std::size_t N, typename Other>
   constexpr bool my_static_extent_is_equal_to_other_subscript(const Other& other) const noexcept {
-    for (rank_type r = 0; r < kRank; ++r) {
-      if (kExtents[r] != dynamic_extent && kExtents[r] != other[r])
-        return false;
+    if (N != 0) {
+      using namespace preview::rel_ops;
+      for (rank_type r = 0; r < kRank; ++r) {
+        if (kExtents[r] != dynamic_extent && kExtents[r] != static_cast<IndexType>(other[r]))
+          return false;
+      }
     }
     return true;
   }
 };
 
-struct extents_prod_helper {
+struct extents_helper {
   template<typename Extents>
   static constexpr std::size_t fwd_prod_of_extents(const Extents& e, std::size_t r) noexcept {
     return e.fwd_prod_of_extents(r);
@@ -261,6 +293,21 @@ struct extents_prod_helper {
   template<typename Extents>
   static constexpr std::size_t rev_prod_of_extents(const Extents& e, std::size_t r) noexcept {
     return e.rev_prod_of_extents(r);
+  }
+
+  template<typename Extents, typename OtherIndexType>
+  static constexpr auto index_cast(OtherIndexType&& i) noexcept {
+    return Extents::index_cast(std::forward<OtherIndexType>(i));
+  }
+
+  template<typename Extents>
+  static constexpr auto extent_dynamic(const Extents& e, typename Extents::rank_type r) noexcept {
+    return e.extent_dynamic(r);
+  }
+
+  template<typename Extent>
+  static constexpr bool index_space_is_representable() noexcept {
+    return Extent::index_space_is_representable();
   }
 };
 
@@ -273,18 +320,42 @@ class extents
         integer_sequence_count<std::index_sequence<Extents...>, dynamic_extent>::value,
         Extents...>
 {
+  static_assert(integer_like<IndexType>::value, "IndexType must be signed or unsigned integral type");
+  static_assert(conjunction_v<bool_constant<
+                    (Extents == dynamic_extent) ||
+                    (Extents <= std::numeric_limits<IndexType>::max())>...>,
+      "Extents must be either equal to dynamic_extent, or is representable as a value of type IndexType");
+
   using storage_base = detail::extents_storage<
       IndexType,
       integer_sequence_count<std::index_sequence<Extents...>, dynamic_extent>::value,
       Extents...>;
+
+  constexpr const storage_base& base() const noexcept { return *this; }
 
   template<typename OtherIndexType, std::size_t... OtherExtents>
   friend class extents;
 
   using storage_base::fwd_prod_of_extents;
   using storage_base::rev_prod_of_extents;
+  using storage_base::index_space_is_representable;
 
-  friend struct detail::extents_prod_helper;
+  template<typename OtherIndexType, std::enable_if_t<conjunction_v<
+      std::is_integral<remove_cvref_t<OtherIndexType>>,
+      negation<std::is_same<remove_cvref_t<OtherIndexType>, bool>>
+  >, int> = 0>
+  static constexpr auto index_cast(OtherIndexType&& i) noexcept {
+    return i;
+  }
+  template<typename OtherIndexType, std::enable_if_t<!conjunction_v<
+      std::is_integral<remove_cvref_t<OtherIndexType>>,
+      negation<std::is_same<remove_cvref_t<OtherIndexType>, bool>>
+  >, int> = 0>
+  static constexpr auto index_cast(OtherIndexType&& i) noexcept {
+    return static_cast<index_type>(i);
+  }
+
+  friend struct detail::extents_helper;
 
  public:
   using index_type = IndexType;
@@ -310,7 +381,7 @@ class extents
       >
   >::value, int> = 0>
   constexpr explicit extents(const extents<OtherIndexType, OtherExtents...>& other) noexcept
-      : storage_base(other) {}
+      : storage_base(other.base()) {}
 
   template<typename OtherIndexType, std::size_t... OtherExtents, std::enable_if_t<conjunction<
       bool_constant<sizeof...(OtherExtents) == rank()>,
@@ -322,7 +393,7 @@ class extents
       >>
   >::value, int> = 0>
   constexpr extents(const extents<OtherIndexType, OtherExtents...>& other) noexcept
-      : storage_base(other) {}
+      : storage_base(other.base()) {}
 
   template<typename... OtherIndexType, std::enable_if_t<conjunction<
       std::is_convertible<OtherIndexType, index_type>...,
@@ -398,7 +469,23 @@ class extents
   }
 };
 
+#if PREVIEW_CXX_VERSION >= 17
+
+template<typename... Integrals>
+extents(Integrals...)
+    -> extents<
+        std::enable_if_t<conjunction_v<std::is_convertible<Integrals, std::size_t>...>, std::size_t>,
+        detail::maybe_static_ext<Integrals>::value...
+    >;
+
+#endif
+
 namespace detail {
+
+template<typename T>
+struct is_extents : std::false_type {};
+template<typename IndexType, std::size_t... Args>
+struct is_extents<extents<IndexType, Args...>> : std::true_type {};
 
 template<typename IndexType, std::size_t Rank, typename Helper = std::make_index_sequence<Rank>>
 struct dextents_helper;
