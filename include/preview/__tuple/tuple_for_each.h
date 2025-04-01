@@ -33,12 +33,17 @@ template<typename Tuple, typename F>
 struct tuple_for_each_invocable
     : tuple_for_each_invocable_impl<Tuple, F, tuple_index_sequence<Tuple>> {};
 
-template<typename Tuple, typename F, std::size_t... I>
+template<typename Tuple, typename F, std::size_t... I, std::enable_if_t<(sizeof...(I) > 0), int> = 0>
 constexpr void tuple_for_each_impl(std::index_sequence<I...>, Tuple&& t, F&& f) {
   int dummy[] = {
       (preview::invoke(f, std::get<I>(std::forward<Tuple>(t))), 0)...
   };
   (void)dummy;
+}
+
+template<typename Tuple, typename F>
+constexpr void tuple_for_each_impl(std::index_sequence<>, Tuple&&, F&&) {
+  // no-op
 }
 
 template<typename Tuple, typename F, typename Seq>

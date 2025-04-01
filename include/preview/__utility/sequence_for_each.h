@@ -27,6 +27,19 @@ struct sequence_for_each_invocable<std::integer_sequence<T, v...>, F, Args...>
           is_invocable<F, std::integral_constant<T, v>, Args...>...
       > {};
 
+template<typename T, T... v, typename F, typename... Args, std::enable_if_t<(sizeof...(v) > 0), int> = 0>
+constexpr void sequence_for_each_impl(std::integer_sequence<T, v...>, F&& f, Args&&... args) {
+  int dummy[] = {
+      (preview::invoke(f, std::integral_constant<T, v>{}, std::forward<Args>(args)...), 0)...
+  };
+  (void)dummy;
+}
+
+template<typename T, typename F, typename... Args>
+constexpr void sequence_for_each_impl(std::integer_sequence<T>, F&&, Args&&...) {
+  // no-op
+}
+
 } // namespace detail
 
 
@@ -38,10 +51,7 @@ sequence_for_each(std::integer_sequence<T, v...>, F&& f, Args&&... args)
         bool_constant<noexcept(preview::invoke(f, std::integral_constant<T, v>{}))>...
     >::value)
 {
-  int dummy[] = {
-      (preview::invoke(f, std::integral_constant<T, v>{}, std::forward<Args>(args)...), 0)...
-  };
-  (void)dummy;
+  preview::detail::sequence_for_each_impl(std::integer_sequence<T, v...>{}, std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 // performs f(std::integral_constant<T, i>{}, args...) for i in [0, N)
