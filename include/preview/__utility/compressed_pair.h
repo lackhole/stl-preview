@@ -31,7 +31,8 @@ struct basic_compressed_slot {
     std::is_constructible<T, Args...>
   >::value, int> = 0>
   constexpr basic_compressed_slot(Args&&... args)
-    : value_(std::forward<Args>(args)...) {}
+      noexcept(std::is_nothrow_constructible<T, Args...>::value)
+      : value_(std::forward<Args>(args)...) {}
 
   constexpr       T&  value()       &  noexcept { return value_; }
   constexpr const T&  value() const &  noexcept { return value_; }
@@ -49,7 +50,8 @@ struct basic_compressed_slot<T, true> : public T {
     std::is_constructible<T, Args...>
   >::value, int> = 0>
   constexpr basic_compressed_slot(Args&&... args)
-    : T(std::forward<Args>(args)...) {}
+      noexcept(std::is_nothrow_constructible<T, Args...>::value)
+      : T(std::forward<Args>(args)...) {}
 
   constexpr       T&  value()       &  noexcept { return static_cast<      T& >(*this); }
   constexpr const T&  value() const &  noexcept { return static_cast<const T& >(*this); }
@@ -281,6 +283,9 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
 
   compressed_pair(const compressed_pair&) = default;
   compressed_pair(compressed_pair&&) = default;
+
+  compressed_pair& operator=(const compressed_pair&) = default;
+  compressed_pair& operator=(compressed_pair&&) = default;
 
   constexpr       T&  first()       &  noexcept { return first_base::value(); }
   constexpr const T&  first() const &  noexcept { return first_base::value(); }

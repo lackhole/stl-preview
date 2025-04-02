@@ -138,8 +138,16 @@ class layout_right::mapping {
   }
 
 #if !PREVIEW_CONFORM_CXX20_STANDARD
+  friend constexpr bool operator==(const mapping& x, const mapping& y) noexcept {
+    return x.extents() == y.extents();
+  }
+
   template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>
   friend constexpr bool operator!=(const mapping& x, const mapping<OtherExtents>& y) noexcept {
+    return !(x == y);
+  }
+
+  friend constexpr bool operator!=(const mapping& x, const mapping& y) noexcept {
     return !(x == y);
   }
 #endif

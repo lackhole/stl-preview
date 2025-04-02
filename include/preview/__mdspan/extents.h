@@ -43,6 +43,9 @@ struct static_array {
   static constexpr T value[size] = {I...};
 };
 
+template<typename T, T... I>
+constexpr T static_array<T, I...>::value[size];
+
 template<typename Seq1, typename Seq2>
 struct extents_same_dynamic_positions;
 
@@ -202,6 +205,9 @@ class extents_storage {
   std::array<IndexType, RankDynamic> dynamic_extents_{};
 };
 
+template<typename IndexType, std::size_t RankDynamic, std::size_t... Extents>
+constexpr std::size_t extents_storage<IndexType, RankDynamic, Extents...>::kExtents[kRank];
+
 template<typename IndexType, std::size_t... Extents>
 class extents_storage<IndexType, 0, Extents...> {
  public:
@@ -283,6 +289,9 @@ class extents_storage<IndexType, 0, Extents...> {
     return true;
   }
 };
+
+template<typename IndexType, std::size_t... Extents>
+constexpr std::size_t extents_storage<IndexType, 0, Extents...>::kExtents[kRank];
 
 struct extents_helper {
   template<typename Extents>

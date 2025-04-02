@@ -5,7 +5,7 @@
 #ifndef PREVIEW_CORE_DEPRECATED_H_
 #define PREVIEW_CORE_DEPRECATED_H_
 
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 
 #define PREVIEW_DEPRECATED(message) [[deprecated(message)]]
 

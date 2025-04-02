@@ -151,11 +151,6 @@ class layout_left::mapping : private Extents {
   }
 
 #if !PREVIEW_CONFORM_CXX20_STANDARD
-  template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>
-  friend constexpr bool operator==(const mapping<OtherExtents>& x, const mapping& y) noexcept {
-    return y == x;
-  }
-
   friend constexpr bool operator==(const mapping& x, const mapping& y) noexcept {
     return x.extents() == y.extents();
   }
@@ -165,13 +160,8 @@ class layout_left::mapping : private Extents {
     return !(x == y);
   }
 
-  template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>
-  friend constexpr bool operator!=(const mapping<OtherExtents>& x, const mapping& y) noexcept {
-    return !(y == x);
-  }
-
   friend constexpr bool operator!=(const mapping& x, const mapping& y) noexcept {
-    return x.extents() == y.extents();
+    return !(x == y);
   }
 #endif
 
