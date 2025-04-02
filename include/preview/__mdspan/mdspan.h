@@ -12,8 +12,6 @@
 #include "preview/__core/deprecated.h"
 #include "preview/__mdspan/default_accessor.h"
 #include "preview/__mdspan/extents.h"
-#include "preview/__mdspan/layout_backward_declare.h"
-#include "preview/__mdspan/layout_stride.h"
 #include "preview/span.h"
 #include "preview/__utility/as_const.h"
 #include "preview/__utility/compressed_pair.h"
@@ -34,20 +32,20 @@ struct mdspan_storage_base : compressed_pair<AccessorType, MappingType> {
 #endif
       = default;
 
-  template<typename MappingArg>
-  constexpr mdspan_storage_base(DataHandleType ptr, MappingArg&& marg)
+  template<typename DataHandleArg, typename MappingArg>
+  constexpr mdspan_storage_base(DataHandleArg&& ptr, MappingArg&& marg)
       : pair{AccessorType{}, MappingType{std::forward<MappingArg>(marg)}}
-      , ptr_{std::move(ptr)} {}
+      , ptr_{std::forward<DataHandleArg>(ptr)} {}
 
-  template<typename MappingArg>
-  constexpr mdspan_storage_base(DataHandleType ptr, MappingArg&& marg, const AccessorType& a)
+  template<typename DataHandleArg, typename MappingArg>
+  constexpr mdspan_storage_base(DataHandleArg&& ptr, MappingArg&& marg, const AccessorType& a)
       : pair{a, MappingType{std::forward<MappingArg>(marg)}}
-      , ptr_{std::move(ptr)} {}
+      , ptr_{std::forward<DataHandleArg>(ptr)} {}
 
-  template<typename MappingArg, typename OtherAccessorType>
-  constexpr mdspan_storage_base(DataHandleType ptr, MappingArg&& marg, const OtherAccessorType& a)
+  template<typename DataHandleArg, typename MappingArg, typename OtherAccessorType>
+  constexpr mdspan_storage_base(DataHandleArg&& ptr, MappingArg&& marg, const OtherAccessorType& a)
       : pair{a, MappingType{std::forward<MappingArg>(marg)}}
-      , ptr_{std::move(ptr)} {}
+      , ptr_{std::forward<DataHandleArg>(ptr)} {}
 
   constexpr       AccessorType& accessor()       noexcept { return pair::first(); }
   constexpr const AccessorType& accessor() const noexcept { return pair::first(); }
