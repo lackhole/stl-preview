@@ -26,8 +26,13 @@ struct mdspan_storage_base : compressed_pair<AccessorType, MappingType> {
   using pair = compressed_pair<AccessorType, MappingType>;
 
   constexpr mdspan_storage_base()
+#if defined(__clang__) && __clang_major__ <= 8 && __clang_minor__ < 1
+
+#else
       noexcept(std::is_nothrow_constructible<pair>::value &&
-               std::is_nothrow_constructible<DataHandleType>::value) = default;
+               std::is_nothrow_constructible<DataHandleType>::value)
+#endif
+      = default;
 
   template<typename MappingArg>
   constexpr mdspan_storage_base(DataHandleType ptr, MappingArg&& marg)
