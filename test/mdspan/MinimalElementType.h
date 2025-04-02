@@ -13,6 +13,11 @@
 
 #include "preview/memory.h"
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4244)
+#endif
+
 // Idiosyncratic element type for mdspan
 // Make sure we don't assume copyable, default constructible, movable etc.
 struct MinimalElementType {
@@ -43,5 +48,9 @@ struct ElementPool {
 private:
   std::remove_const_t<T>* ptr_;
 };
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif // TEST_STD_CONTAINERS_VIEWS_MDSPAN_MINIMAL_ELEMENT_TYPE_H

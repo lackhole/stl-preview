@@ -23,6 +23,7 @@ VERSIONED_TYPE_TEST(MdSpanDefaultAccessorCtorDefault, ctor_conversion) {
   using T = TypeParam;
 
   ASSERT_NOEXCEPT(preview::default_accessor<T>{});
-  [[maybe_unused]] preview::default_accessor<T> acc;
+  PREVIEW_MAYBE_UNUSED preview::default_accessor<T> acc;
+  (void)acc;
   static_assert(std::is_trivially_default_constructible<preview::default_accessor<T>>::value, "");
 }

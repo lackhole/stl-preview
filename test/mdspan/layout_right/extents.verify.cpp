@@ -23,10 +23,10 @@
 
 void not_extents() {
   // expected-error-re@*:* {{static assertion failed {{.*}}layout_right::mapping template argument must be a specialization of extents}}
-  [[maybe_unused]] preview::layout_right::mapping<void> mapping;
+  PREVIEW_MAYBE_UNUSED preview::layout_right::mapping<void> mapping;
 }
 
 void representable() {
   // expected-error-re@*:* {{static assertion failed {{.*}}layout_right::mapping product of static extents must be representable as index_type.}}
-  [[maybe_unused]] preview::layout_right::mapping<preview::extents<signed char, 20, 20>> mapping;
+  PREVIEW_MAYBE_UNUSED preview::layout_right::mapping<preview::extents<signed char, 20, 20>> mapping;
 }

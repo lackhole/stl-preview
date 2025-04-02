@@ -27,7 +27,7 @@ VERSIONED_TYPE_TEST(MdSpanDefaultAccessorCtor, ctor_conversion) {
 
   preview::default_accessor<FromT> acc_from;
   ASSERT_NOEXCEPT(preview::default_accessor<ToT>(acc_from));
-  [[maybe_unused]] preview::default_accessor<ToT> acc_to(acc_from);
+  PREVIEW_MAYBE_UNUSED preview::default_accessor<ToT> acc_to(acc_from);
 }
 
 struct Base {};

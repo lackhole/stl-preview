@@ -19,5 +19,5 @@
 
 void not_extents() {
   // expected-error-re@*:* {{static assertion failed {{.*}}mdspan: Extents template parameter must be a specialization of extents.}}
-  [[maybe_unused]] preview::mdspan<int, int> m;
+  PREVIEW_MAYBE_UNUSED preview::mdspan<int, int> m;
 }

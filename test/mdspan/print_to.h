@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "preview/mdspan.h"
+#include "preview/utility.h"
 
 template<typename T>
 struct TypeId {
@@ -97,9 +98,11 @@ void PrintToImpl(const preview::extents<IndexType, Extents...>& e, std::ostream*
   } else {
     *os << "{";
     {
-      PREVIEW_MAYBE_UNUSED int dummy[] = {
-          ((*os << " " << e.extent(I)), 0)...
-      };
+      preview::sequence_for_each(std::index_sequence<I...>{},
+          [os, &e](auto i) {
+            *os << " " << e.extent(i);
+          }
+      );
     }
     *os << " }";
   }
@@ -116,9 +119,11 @@ void PrintToImpl(const std::array<T, N>& arr, std::ostream* os, std::index_seque
   } else {
     *os << "{";
     {
-      PREVIEW_MAYBE_UNUSED int dummy[] = {
-          ((*os << " " << arr[I]), 0)...
-      };
+      preview::sequence_for_each(std::index_sequence<I...>{},
+          [os, &arr](auto i) {
+            *os << " " << arr[i];
+          }
+      );
     }
     *os << " }";
   }

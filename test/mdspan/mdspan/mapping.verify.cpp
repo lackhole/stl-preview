@@ -19,5 +19,5 @@
 
 void not_layout_policy() {
   // expected-error-re@*:* {{static assertion failed {{.*}}mdspan: LayoutPolicy template parameter is invalid. A common mistake is to pass a layout mapping instead of a layout policy}}
-  [[maybe_unused]] preview::mdspan<int, preview::extents<int>, preview::layout_left::mapping<preview::extents<int>>> m;
+  PREVIEW_MAYBE_UNUSED preview::mdspan<int, preview::extents<int>, preview::layout_left::mapping<preview::extents<int>>> m;
 }
