@@ -24,75 +24,17 @@ namespace preview {
 // ---------- layout_left::mapping ----------
 
 template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    bool_constant<(Extents::rank() <= 1)>,
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(true) */ negation<std::is_convertible<OtherExtents, Extents>>
->::value, int>>
-constexpr layout_left::mapping<Extents>::mapping(const layout_right::mapping<OtherExtents>& other) noexcept
-    : extents_base(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    bool_constant<(Extents::rank() <= 1)>,
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(false) */ std::is_convertible<OtherExtents, Extents>
->::value, int>>
-constexpr layout_left::mapping<Extents>::mapping(const layout_right::mapping<OtherExtents>& other) noexcept
-    : extents_base(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(true) */ bool_constant<(Extents::rank() > 0)>
->::value, int>>
-constexpr layout_left::mapping<Extents>::mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
-    : extents_base(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(false) */ bool_constant<!(Extents::rank() > 0)>
->::value, int>>
-constexpr layout_left::mapping<Extents>::mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
-    : extents_base(other.extents()) {}
+template<typename OtherMapping>
+constexpr layout_left::mapping<Extents>::mapping(detail::layout_mapping_ctor_tag, const OtherMapping& m) noexcept
+    : extents_base(m.extents()) {}
 
 
 // ---------- layout_right::mapping ----------
 
 template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    bool_constant<(Extents::rank() <= 1)>,
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(true) */ negation<std::is_convertible<OtherExtents, Extents>>
->::value, int>>
-constexpr layout_right::mapping<Extents>::mapping(const layout_left::mapping<OtherExtents>& other) noexcept
-    : extents_(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    bool_constant<(Extents::rank() <= 1)>,
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(false) */ std::is_convertible<OtherExtents, Extents>
->::value, int>>
-constexpr layout_right::mapping<Extents>::mapping(const layout_left::mapping<OtherExtents>& other) noexcept
-    : extents_(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(true) */ bool_constant<(Extents::rank() > 0)>
->::value, int>>
-constexpr layout_right::mapping<Extents>::mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
-    : extents_(other.extents()) {}
-
-template<typename Extents>
-template<typename OtherExtents, std::enable_if_t<conjunction<
-    std::is_constructible<Extents, OtherExtents>,
-    /* explicit(false) */ bool_constant<!(Extents::rank() > 0)>
->::value, int>>
-constexpr layout_right::mapping<Extents>::mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
-    : extents_(other.extents()) {}
+template<typename OtherMapping>
+constexpr layout_right::mapping<Extents>::mapping(detail::layout_mapping_ctor_tag, const OtherMapping& m) noexcept
+    : extents_(m.extents()) {}
 
 } // namespace preview
 

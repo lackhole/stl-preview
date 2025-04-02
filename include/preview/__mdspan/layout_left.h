@@ -25,6 +25,9 @@ class layout_left::mapping : private Extents {
 
   using extents_base = Extents;
 
+  template<typename OtherMapping>
+  constexpr mapping(detail::layout_mapping_ctor_tag, const OtherMapping& m) noexcept;
+
  public:
   using extents_type = Extents;
   using index_type   = typename extents_type::index_type;
@@ -56,14 +59,16 @@ class layout_left::mapping : private Extents {
       std::is_constructible<extents_type, OtherExtents>,
       /* explicit(true) */ negation<std::is_convertible<OtherExtents, extents_type>>
   >::value, int> = 0>
-  constexpr explicit mapping(const layout_right::mapping<OtherExtents>& other) noexcept;
+  constexpr explicit mapping(const layout_right::mapping<OtherExtents>& other) noexcept
+      : mapping(detail::layout_mapping_ctor_tag{}, other) {}
 
   template<typename OtherExtents, std::enable_if_t<conjunction<
       bool_constant<(extents_type::rank() <= 1)>,
       std::is_constructible<extents_type, OtherExtents>,
       /* explicit(false) */ std::is_convertible<OtherExtents, extents_type>
   >::value, int> = 0>
-  constexpr mapping(const layout_right::mapping<OtherExtents>& other) noexcept;
+  constexpr mapping(const layout_right::mapping<OtherExtents>& other) noexcept
+      : mapping(detail::layout_mapping_ctor_tag{}, other) {}
 
   template<typename LayoutLeftPaddedMapping, std::enable_if_t<conjunction<
       detail::is_layout_left_padded_mapping_of<LayoutLeftPaddedMapping>,
@@ -83,18 +88,19 @@ class layout_left::mapping : private Extents {
 
 
   // TODO: Investigate noexcept
-
   template<typename OtherExtents, std::enable_if_t<conjunction<
       std::is_constructible<extents_type, OtherExtents>,
       /* explicit(true) */ bool_constant<(extents_type::rank() > 0)>
   >::value, int> = 0>
-  constexpr explicit mapping(const layout_stride::mapping<OtherExtents>& other) noexcept;
+  constexpr explicit mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
+      : mapping(detail::layout_mapping_ctor_tag{}, other) {}
 
   template<typename OtherExtents, std::enable_if_t<conjunction<
       std::is_constructible<extents_type, OtherExtents>,
       /* explicit(false) */ bool_constant<!(extents_type::rank() > 0)>
   >::value, int> = 0>
-  constexpr mapping(const layout_stride::mapping<OtherExtents>& other) noexcept;
+  constexpr mapping(const layout_stride::mapping<OtherExtents>& other) noexcept
+      : mapping(detail::layout_mapping_ctor_tag{}, other) {}
 
   constexpr mapping& operator=(const mapping&) noexcept = default;
 
@@ -102,7 +108,7 @@ class layout_left::mapping : private Extents {
   constexpr const extents_type& extents() const noexcept { return static_cast<const extents_type&>(*this); }
 
   constexpr index_type required_span_size() const noexcept {
-    return detail::extents_helper::fwd_prod_of_extents(extents(), extents_type::rank());
+    return static_cast<index_type>(detail::extents_helper::fwd_prod_of_extents(extents(), extents_type::rank()));
   }
 
 #if PREVIEW_CXX_VERSION < 17
@@ -141,7 +147,7 @@ class layout_left::mapping : private Extents {
 
   template<typename Dummy = void, std::enable_if_t<std::is_void<Dummy>::value && (extents_type::rank() > 0), int> = 0>
   constexpr index_type stride(rank_type i) const noexcept {
-    return detail::extents_helper::fwd_prod_of_extents(extents(), i);
+    return static_cast<index_type>(detail::extents_helper::fwd_prod_of_extents(extents(), i));
   }
 
   template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>

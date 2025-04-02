@@ -19,6 +19,8 @@
 namespace preview {
 namespace detail {
 
+struct layout_mapping_ctor_tag {};
+
 template<typename Layout, typename Mapping>
 struct is_mapping_of : std::is_same<typename Layout::template mapping<typename Mapping::extents_type>, Mapping> {};
 

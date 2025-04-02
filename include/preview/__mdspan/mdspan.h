@@ -257,7 +257,7 @@ class mdspan {
   }
 
   constexpr size_type size() const noexcept {
-    return detail::extents_helper::fwd_prod_of_extents(extents(), rank());
+    return static_cast<size_type>(detail::extents_helper::fwd_prod_of_extents(extents(), rank()));
   }
   constexpr bool empty() const noexcept {
     return size() == 0;

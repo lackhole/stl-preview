@@ -156,7 +156,7 @@ class extents_storage {
       : extents_storage(exts, std::make_index_sequence<RankDynamic>{}, bool_constant<N == RankDynamic>{}){}
 
   constexpr IndexType extent(rank_type i) const noexcept {
-    return kExtents[i] == dynamic_extent ? dynamic_extents_[dynamic_index(i)] : kExtents[i];
+    return kExtents[i] == dynamic_extent ? dynamic_extents_[dynamic_index(i)] : static_cast<IndexType>(kExtents[i]);
   }
   static constexpr rank_type dynamic_index(rank_type i) noexcept {
     return dynamic_index_t::value[i];
@@ -214,7 +214,8 @@ class extents_storage<IndexType, 0, Extents...> {
   using rank_type = std::size_t;
 
   static constexpr rank_type   kRank           = sizeof...(Extents);
-  static constexpr std::size_t kExtents[kRank] = {Extents...};
+  // TODO: Remove +1
+  static constexpr std::size_t kExtents[kRank + 1] = {Extents..., std::size_t{}};
 
   constexpr extents_storage() noexcept = default;
 
@@ -239,7 +240,7 @@ class extents_storage<IndexType, 0, Extents...> {
   }
 
   constexpr IndexType extent(rank_type i) const noexcept {
-    return kExtents[i];
+    return static_cast<IndexType>(kExtents[i]);
   }
   static constexpr rank_type dynamic_index(rank_type) noexcept {
     return 0;
@@ -257,11 +258,11 @@ class extents_storage<IndexType, 0, Extents...> {
     IndexType space = 1;
     for (rank_type r = 0; r < kRank; ++r) {
       if (kExtents[r] != 0)
-        space *= kExtents[r];
+        space *= static_cast<IndexType>(kExtents[r]);
     }
     for (rank_type r = 0; r < kRank; ++r) {
       if (kExtents[r] != 0)
-        space /= kExtents[r];
+        space /= static_cast<IndexType>(kExtents[r]);
     }
     return space == 1;
   }
@@ -291,7 +292,7 @@ class extents_storage<IndexType, 0, Extents...> {
 };
 
 template<typename IndexType, std::size_t... Extents>
-constexpr std::size_t extents_storage<IndexType, 0, Extents...>::kExtents[kRank];
+constexpr std::size_t extents_storage<IndexType, 0, Extents...>::kExtents[kRank + 1];
 
 struct extents_helper {
   template<typename Extents>
