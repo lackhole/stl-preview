@@ -59,12 +59,17 @@ template<typename Tuple, typename F>
 struct tuple_for_each_in_place_index_invocable
     : tuple_for_each_in_place_index_invocable_impl<Tuple, F, tuple_index_sequence<Tuple>> {};
 
-template<typename Tuple, typename F, std::size_t... I>
+template<typename Tuple, typename F, std::size_t... I, std::enable_if_t<(sizeof...(I) > 0), int> = 0>
 constexpr void tuple_for_each_index_impl(std::index_sequence<I...>, Tuple&& t, F&& f) {
   int dummy[] = {
       (preview::invoke(f, std::get<I>(std::forward<Tuple>(t)), std::integral_constant<std::size_t, I>{}), 0)...
   };
   (void)dummy;
+}
+
+template<typename Tuple, typename F>
+constexpr void tuple_for_each_index_impl(std::index_sequence<>, Tuple&&, F&&) {
+  // no-op
 }
 
 } // namespace detail
