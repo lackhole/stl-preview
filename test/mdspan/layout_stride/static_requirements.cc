@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "../../test_utils.h"
+#include "../print_to.h"
 
 // Common requirements of all layout mappings
 template <class M, size_t... Idxs>

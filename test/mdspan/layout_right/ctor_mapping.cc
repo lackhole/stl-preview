@@ -24,12 +24,13 @@
 #include "preview/mdspan.h"
 #include "preview/span.h" // dynamic_extent
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template <class To, class From>
 constexpr void test_implicit_conversion(To dest, From src) {
-  ASSERT_EQ(dest, src);
+  EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 }
 
 template <bool implicit, class ToE, class FromE>
@@ -41,11 +42,13 @@ constexpr void test_conversion(FromE src_exts) {
   ASSERT_NOEXCEPT(To(src));
   To dest(src);
 
-  ASSERT_EQ(dest, src);
+  EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 #if PREVIEW_CXX_VERSION >= 17
   if constexpr (implicit) {
     dest = src;
-    ASSERT_EQ(dest, src);
+    EXPECT_EQ(dest, src);
+    EXPECT_EQ(src, dest);
     test_implicit_conversion<To, From>(src, src);
   }
 #endif
@@ -122,7 +125,7 @@ constexpr void test_static_extent_mismatch() {
   static_assert(!std::is_constructible<mapping_t<int, 5, D>, mapping_t<int, 4, D>>::value, "");
 }
 
-TEST(MdSpanLayoutRight, VERSIONED(ctor_layout_left)) {
+TEST(MdSpanLayoutRight, VERSIONED(ctor_mapping)) {
   test_conversion<int, int>();
   test_conversion<int, size_t>();
   test_conversion<size_t, int>();

@@ -4,8 +4,10 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
+#include "../print_to.h"
 
 template <class E, class... Args>
 constexpr void test_stride(std::array<typename E::index_type, E::rank()> strides, Args... args) {
@@ -18,7 +20,7 @@ constexpr void test_stride(std::array<typename E::index_type, E::rank()> strides
 
   ASSERT_NOEXCEPT(m.strides());
   auto strides_out = m.strides();
-  static_assert(std::is_same<decltype(strides_out), std::array<typename E::index_type, E::rank()>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_same<decltype(strides_out), std::array<typename E::index_type, E::rank()>>::value);
   for (size_t r = 0; r < E::rank(); r++)
     ASSERT_EQ(strides[r], strides_out[r]);
 }

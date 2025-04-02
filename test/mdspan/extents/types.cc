@@ -6,7 +6,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template<typename T>
@@ -27,14 +29,14 @@ void testExtents() {
   EXPECT_EQ_TYPE(typename E::size_type, std::make_unsigned_t<IndexType>);
   EXPECT_EQ_TYPE(typename E::rank_type, size_t);
 
-  static_assert(sizeof...(Extents) == E::rank(), "");
+  PREVIEW_STATIC_ASSERT(sizeof...(Extents) == E::rank());
 #if PREVIEW_CXX_VERSION >= 17
-  static_assert((static_cast<size_t>(Extents == preview::dynamic_extent) + ...) == E::rank_dynamic(), "");
+  PREVIEW_STATIC_ASSERT((static_cast<size_t>(Extents == preview::dynamic_extent) + ...) == E::rank_dynamic());
 #endif
 
-  static_assert(preview::regular<E>::value, "");
-  static_assert(std::is_trivially_copyable<E>::value, "");
-  static_assert(std::is_empty<E>::value == (E::rank_dynamic() == 0), "");
+  PREVIEW_STATIC_ASSERT(preview::regular<E>::value);
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<E>::value);
+  PREVIEW_STATIC_ASSERT(std::is_empty<E>::value == (E::rank_dynamic() == 0));
 }
 
 template <class IndexType, size_t... Extents>

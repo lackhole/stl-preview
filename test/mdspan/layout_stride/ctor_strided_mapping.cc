@@ -4,10 +4,11 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "preview/core.h"
 
-#include "mdspan/CustomTestLayouts.h"
+#include "../../test_utils.h"
+#include "../print_to.h"
+#include "../CustomTestLayouts.h"
 
 template<typename From, typename FromE>
 constexpr From create(const FromE& src_exts, std::true_type) {
@@ -36,12 +37,14 @@ constexpr void test_conversion(FromE src_exts) {
 
   ASSERT_NOEXCEPT(To(src));
   To dest(src);
-  ASSERT_EQ(dest, src);
+  EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 
 #if PREVIEW_CXX_VERSION >= 17
   if constexpr (implicit) {
     To dest_implicit = src;
-    ASSERT_EQ(dest_implicit, src);
+    EXPECT_EQ(dest_implicit, src);
+    EXPECT_EQ(src, dest_implicit);
   } else {
     ASSERT_TRUE((!std::is_convertible<From, To>::value));
   }
@@ -88,47 +91,47 @@ constexpr void test_no_implicit_conversion() {
   constexpr size_t D = preview::dynamic_extent;
 
   // Sanity check that one static to dynamic conversion works
-  static_assert(std::is_constructible<ToM<int, D>, FromM<FromL, int, 5>>::value, "");
-  static_assert(std::is_convertible<FromM<FromL, int, 5>, ToM<int, D>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<int, D>, FromM<FromL, int, 5>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<FromM<FromL, int, 5>, ToM<int, D>>::value);
 
   // Check that dynamic to static conversion only works explicitly
-  static_assert(std::is_constructible<ToM<int, 5>, FromM<FromL, int, D>>::value, "");
-  static_assert(!std::is_convertible<FromM<FromL, int, D>, ToM<int, 5>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<int, 5>, FromM<FromL, int, D>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<FromM<FromL, int, D>, ToM<int, 5>>::value);
 
   // Sanity check that one static to dynamic conversion works
-  static_assert(std::is_constructible<ToM<int, D, 7>, FromM<FromL, int, 5, 7>>::value, "");
-  static_assert(std::is_convertible<FromM<FromL, int, 5, 7>, ToM<int, D, 7>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<int, D, 7>, FromM<FromL, int, 5, 7>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<FromM<FromL, int, 5, 7>, ToM<int, D, 7>>::value);
 
   // Check that dynamic to static conversion only works explicitly
-  static_assert(std::is_constructible<ToM<int, 5, 7>, FromM<FromL, int, D, 7>>::value, "");
-  static_assert(!std::is_convertible<FromM<FromL, int, D, 7>, ToM<int, 5, 7>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<int, 5, 7>, FromM<FromL, int, D, 7>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<FromM<FromL, int, D, 7>, ToM<int, 5, 7>>::value);
 
   // Sanity check that smaller index_type to larger index_type conversion works
-  static_assert(std::is_constructible<ToM<size_t, 5>, FromM<FromL, int, 5>>::value, "");
-  static_assert(std::is_convertible<FromM<FromL, int, 5>, ToM<size_t, 5>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<size_t, 5>, FromM<FromL, int, 5>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<FromM<FromL, int, 5>, ToM<size_t, 5>>::value);
 
   // Check that larger index_type to smaller index_type conversion works explicitly only
-  static_assert(std::is_constructible<ToM<int, 5>, FromM<FromL, size_t, 5>>::value, "");
-  static_assert(!std::is_convertible<FromM<FromL, size_t, 5>, ToM<int, 5>>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToM<int, 5>, FromM<FromL, size_t, 5>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<FromM<FromL, size_t, 5>, ToM<int, 5>>::value);
 }
 
 template <class FromL>
 constexpr void test_rank_mismatch() {
   constexpr size_t D = preview::dynamic_extent;
 
-  static_assert(!std::is_constructible<ToM<int, D>, FromM<FromL, int>>::value, "");
-  static_assert(!std::is_constructible<ToM<int>, FromM<FromL, int, D, D>>::value, "");
-  static_assert(!std::is_constructible<ToM<int, D>, FromM<FromL, int, D, D>>::value, "");
-  static_assert(!std::is_constructible<ToM<int, D, D, D>, FromM<FromL, int, D, D>>::value, "");
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, D>, FromM<FromL, int>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int>, FromM<FromL, int, D, D>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, D>, FromM<FromL, int, D, D>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, D, D, D>, FromM<FromL, int, D, D>>::value);
 }
 
 template <class FromL>
 constexpr void test_static_extent_mismatch() {
   constexpr size_t D = preview::dynamic_extent;
 
-  static_assert(!std::is_constructible<ToM<int, D, 5>, FromM<FromL, int, D, 4>>::value, "");
-  static_assert(!std::is_constructible<ToM<int, 5>, FromM<FromL, int, 4>>::value, "");
-  static_assert(!std::is_constructible<ToM<int, 5, D>, FromM<FromL, int, 4, D>>::value, "");
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, D, 5>, FromM<FromL, int, D, 4>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, 5>, FromM<FromL, int, 4>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ToM<int, 5, D>, FromM<FromL, int, 4, D>>::value);
 }
 
 template <class FromL>

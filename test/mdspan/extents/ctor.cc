@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 #include <tuple>
@@ -182,8 +182,14 @@ struct IntegralCtorTest {
   template <class E, class AllExtents, class Extents, size_t... Indices>
   static testing::AssertionResult test_construction(AllExtents all_ext, Extents ext, std::index_sequence<Indices...>) {
     // construction from indices
-    ASSERT_NOEXCEPT(E(ext[Indices]...));
-    return test_runtime_observers(E(ext[Indices]...), all_ext);
+    // Split to impl since some implementation doesn't define operator[] as noexcept
+    return test_construction_impl<E>(std::move(all_ext), ext[Indices]...);
+  }
+
+  template <class E, class AllExtents, typename... Extents>
+  static testing::AssertionResult test_construction_impl(AllExtents all_ext, Extents... exts) {
+    ASSERT_NOEXCEPT(E(exts...));
+    return test_runtime_observers(E(exts...), all_ext);
   }
 };
 

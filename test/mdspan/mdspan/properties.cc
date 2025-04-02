@@ -51,13 +51,14 @@
 //    - is_nothrow_swappable_v<MDS> is true.
 // A specialization of mdspan is a trivially copyable type if its accessor_type, mapping_type, and data_handle_type are trivially copyable types.
 
-#include <mdspan>
-#include <cassert>
-#include <concepts>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/concepts.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -70,110 +71,114 @@ constexpr void test_mdspan_types(const H& handle, const M& map, const A& acc) {
   // =====================================
   // Traits for every mdspan
   // =====================================
-  static_assert(std::copyable<MDS>);
-  static_assert(std::is_nothrow_move_constructible_v<MDS>);
-  static_assert(std::is_nothrow_move_assignable_v<MDS>);
-  static_assert(std::is_nothrow_swappable_v<MDS>);
+  PREVIEW_STATIC_ASSERT(preview::copyable<MDS>::value);
+  PREVIEW_STATIC_ASSERT(std::is_nothrow_move_constructible<MDS>::value);
+  PREVIEW_STATIC_ASSERT(std::is_nothrow_move_assignable<MDS>::value);
+  PREVIEW_STATIC_ASSERT(preview::is_nothrow_swappable_v<MDS>);
 
   // =====================================
   // Invariants coming from data handle
   // =====================================
   // data_handle()
-  ASSERT_SAME_TYPE(decltype(m.data_handle()), const H&);
+  EXPECT_EQ_TYPE(decltype(m.data_handle()), const H&);
   ASSERT_NOEXCEPT(m.data_handle());
-  if constexpr (std::equality_comparable<H>) {
-    assert(m.data_handle() == handle);
+#if PREVIEW_CXX_VERSION >= 17
+  if constexpr (preview::equality_comparable<H>::value) {
+    EXPECT_EQ(m.data_handle(), handle);
   }
+#endif
 
   // =====================================
   // Invariants coming from extents
   // =====================================
 
   // extents()
-  ASSERT_SAME_TYPE(decltype(m.extents()), const typename MDS::extents_type&);
+  EXPECT_EQ_TYPE(decltype(m.extents()), const typename MDS::extents_type&);
   ASSERT_NOEXCEPT(m.extents());
-  assert(m.extents() == map.extents());
+  EXPECT_EQ(m.extents(), map.extents());
 
   // rank()
-  ASSERT_SAME_TYPE(decltype(m.rank()), typename MDS::rank_type);
+  EXPECT_EQ_TYPE(decltype(m.rank()), typename MDS::rank_type);
   ASSERT_NOEXCEPT(m.rank());
-  assert(MDS::rank() == MDS::extents_type::rank());
+  EXPECT_EQ(MDS::rank(), MDS::extents_type::rank());
 
   // rank_dynamic()
-  ASSERT_SAME_TYPE(decltype(m.rank_dynamic()), typename MDS::rank_type);
+  EXPECT_EQ_TYPE(decltype(m.rank_dynamic()), typename MDS::rank_type);
   ASSERT_NOEXCEPT(m.rank_dynamic());
-  assert(MDS::rank_dynamic() == MDS::extents_type::rank_dynamic());
+  EXPECT_EQ(MDS::rank_dynamic(), MDS::extents_type::rank_dynamic());
 
   // extent(r), static_extent(r), size()
-  if constexpr (MDS::rank() > 0) {
+  if PREVIEW_CONSTEXPR_AFTER_CXX17 (MDS::rank() > 0) {
     typename MDS::size_type size = 1;
     for (typename MDS::rank_type r = 0; r < MDS::rank(); r++) {
-      ASSERT_SAME_TYPE(decltype(MDS::static_extent(r)), size_t);
+      EXPECT_EQ_TYPE(decltype(MDS::static_extent(r)), size_t);
       ASSERT_NOEXCEPT(MDS::static_extent(r));
-      assert(MDS::static_extent(r) == MDS::extents_type::static_extent(r));
-      ASSERT_SAME_TYPE(decltype(m.extent(r)), typename MDS::index_type);
+      EXPECT_EQ(MDS::static_extent(r), MDS::extents_type::static_extent(r));
+      EXPECT_EQ_TYPE(decltype(m.extent(r)), typename MDS::index_type);
       ASSERT_NOEXCEPT(m.extent(r));
-      assert(m.extent(r) == m.extents().extent(r));
+      EXPECT_EQ(m.extent(r), m.extents().extent(r));
       size *= m.extent(r);
     }
-    assert(m.size() == size);
+    EXPECT_EQ(m.size(), size);
   } else {
-    assert(m.size() == 1);
+    EXPECT_EQ(m.size(), 1);
   }
-  ASSERT_SAME_TYPE(decltype(m.size()), typename MDS::size_type);
+  EXPECT_EQ_TYPE(decltype(m.size()), typename MDS::size_type);
   ASSERT_NOEXCEPT(m.size());
 
   // empty()
-  ASSERT_SAME_TYPE(decltype(m.empty()), bool);
+  EXPECT_EQ_TYPE(decltype(m.empty()), bool);
   ASSERT_NOEXCEPT(m.empty());
-  assert(m.empty() == (m.size() == 0));
+  EXPECT_EQ(m.empty(), (m.size() == 0));
 
   // =====================================
   // Invariants coming from mapping
   // =====================================
 
   // mapping()
-  ASSERT_SAME_TYPE(decltype(m.mapping()), const M&);
+  EXPECT_EQ_TYPE(decltype(m.mapping()), const M&);
   ASSERT_NOEXCEPT(m.mapping());
 
   // is_[always_]unique/exhaustive/strided()
-  ASSERT_SAME_TYPE(decltype(MDS::is_always_unique()), bool);
-  ASSERT_SAME_TYPE(decltype(MDS::is_always_exhaustive()), bool);
-  ASSERT_SAME_TYPE(decltype(MDS::is_always_strided()), bool);
-  ASSERT_SAME_TYPE(decltype(m.is_unique()), bool);
-  ASSERT_SAME_TYPE(decltype(m.is_exhaustive()), bool);
-  ASSERT_SAME_TYPE(decltype(m.is_strided()), bool);
+  EXPECT_EQ_TYPE(decltype(MDS::is_always_unique()), bool);
+  EXPECT_EQ_TYPE(decltype(MDS::is_always_exhaustive()), bool);
+  EXPECT_EQ_TYPE(decltype(MDS::is_always_strided()), bool);
+  EXPECT_EQ_TYPE(decltype(m.is_unique()), bool);
+  EXPECT_EQ_TYPE(decltype(m.is_exhaustive()), bool);
+  EXPECT_EQ_TYPE(decltype(m.is_strided()), bool);
   // per LWG-4021 "mdspan::is_always_meow() should be noexcept"
-  static_assert(noexcept(MDS::is_always_unique()));
-  static_assert(noexcept(MDS::is_always_exhaustive()));
-  static_assert(noexcept(MDS::is_always_strided()));
-  LIBCPP_STATIC_ASSERT(!noexcept(m.is_unique()));
-  LIBCPP_STATIC_ASSERT(!noexcept(m.is_exhaustive()));
-  LIBCPP_STATIC_ASSERT(!noexcept(m.is_strided()));
-  static_assert(MDS::is_always_unique() == M::is_always_unique());
-  static_assert(MDS::is_always_exhaustive() == M::is_always_exhaustive());
-  static_assert(MDS::is_always_strided() == M::is_always_strided());
-  assert(m.is_unique() == map.is_unique());
-  assert(m.is_exhaustive() == map.is_exhaustive());
-  assert(m.is_strided() == map.is_strided());
+  PREVIEW_STATIC_ASSERT(noexcept(MDS::is_always_unique()));
+  PREVIEW_STATIC_ASSERT(noexcept(MDS::is_always_exhaustive()));
+  PREVIEW_STATIC_ASSERT(noexcept(MDS::is_always_strided()));
+  PREVIEW_STATIC_ASSERT(!noexcept(m.is_unique()));
+  PREVIEW_STATIC_ASSERT(!noexcept(m.is_exhaustive()));
+  PREVIEW_STATIC_ASSERT(!noexcept(m.is_strided()));
+  PREVIEW_STATIC_ASSERT(MDS::is_always_unique() == M::is_always_unique());
+  PREVIEW_STATIC_ASSERT(MDS::is_always_exhaustive() == M::is_always_exhaustive());
+  PREVIEW_STATIC_ASSERT(MDS::is_always_strided() == M::is_always_strided());
+  EXPECT_EQ(m.is_unique(), map.is_unique());
+  EXPECT_EQ(m.is_exhaustive(), map.is_exhaustive());
+  EXPECT_EQ(m.is_strided(), map.is_strided());
 
   // stride(r)
+#if PREVIEW_CXX_VERSION >= 17
   if constexpr (MDS::rank() > 0) {
     if (m.is_strided()) {
       for (typename MDS::rank_type r = 0; r < MDS::rank(); r++) {
-        ASSERT_SAME_TYPE(decltype(m.stride(r)), typename MDS::index_type);
-        LIBCPP_STATIC_ASSERT(!noexcept(m.stride(r)));
-        assert(m.stride(r) == map.stride(r));
+        EXPECT_EQ_TYPE(decltype(m.stride(r)), typename MDS::index_type);
+        PREVIEW_STATIC_ASSERT(!noexcept(m.stride(r)));
+        EXPECT_EQ(m.stride(r), map.stride(r));
       }
     }
   }
+#endif
 
   // =====================================
   // Invariants coming from accessor
   // =====================================
 
   // accessor()
-  ASSERT_SAME_TYPE(decltype(m.accessor()), const A&);
+  EXPECT_EQ_TYPE(decltype(m.accessor()), const A&);
   ASSERT_NOEXCEPT(m.accessor());
 }
 
@@ -212,6 +217,5 @@ constexpr bool test() {
 }
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

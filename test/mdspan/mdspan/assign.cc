@@ -14,10 +14,11 @@
 
 #include <type_traits>
 
+#include "preview/core.h"
 #include "preview/concepts.h"
 #include "preview/span.h"
 
-#include "gtest.h"
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -33,27 +34,39 @@ constexpr void test_mdspan_types(const H& handle, const M& map, const A& acc) {
   // The defaulted assignment operator seems to be deprecated because:
   //   error: definition of implicit copy assignment operator for 'checked_accessor<const double>' is deprecated
   //   because it has a user-provided copy constructor [-Werror,-Wdeprecated-copy-with-user-provided-copy]
-  if (!std::is_same<A, checked_accessor<const double>>::value)
-    m = m_org;
-  // even though the following checks out:
-  static_assert(preview::copyable<checked_accessor<const double>>::value, "");
-  static_assert(std::is_assignable<checked_accessor<const double>, checked_accessor<const double>>::value, "");
-
-  static_assert(noexcept(m = m_org), "");
-  ASSERT_EQ(m.extents(), map.extents());
 #if PREVIEW_CXX_VERSION >= 17
-  if constexpr (preview::equality_comparable<H>::value)
-    ASSERT_EQ(m.data_handle(), handle);
-  if constexpr (preview::equality_comparable<M>::value)
-    ASSERT_EQ(m.mapping(), map);
-  if constexpr (preview::equality_comparable<A>::value)
-    ASSERT_EQ(m.accessor(), acc);
+  if constexpr (!std::is_same<A, checked_accessor<const double>>::value)
+    m = m_org;
+#endif
+  // even though the following checks out:
+  PREVIEW_STATIC_ASSERT(preview::copyable<checked_accessor<const double>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_assignable<checked_accessor<const double>, checked_accessor<const double>>::value);
+
+#if PREVIEW_CXX_VERSION >= 17
+  PREVIEW_STATIC_ASSERT(noexcept(m = m_org));
+#endif
+  EXPECT_EQ(m.extents(), map.extents());
+  EXPECT_EQ(map.extents(), m.extents());
+
+#if PREVIEW_CXX_VERSION >= 17
+  if constexpr (preview::equality_comparable<H>::value){
+    EXPECT_EQ(m.data_handle(), handle);
+    EXPECT_EQ(handle, m.data_handle());
+  }
+  if constexpr (preview::equality_comparable<M>::value){
+    EXPECT_EQ(m.mapping(), map);
+    EXPECT_EQ(map, m.mapping());
+  }
+  if constexpr (preview::equality_comparable<A>::value){
+    EXPECT_EQ(m.accessor(), acc);
+    EXPECT_EQ(acc, m.accessor());
+  }
 #endif
 
-  static_assert(std::is_trivially_assignable<MDS, const MDS&>::value ==
+  PREVIEW_STATIC_ASSERT(std::is_trivially_assignable<MDS, const MDS&>::value ==
                 ((!std::is_class<H>::value ||
                   std::is_trivially_assignable<H, const H&>::value)&&std::is_trivially_assignable<M, const M&>::value &&
-                 std::is_trivially_assignable<A, const A&>::value), "");
+                 std::is_trivially_assignable<A, const A&>::value));
 }
 
 template <class H, class L, class A>
@@ -70,13 +83,13 @@ constexpr void mixin_extents(const H& handle, const L& layout, const A& acc) {
 template <class H, class A>
 constexpr void mixin_layout(const H& handle, const A& acc) {
   // make sure we test a trivially assignable mapping
-  static_assert(std::is_trivially_assignable<preview::layout_left::mapping<preview::extents<int>>,
-                                             const preview::layout_left::mapping<preview::extents<int>>&>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_trivially_assignable<preview::layout_left::mapping<preview::extents<int>>,
+                                             const preview::layout_left::mapping<preview::extents<int>>&>::value);
   mixin_extents(handle, preview::layout_left(), acc);
   mixin_extents(handle, preview::layout_right(), acc);
   // make sure we test a not trivially assignable mapping
-  static_assert(!std::is_trivially_assignable< layout_wrapping_integral<4>::mapping<preview::extents<int>>,
-                                               const layout_wrapping_integral<4>::mapping<preview::extents<int>>&>::value, "");
+  PREVIEW_STATIC_ASSERT(!std::is_trivially_assignable< layout_wrapping_integral<4>::mapping<preview::extents<int>>,
+                                               const layout_wrapping_integral<4>::mapping<preview::extents<int>>&>::value);
   mixin_extents(handle, layout_wrapping_integral<4>(), acc);
 }
 
@@ -84,15 +97,15 @@ template <class T>
 constexpr void mixin_accessor() {
   ElementPool<T, 1024> elements;
   // make sure we test trivially constructible accessor and data_handle
-  static_assert(std::is_trivially_copyable<preview::default_accessor<T>>::value, "");
-  static_assert(std::is_trivially_copyable<typename preview::default_accessor<T>::data_handle_type>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<preview::default_accessor<T>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<typename preview::default_accessor<T>::data_handle_type>::value);
   mixin_layout(elements.get_ptr(), preview::default_accessor<T>());
 
   // Using weird accessor/data_handle
   // Make sure they actually got the properties we want to test
   // checked_accessor is noexcept copy constructible except for const double
   checked_accessor<T> acc(1024);
-  static_assert(noexcept(checked_accessor<T>(acc)) != std::is_same<T, const double>::value, "");
+  PREVIEW_STATIC_ASSERT(noexcept(checked_accessor<T>(acc)) != std::is_same<T, const double>::value);
   mixin_layout(typename checked_accessor<T>::data_handle_type(elements.get_ptr()), acc);
 }
 

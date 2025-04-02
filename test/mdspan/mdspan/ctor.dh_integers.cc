@@ -30,54 +30,57 @@
 //   - value-initializes acc_.
 
 #include <array>
-#include <cassert>
-#include <concepts>
-#include <mdspan>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+#include "preview/type_traits.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
 #include "CustomTestAccessors.h"
 
+#if PREVIEW_CONFORM_CXX20_STANDARD
 template <class MDS, class... Args>
 concept check_mdspan_ctor_implicit = requires(MDS m, Args... args) { m = {args...}; };
+#endif
 
 template <bool mec, bool ac, class H, class M, class A, class... Idxs>
 constexpr void test_mdspan_types(const H& handle, const M& map, const A&, Idxs... idxs) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
 
-  static_assert(mec == std::is_constructible_v<M, typename M::extents_type>);
-  static_assert(ac == std::is_default_constructible_v<A>);
+  PREVIEW_STATIC_ASSERT(mec == std::is_constructible<M, typename M::extents_type>::value);
+  PREVIEW_STATIC_ASSERT(ac == std::is_default_constructible<A>::value);
 
+#if PREVIEW_CXX_VERSION >= 17
   if constexpr (mec && ac) {
-    if (!std::is_constant_evaluated()) {
-      move_counted_handle<typename MDS::element_type>::move_counter() = 0;
-    }
+    move_counted_handle<typename MDS::element_type>::move_counter() = 0;
     MDS m(handle, idxs...);
-    if (!std::is_constant_evaluated()) {
-      if constexpr (std::is_same_v<H, move_counted_handle<typename MDS::element_type>>) {
-        assert((H::move_counter() == 1));
-      }
+    if constexpr (std::is_same_v<H, move_counted_handle<typename MDS::element_type>>) {
+      EXPECT_EQ(H::move_counter(), 1);
     }
 
+    #if PREVIEW_CONFORM_CXX20_STANDARD
     // sanity check that concept works
-    static_assert(check_mdspan_ctor_implicit<MDS, H, std::array<typename MDS::index_type, MDS::rank_dynamic()>>);
+    PREVIEW_STATIC_ASSERT(check_mdspan_ctor_implicit<MDS, H, std::array<typename MDS::index_type, MDS::rank_dynamic()>>);
     // check that the constructor from integral is explicit
-    static_assert(!check_mdspan_ctor_implicit<MDS, H, Idxs...>);
+    PREVIEW_STATIC_ASSERT(!check_mdspan_ctor_implicit<MDS, H, Idxs...>);
+    #endif
 
-    assert(m.extents() == map.extents());
-    if constexpr (std::equality_comparable<H>)
-      assert(m.data_handle() == handle);
-    if constexpr (std::equality_comparable<M>)
-      assert(m.mapping() == map);
-    if constexpr (std::equality_comparable<A>)
-      assert(m.accessor() == A());
+    EXPECT_EQ(m.extents(), map.extents());
+    if constexpr (preview::equality_comparable<H>::value)
+      EXPECT_EQ(m.data_handle(), handle);
+    if constexpr (preview::equality_comparable<M>::value)
+      EXPECT_EQ(m.mapping(), map);
+    if constexpr (preview::equality_comparable<A>::value)
+      EXPECT_EQ(m.accessor(), A());
   } else {
-    static_assert(!std::is_constructible_v<MDS, const H&, Idxs... >);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible_v<MDS, const H&, Idxs... >);
   }
+#endif
 }
 
 template <bool mec, bool ac, class H, class L, class A>
@@ -107,14 +110,14 @@ constexpr void mixin_layout(const H& handle, const A& acc) {
 
   // Use weird layout, make sure it has the properties we want to test
   // Sanity check that this layouts mapping is constructible from extents (via its move constructor)
-  static_assert(std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::extents<int>>, preview::extents<int>>);
-  static_assert(
-      !std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::extents<int>>, const preview::extents<int>&>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<layout_wrapping_integral<8>::mapping<preview::extents<int>>, preview::extents<int>>::value);
+  PREVIEW_STATIC_ASSERT(
+      !std::is_constructible<layout_wrapping_integral<8>::mapping<preview::extents<int>>, const preview::extents<int>&>::value);
   mixin_extents<true, ac>(handle, layout_wrapping_integral<8>(), acc);
   // Sanity check that this layouts mapping is not constructible from extents
-  static_assert(!std::is_constructible_v<layout_wrapping_integral<4>::mapping<preview::extents<int>>, preview::extents<int>>);
-  static_assert(
-      !std::is_constructible_v<layout_wrapping_integral<4>::mapping<preview::extents<int>>, const preview::extents<int>&>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<layout_wrapping_integral<4>::mapping<preview::extents<int>>, preview::extents<int>>::value);
+  PREVIEW_STATIC_ASSERT(
+      !std::is_constructible<layout_wrapping_integral<4>::mapping<preview::extents<int>>, const preview::extents<int>&>::value);
   mixin_extents<false, ac>(handle, layout_wrapping_integral<4>(), acc);
 }
 
@@ -126,8 +129,8 @@ constexpr void mixin_accessor() {
   // Using weird accessor/data_handle
   // Make sure they actually got the properties we want to test
   // checked_accessor is not default constructible except for const double, where it is not noexcept
-  static_assert(std::is_default_constructible_v<checked_accessor<T>> == std::is_same_v<T, const double>);
-  mixin_layout<std::is_same_v<T, const double>>(
+  PREVIEW_STATIC_ASSERT(std::is_default_constructible<checked_accessor<T>>::value == std::is_same<T, const double>::value);
+  mixin_layout<std::is_same<T, const double>::value>(
       typename checked_accessor<T>::data_handle_type(elements.get_ptr()), checked_accessor<T>(1024));
 }
 
@@ -143,22 +146,21 @@ constexpr bool test() {
   constexpr size_t D = preview::dynamic_extent;
   using mds_t        = preview::mdspan<float, preview::extents<int, 3, D, D>>;
   // sanity check
-  static_assert(std::is_constructible_v<mds_t, float*, int, int, int>);
-  static_assert(std::is_constructible_v<mds_t, float*, int, int>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<mds_t, float*, int, int, int>::value);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<mds_t, float*, int, int>::value);
   // wrong number of arguments
-  static_assert(!std::is_constructible_v<mds_t, float*, int>);
-  static_assert(!std::is_constructible_v<mds_t, float*, int, int, int, int>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, int>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, int, int, int, int>::value);
   // not convertible to int
-  static_assert(!std::is_constructible_v<mds_t, float*, int, int, preview::dextents<int, 1>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, int, int, preview::dextents<int, 1>>::value);
 
   // test non-constructibility from wrong handle_type
-  static_assert(!std::is_constructible_v<mds_t, const float*, int, int>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, const float*, int, int>::value);
 
   return true;
 }
 
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

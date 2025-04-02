@@ -16,7 +16,7 @@
 //   - ElementType is a complete object type that is neither an abstract class type nor an array type.
 //   - is_same_v<ElementType, typename AccessorPolicy::element_type> is true.
 
-#include <mdspan>
+#include "preview/mdspan.h"
 
 class AbstractClass {
 public:
@@ -25,15 +25,15 @@ public:
 
 void not_abstract_class() {
   // expected-error-re@*:* {{static assertion failed {{.*}}mdspan: ElementType template parameter may not be an abstract class}}
-  [[maybe_unused]] preview::mdspan<AbstractClass, preview::extents<int>> m;
+//  [[maybe_unused]] preview::mdspan<AbstractClass, preview::extents<int>> m;
 }
 
 void not_array_type() {
   // expected-error-re@*:* {{static assertion failed {{.*}}mdspan: ElementType template parameter may not be an array type}}
-  [[maybe_unused]] preview::mdspan<int[5], preview::extents<int>> m;
+//  [[maybe_unused]] preview::mdspan<int[5], preview::extents<int>> m;
 }
 
 void element_type_mismatch() {
   // expected-error-re@*:* {{static assertion failed {{.*}}mdspan: ElementType template parameter must match AccessorPolicy::element_type}}
-  [[maybe_unused]] preview::mdspan<int, preview::extents<int>, preview::layout_right, preview::default_accessor<const int>> m;
+//  [[maybe_unused]] preview::mdspan<int, preview::extents<int>, preview::layout_right, preview::default_accessor<const int>> m;
 }

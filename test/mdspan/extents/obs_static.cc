@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template<typename T>
@@ -24,15 +24,15 @@ TYPED_TEST_SUITE(MdSpanExtentsObsStatic, MdSpanExtentsObsStaticTypes);
 template <class E, std::size_t rank, std::size_t rank_dynamic, std::size_t... StaticExts, std::size_t... Indices>
 void test_static_observers(std::index_sequence<StaticExts...>, std::index_sequence<Indices...>) {
   ASSERT_NOEXCEPT(E::rank());
-  static_assert(E::rank() == rank, "");
+  PREVIEW_STATIC_ASSERT(E::rank() == rank);
   ASSERT_NOEXCEPT(E::rank_dynamic());
-  static_assert(E::rank_dynamic() == rank_dynamic, "");
+  PREVIEW_STATIC_ASSERT(E::rank_dynamic() == rank_dynamic);
 
   // Let's only test this if the call isn't a precondition violation
   if PREVIEW_CONSTEXPR_AFTER_CXX17 (rank > 0) {
     ASSERT_NOEXCEPT(E::static_extent(0));
     EXPECT_EQ_TYPE(decltype(E::static_extent(0)), std::size_t);
-    static_assert(preview::conjunction_v<preview::bool_constant<(E::static_extent(Indices) == StaticExts)>...>, "");
+    PREVIEW_STATIC_ASSERT(preview::conjunction_v<preview::bool_constant<(E::static_extent(Indices) == StaticExts)>...>);
   }
 }
 

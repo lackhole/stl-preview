@@ -4,7 +4,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template <class E>
@@ -12,7 +12,7 @@ constexpr void
 test_layout_mapping_stride(E ext, std::array<typename E::index_type, E::rank()> strides, bool exhaustive) {
   using M = preview::layout_stride::mapping<E>;
   M m(ext, strides);
-  ASSERT_EQ(m.is_exhaustive(), exhaustive);
+  EXPECT_EQ(m.is_exhaustive(), exhaustive);
 }
 
 TEST(MdSpanLayoutStride, VERSIONED(is_exhaustive_corner_case)) {

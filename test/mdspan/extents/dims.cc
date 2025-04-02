@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template<typename T>

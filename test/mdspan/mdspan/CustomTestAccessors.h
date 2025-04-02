@@ -19,7 +19,7 @@
 
 #include <cassert>
 #include <cstddef>
-#include <mdspan>
+//#include <mdspan>
 #include <type_traits>
 
 // This contains a bunch of accessors and handles which have different properties
@@ -54,8 +54,7 @@ struct move_counted_handle {
 
   constexpr move_counted_handle(move_counted_handle&& other) {
     ptr = other.ptr;
-//    if (!std::is_constant_evaluated())
-      move_counter()++;
+    move_counter()++;
   }
   constexpr move_counted_handle(T* ptr_) : ptr(ptr_) {}
 
@@ -95,8 +94,8 @@ struct checked_accessor {
   }
 };
 
-static_assert(std::is_constructible_v<checked_accessor<const int>, const checked_accessor<int>&>);
-static_assert(!std::is_convertible_v<const checked_accessor<int>&, checked_accessor<const int>>);
+static_assert(std::is_constructible<checked_accessor<const int>, const checked_accessor<int>&>::value, "");
+static_assert(!std::is_convertible<const checked_accessor<int>&, checked_accessor<const int>>::value, "");
 
 template <>
 struct checked_accessor<double> {

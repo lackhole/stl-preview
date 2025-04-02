@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "../../test_utils.h"
+#include "../print_to.h"
 
 template <class E>
 constexpr void test_required_span_size(E e, std::array<int, E::rank()> strides, typename E::index_type expected_size) {
@@ -13,7 +13,7 @@ constexpr void test_required_span_size(E e, std::array<int, E::rank()> strides, 
   const M m(e, strides);
 
   ASSERT_NOEXCEPT(m.required_span_size());
-  ASSERT_EQ(m.required_span_size(), expected_size);
+  EXPECT_EQ(m.required_span_size(), expected_size);
 }
 
 TEST(MdSpanLayoutStride, VERSIONED(required_span_size)) {

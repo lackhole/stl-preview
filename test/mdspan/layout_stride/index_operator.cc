@@ -4,10 +4,12 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "preview/core.h"
 
-#include "mdspan/ConvertibleToIntegral.h"
+#include "../../test_utils.h"
+#include "../print_to.h"
+
+#include "../ConvertibleToIntegral.h"
 
 #include "preview/utility.h"
 
@@ -44,7 +46,7 @@ constexpr void iterate_stride(M m, const std::array<int, M::extents_type::rank()
     expected_val += std::get<i>(arg) * strides[i];
   }, std::make_tuple(args...));
 
-  ASSERT_EQ(expected_val, static_cast<std::size_t>(m(args...)));
+  EXPECT_EQ(expected_val, static_cast<std::size_t>(m(args...)));
 }
 
 template <class M, class... Args, std::enable_if_t<(-1 != static_cast<int>(M::extents_type::rank()) - 1 - static_cast<int>(sizeof...(Args))), int> = 0>
@@ -73,20 +75,20 @@ TEST(MdSpanLayoutStride, VERSIONED(index_operator)) {
   test_iteration<preview::extents<signed char, D, D, D, D>>(std::array<int, 4>{1, 1, 1, 1}, 1, 1, 1, 1);
 
   // Check operator constraint for number of arguments
-  static_assert(check_operator_constraints(
-      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), 0), "");
-  static_assert(!check_operator_constraints(
-      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), 0, 0), "");
+  PREVIEW_STATIC_ASSERT(check_operator_constraints(
+      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), 0));
+  PREVIEW_STATIC_ASSERT(!check_operator_constraints(
+      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), 0, 0));
 
   // Check operator constraint for convertibility of arguments to index_type
-  static_assert(check_operator_constraints(
-      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), IntType(0)), "");
-  static_assert(!check_operator_constraints(
-      preview::layout_stride::mapping<preview::extents<unsigned, D>>(preview::extents<unsigned, D>(1), preview::to_array({1})), IntType(0)), "");
+  PREVIEW_STATIC_ASSERT(check_operator_constraints(
+      preview::layout_stride::mapping<preview::extents<int, D>>(preview::extents<int, D>(1), preview::to_array({1})), IntType(0)));
+  PREVIEW_STATIC_ASSERT(!check_operator_constraints(
+      preview::layout_stride::mapping<preview::extents<unsigned, D>>(preview::extents<unsigned, D>(1), preview::to_array({1})), IntType(0)));
 
   // Check operator constraint for no-throw-constructibility of index_type from arguments
-  static_assert(!check_operator_constraints(
-      preview::layout_stride::mapping<preview::extents<unsigned char, D>>(preview::extents<unsigned char, D>(1), preview::to_array({1})), IntType(0)), "");
+  PREVIEW_STATIC_ASSERT(!check_operator_constraints(
+      preview::layout_stride::mapping<preview::extents<unsigned char, D>>(preview::extents<unsigned char, D>(1), preview::to_array({1})), IntType(0)));
 }
 
 TEST(MdSpanLayoutStride, VERSIONED(index_operator_large)) {

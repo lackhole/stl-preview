@@ -42,10 +42,10 @@
 #include <type_traits>
 
 #include "preview/concepts.h"
+#include "preview/core.h"
 #include "preview/span.h"
-#include "preview/type_traits.h"
 
-#include "gtest.h"
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -53,14 +53,21 @@
 
 template <class ToMDS, class FromMDS>
 constexpr void test_implicit_conversion(ToMDS to_mds, FromMDS from_mds) {
-  ASSERT_EQ(to_mds.extents(), from_mds.extents());
+  EXPECT_EQ(to_mds.extents(), from_mds.extents());
+  EXPECT_EQ(from_mds.extents(), to_mds.extents());
 #if PREVIEW_CXX_VERSION >= 17
-  if constexpr (preview::equality_comparable_with<typename ToMDS::data_handle_type, typename FromMDS::data_handle_type>::value)
-    ASSERT_EQ(to_mds.data_handle(), from_mds.data_handle());
-  if constexpr (preview::equality_comparable_with<typename ToMDS::mapping_type, typename FromMDS::mapping_type>::value)
-    ASSERT_EQ(to_mds.mapping(), from_mds.mapping());
-  if constexpr (preview::equality_comparable_with<typename ToMDS::accessor_type, typename FromMDS::accessor_type>::value)
-    ASSERT_EQ(to_mds.accessor(), from_mds.accessor());
+  if constexpr (preview::equality_comparable_with<typename ToMDS::data_handle_type, typename FromMDS::data_handle_type>::value) {
+    EXPECT_EQ(to_mds.data_handle(), from_mds.data_handle());
+    EXPECT_EQ(from_mds.data_handle(), to_mds.data_handle());
+  }
+  if constexpr (preview::equality_comparable_with<typename ToMDS::mapping_type, typename FromMDS::mapping_type>::value) {
+    EXPECT_EQ(to_mds.mapping(), from_mds.mapping());
+    EXPECT_EQ(from_mds.mapping(), to_mds.mapping());
+  }
+  if constexpr (preview::equality_comparable_with<typename ToMDS::accessor_type, typename FromMDS::accessor_type>::value) {
+    EXPECT_EQ(to_mds.accessor(), from_mds.accessor());
+    EXPECT_EQ(from_mds.accessor(), to_mds.accessor());
+  }
 #endif
 }
 
@@ -90,25 +97,32 @@ constexpr void test_conversion(FromMDS from_mds) {
       std::is_constructible<typename ToMDS::data_handle_type, const typename FromMDS::data_handle_type&>::value &&
       std::is_constructible<typename ToMDS::extents_type, typename FromMDS::extents_type>::value;
 
-  if constexpr (constructible) {
-    if constexpr (passes_mandates) {
+  if PREVIEW_CONSTEXPR_AFTER_CXX17 (constructible) {
+    if PREVIEW_CONSTEXPR_AFTER_CXX17 (passes_mandates) {
       ToMDS to_mds(from_mds);
-      ASSERT_EQ(to_mds.extents(), from_mds.extents());
-      if constexpr (preview::equality_comparable_with<typename ToMDS::data_handle_type, typename FromMDS::data_handle_type>::value)
-        ASSERT_EQ(to_mds.data_handle(), from_mds.data_handle());
-      if constexpr (preview::equality_comparable_with<typename ToMDS::mapping_type, typename FromMDS::mapping_type>::value) {
-        ASSERT_EQ(to_mds.mapping(), from_mds.mapping());
+      EXPECT_EQ(to_mds.extents(), from_mds.extents());
+      EXPECT_EQ(from_mds.extents(), to_mds.extents());
+
+      if PREVIEW_CONSTEXPR_AFTER_CXX17 (preview::equality_comparable_with<typename ToMDS::data_handle_type, typename FromMDS::data_handle_type>::value) {
+        EXPECT_EQ(to_mds.data_handle(), from_mds.data_handle());
+        EXPECT_EQ(from_mds.data_handle(), to_mds.data_handle());
       }
-      if constexpr (preview::equality_comparable_with<typename ToMDS::accessor_type, typename FromMDS::accessor_type>::value)
-        ASSERT_EQ(to_mds.accessor(), from_mds.accessor());
-      if constexpr (convertible) {
+      if PREVIEW_CONSTEXPR_AFTER_CXX17 (preview::equality_comparable_with<typename ToMDS::mapping_type, typename FromMDS::mapping_type>::value) {
+        EXPECT_EQ(to_mds.mapping(), from_mds.mapping());
+        EXPECT_EQ(from_mds.mapping(), to_mds.mapping());
+      }
+      if PREVIEW_CONSTEXPR_AFTER_CXX17 (preview::equality_comparable_with<typename ToMDS::accessor_type, typename FromMDS::accessor_type>::value) {
+        EXPECT_EQ(to_mds.accessor(), from_mds.accessor());
+        EXPECT_EQ(from_mds.accessor(), to_mds.accessor());
+      }
+      if PREVIEW_CONSTEXPR_AFTER_CXX17 (convertible) {
         test_implicit_conversion(from_mds, from_mds);
       } else {
-        static_assert(!std::is_convertible_v<FromMDS, ToMDS>);
+        PREVIEW_STATIC_ASSERT(!std::is_convertible<FromMDS, ToMDS>::value);
       }
     }
   } else {
-    static_assert(!std::is_constructible_v<ToMDS, FromMDS>);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<ToMDS, FromMDS>::value);
   }
 }
 
@@ -149,27 +163,27 @@ constexpr void mixin_layout(const FromH& handle, const FromA& acc) {
   mixin_extents<preview::layout_right, ToA>(handle, preview::layout_right(), acc);
   // Check layout policy conversion
   // different layout policies, but constructible and convertible
-  static_assert(std::is_constructible_v<preview::layout_left::mapping<preview::dextents<int, 1>>,
-                                        const preview::layout_right::mapping<preview::dextents<int, 1>>&>);
-  static_assert(std::is_convertible_v<const preview::layout_right::mapping<preview::dextents<int, 1>>&,
-                                      preview::layout_left::mapping<preview::dextents<int, 1>>>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<preview::layout_left::mapping<preview::dextents<int, 1>>,
+                                      const preview::layout_right::mapping<preview::dextents<int, 1>>&>::value);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<const preview::layout_right::mapping<preview::dextents<int, 1>>&,
+                                    preview::layout_left::mapping<preview::dextents<int, 1>>>::value);
   // different layout policies, not constructible
-  static_assert(!std::is_constructible_v<preview::layout_left::mapping<preview::dextents<int, 2>>,
-                                         const preview::layout_right::mapping<preview::dextents<int, 2>>&>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<preview::layout_left::mapping<preview::dextents<int, 2>>,
+                                       const preview::layout_right::mapping<preview::dextents<int, 2>>&>::value);
   // different layout policies, constructible and not convertible
-  static_assert(std::is_constructible_v<preview::layout_left::mapping<preview::dextents<int, 1>>,
-                                        const preview::layout_right::mapping<preview::dextents<size_t, 1>>&>);
-  static_assert(!std::is_convertible_v<const preview::layout_right::mapping<preview::dextents<size_t, 1>>&,
-                                       preview::layout_left::mapping<preview::dextents<int, 1>>>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<preview::layout_left::mapping<preview::dextents<int, 1>>,
+                                      const preview::layout_right::mapping<preview::dextents<size_t, 1>>&>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<const preview::layout_right::mapping<preview::dextents<size_t, 1>>&,
+                                     preview::layout_left::mapping<preview::dextents<int, 1>>>::value);
 
   mixin_extents<preview::layout_left, ToA>(handle, preview::layout_right(), acc);
   mixin_extents<layout_wrapping_integral<4>, ToA>(handle, layout_wrapping_integral<4>(), acc);
   // different layout policies, constructible and not convertible
-  static_assert(!std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::dextents<unsigned, 2>>,
-                                         const layout_wrapping_integral<8>::mapping<preview::dextents<int, 2>>&>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<layout_wrapping_integral<8>::mapping<preview::dextents<unsigned, 2>>,
+                                       const layout_wrapping_integral<8>::mapping<preview::dextents<int, 2>>&>::value);
 
-  static_assert(std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::dextents<unsigned, 2>>,
-                                        layout_wrapping_integral<8>::mapping<preview::dextents<int, 2>>>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<layout_wrapping_integral<8>::mapping<preview::dextents<unsigned, 2>>,
+                                      layout_wrapping_integral<8>::mapping<preview::dextents<int, 2>>>::value);
   mixin_extents<layout_wrapping_integral<8>, ToA>(handle, layout_wrapping_integral<8>(), acc);
 }
 
@@ -185,16 +199,16 @@ template <bool constructible_constref_acc,
           class ToA,
           class FromA>
 constexpr bool test(FromA from_acc) {
-  static_assert(preview::copyable<ToA>::value, "");
-  static_assert(preview::copyable<FromA>::value, "");
-  static_assert(std::is_constructible<ToA, const FromA&>::value == constructible_constref_acc, "");
-  static_assert(std::is_constructible<ToA, FromA>::value == constructible_nonconst_acc, "");
-  static_assert(std::is_constructible<typename ToA::data_handle_type, const typename FromA::data_handle_type&>::value == constructible_constref_handle, "");
-  static_assert(std::is_constructible<typename ToA::data_handle_type, typename FromA::data_handle_type>::value == constructible_nonconst_handle, "");
-  static_assert(std::is_convertible<const FromA&, ToA>::value == convertible_constref_acc, "");
-  static_assert(std::is_convertible<FromA, ToA>::value == convertible_nonconst_acc, "");
-  static_assert(std::is_convertible<const typename FromA::data_handle_type&, typename ToA::data_handle_type>::value == convertible_constref_handle, "");
-  static_assert(std::is_convertible<typename FromA::data_handle_type, typename ToA::data_handle_type>::value == convertible_nonconst_handle, "");
+  PREVIEW_STATIC_ASSERT(preview::copyable<ToA>::value);
+  PREVIEW_STATIC_ASSERT(preview::copyable<FromA>::value);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToA, const FromA&>::value == constructible_constref_acc);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<ToA, FromA>::value == constructible_nonconst_acc);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<typename ToA::data_handle_type, const typename FromA::data_handle_type&>::value == constructible_constref_handle);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<typename ToA::data_handle_type, typename FromA::data_handle_type>::value == constructible_nonconst_handle);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<const FromA&, ToA>::value == convertible_constref_acc);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<FromA, ToA>::value == convertible_nonconst_acc);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<const typename FromA::data_handle_type&, typename ToA::data_handle_type>::value == convertible_constref_handle);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<typename FromA::data_handle_type, typename ToA::data_handle_type>::value == convertible_nonconst_handle);
 
   ElementPool<typename FromA::element_type, 1024> elements;
   mixin_layout<ToA>(typename FromA::data_handle_type(elements.get_ptr()), from_acc);

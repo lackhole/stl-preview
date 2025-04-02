@@ -51,32 +51,36 @@
 //      -> mdspan<typename AccessorType::element_type, typename MappingType::extents_type,
 //                typename MappingType::layout_type, AccessorType>;
 
-#include <mdspan>
-#include <cassert>
-#include <concepts>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/concepts.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+#include "preview/type_traits.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
 #include "CustomTestAccessors.h"
+
+#if PREVIEW_CXX_VERSION >= 17
 
 template <class H, class M, class A>
 constexpr void test_mdspan_types(const H& handle, const M& map, const A& acc) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
 
   // deduction from data_handle_type (including non-pointer), mapping and accessor
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, map, acc)), MDS);
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, map, acc)), MDS);
 
   if constexpr (std::is_same_v<A, preview::default_accessor<typename A::element_type>>) {
     // deduction from pointer and mapping
     // non-pointer data-handle-types have other accessor
-    ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, map)), MDS);
+    EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, map)), MDS);
     if constexpr (std::is_same_v<typename M::layout_type, preview::layout_right>) {
       // deduction from pointer and extents
-      ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, map.extents())), MDS);
+      EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, map.extents())), MDS);
     }
   }
 }
@@ -98,36 +102,34 @@ struct SizeTIntType {
   constexpr operator size_t() const noexcept { return size_t(val); }
 };
 
-template <class H, class A>
-  requires(sizeof(decltype(preview::mdspan(std::declval<H>(), 10))) > 0)
+template <class H, class A, std::enable_if_t<preview::is_deductible_v<preview::mdspan, H, int>, int> = 0>
 constexpr bool test_no_layout_deduction_guides(const H& handle, const A&) {
   using T = typename A::element_type;
-  // deduction from pointer alone
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle)), preview::mdspan<T, preview::extents<size_t>>);
-  // deduction from pointer and integral like
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, 5, SizeTIntType(6))), preview::mdspan<T, preview::dextents<size_t, 2>>);
 
-#if _LIBCPP_STD_VER >= 26
+  // deduction from pointer alone
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle)), preview::mdspan<T, preview::extents<size_t>>);
+  // deduction from pointer and integral like
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, 5, SizeTIntType(6))), preview::mdspan<T, preview::dextents<size_t, 2>>);
+
   // P3029R1: deduction from `integral_constant`
-  ASSERT_SAME_TYPE(
+  EXPECT_EQ_TYPE(
       decltype(preview::mdspan(handle, std::integral_constant<size_t, 5>{})), preview::mdspan<T, preview::extents<size_t, 5>>);
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, std::integral_constant<size_t, 5>{}, preview::dynamic_extent)),
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, std::integral_constant<size_t, 5>{}, preview::dynamic_extent)),
                    preview::mdspan<T, preview::extents<size_t, 5, preview::dynamic_extent>>);
-  ASSERT_SAME_TYPE(
+  EXPECT_EQ_TYPE(
       decltype(preview::mdspan(
           handle, std::integral_constant<size_t, 5>{}, preview::dynamic_extent, std::integral_constant<size_t, 7>{})),
       preview::mdspan<T, preview::extents<size_t, 5, preview::dynamic_extent, 7>>);
-#endif
 
-  std::array<char, 3> exts;
+  std::array<char, 3> exts{};
   // deduction from pointer and array
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, exts)), preview::mdspan<T, preview::dextents<size_t, 3>>);
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, exts)), preview::mdspan<T, preview::dextents<size_t, 3>>);
   // deduction from pointer and span
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(handle, std::span(exts))), preview::mdspan<T, preview::dextents<size_t, 3>>);
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(handle, preview::span(exts))), preview::mdspan<T, preview::dextents<size_t, 3>>);
   return true;
 }
 
-template <class H, class A>
+template <class H, class A, std::enable_if_t<!preview::is_deductible_v<preview::mdspan, H, int>, int> = 0>
 constexpr bool test_no_layout_deduction_guides(const H&, const A&) {
   return false;
 }
@@ -139,7 +141,7 @@ constexpr void mixin_layout(const H& handle, const A& acc) {
   mixin_extents(handle, layout_wrapping_integral<4>(), acc);
 
   // checking that there is no deduction happen for non-pointer handle type
-  assert((test_no_layout_deduction_guides(handle, acc) == std::is_same_v<H, typename A::element_type*>));
+  EXPECT_EQ((test_no_layout_deduction_guides(handle, acc)), (std::is_same<H, typename A::element_type*>::value));
 }
 
 template <class T>
@@ -151,11 +153,11 @@ constexpr void mixin_accessor() {
   // Make sure they actually got the properties we want to test
   // checked_accessor is noexcept copy constructible except for const double
   checked_accessor<T> acc(1024);
-  static_assert(noexcept(checked_accessor<T>(acc)) != std::is_same_v<T, const double>);
+  PREVIEW_STATIC_ASSERT(noexcept(checked_accessor<T>(acc)) != std::is_same<T, const double>::value);
   mixin_layout(typename checked_accessor<T>::data_handle_type(elements.get_ptr()), acc);
 }
 
-constexpr bool test() {
+bool test() {
   mixin_accessor<int>();
   mixin_accessor<const int>();
   mixin_accessor<double>();
@@ -164,13 +166,19 @@ constexpr bool test() {
   mixin_accessor<const MinimalElementType>();
 
   // deduction from array alone
-  float a[12];
-  ASSERT_SAME_TYPE(decltype(preview::mdspan(a)), preview::mdspan<float, preview::extents<size_t, 12>>);
+  float a[12]{};
+  EXPECT_EQ_TYPE(decltype(preview::mdspan(a)), preview::mdspan<float, preview::extents<size_t, 12>>);
 
   return true;
 }
+
+#else
+bool test() {
+  return true;
+}
+#endif
+
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

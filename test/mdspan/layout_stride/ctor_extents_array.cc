@@ -7,9 +7,11 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
-#include "mdspan/ConvertibleToIntegral.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
+#include "../print_to.h"
+#include "../ConvertibleToIntegral.h"
 
 template <class E, class S>
 constexpr void test_construction(E e, S s) {
@@ -20,6 +22,7 @@ constexpr void test_construction(E e, S s) {
   // check correct extents are returned
   ASSERT_NOEXCEPT(m.extents());
   EXPECT_EQ(m.extents(), e);
+  EXPECT_EQ(e, m.extents());
 
   // check required_span_size()
   typename E::index_type expected_size = 1;
@@ -93,17 +96,17 @@ TEST(MdSpanLayoutStride, VERSIONED(ctor_extents_array)) {
   {
     using mapping_t = preview::layout_stride::mapping<preview::dextents<unsigned, 2>>;
     // wrong strides size
-    static_assert(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<int, 3>>::value, "");
-    static_assert(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<int, 1>>::value, "");
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<int, 3>>::value);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<int, 1>>::value);
     // wrong extents rank
-    static_assert(!std::is_constructible<mapping_t, preview::dextents<int, 3>, std::array<int, 2>>::value, "");
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<mapping_t, preview::dextents<int, 3>, std::array<int, 2>>::value);
     // none-convertible strides
-    static_assert(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<IntType, 2>>::value, "");
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<IntType, 2>>::value);
   }
   {
     // not no-throw constructible index_type from stride
     using mapping_t = preview::layout_stride::mapping<preview::dextents<unsigned char, 2>>;
-    static_assert(std::is_convertible<IntType, unsigned char>::value, "");
-    static_assert(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<IntType, 2>>::value, "");
+    PREVIEW_STATIC_ASSERT(std::is_convertible<IntType, unsigned char>::value);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<mapping_t, preview::dextents<int, 2>, std::array<IntType, 2>>::value);
   }
 }

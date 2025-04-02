@@ -7,13 +7,16 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template<typename To, typename From>
 constexpr void test_implicit(From src, std::true_type) {
   To dest_implicit = src;
-  ASSERT_EQ(dest_implicit, src);
+  EXPECT_EQ(dest_implicit, src);
+  EXPECT_EQ(src, dest_implicit);
 }
 
 template<typename To, typename From>
@@ -35,7 +38,8 @@ constexpr void test_conversion(FromE src_exts) {
 
   ASSERT_NOEXCEPT(To(src));
   To dest(src);
-  ASSERT_EQ(dest, src);
+  EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 
   test_implicit<To>(src, preview::bool_constant<implicit>{});
 }
@@ -69,18 +73,18 @@ using ls_mapping_t = preview::layout_stride::mapping<preview::extents<IdxT, Exte
 constexpr void test_rank_mismatch() {
   constexpr size_t D = preview::dynamic_extent;
 
-  static_assert(!std::is_constructible<ll_mapping_t<int, D>, ls_mapping_t<int>>::value, "");
-  static_assert(!std::is_constructible<ll_mapping_t<int>, ls_mapping_t<int, D, D>>::value, "");
-  static_assert(!std::is_constructible<ll_mapping_t<int, D>, ls_mapping_t<int, D, D>>::value, "");
-  static_assert(!std::is_constructible<ll_mapping_t<int, D, D, D>, ls_mapping_t<int, D, D>>::value, "");
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, D>, ls_mapping_t<int>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int>, ls_mapping_t<int, D, D>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, D>, ls_mapping_t<int, D, D>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, D, D, D>, ls_mapping_t<int, D, D>>::value);
 }
 
 constexpr void test_static_extent_mismatch() {
   constexpr size_t D = preview::dynamic_extent;
 
-  static_assert(!std::is_constructible<ll_mapping_t<int, D, 5>, ls_mapping_t<int, D, 4>>::value, "");
-  static_assert(!std::is_constructible<ll_mapping_t<int, 5>, ls_mapping_t<int, 4>>::value, "");
-  static_assert(!std::is_constructible<ll_mapping_t<int, 5, D>, ls_mapping_t<int, 4, D>>::value, "");
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, D, 5>, ls_mapping_t<int, D, 4>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, 5>, ls_mapping_t<int, 4>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<ll_mapping_t<int, 5, D>, ls_mapping_t<int, 4, D>>::value);
 }
 
 TEST(MdSpanLayoutLeft, VERSIONED(ctor_layout_stride)) {

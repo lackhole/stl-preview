@@ -4,8 +4,8 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/print_to.h"
+#include "../../test_utils.h"
+#include "../print_to.h"
 
 #if PREVIEW_CXX_VERSION >= 17
 

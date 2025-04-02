@@ -3,7 +3,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template <class E>
@@ -12,17 +14,20 @@ test_layout_mapping_stride(E ext, std::array<typename E::index_type, E::rank()> 
   using M = preview::layout_stride::mapping<E>;
   M m(ext, strides);
   const M c_m = m;
-  ASSERT_EQ(m.strides(), strides);
-  ASSERT_EQ(c_m.strides(), strides);
-  ASSERT_EQ(m.extents(), ext);
-  ASSERT_EQ(c_m.extents(), ext);
-  ASSERT_EQ(M::is_unique(), true);
-  ASSERT_EQ(m.is_exhaustive(), exhaustive);
-  ASSERT_EQ(c_m.is_exhaustive(), exhaustive);
-  ASSERT_EQ(M::is_strided(), true);
-  ASSERT_EQ(M::is_always_unique(), true);
-  ASSERT_EQ(M::is_always_exhaustive(), false);
-  ASSERT_EQ(M::is_always_strided(), true);
+  EXPECT_EQ(m.strides(), strides);
+  EXPECT_EQ(strides, m.strides());
+  EXPECT_EQ(c_m.strides(), strides);
+  EXPECT_EQ(strides, c_m.strides());
+  EXPECT_EQ(m.extents(), ext);
+  EXPECT_EQ(ext, m.extents());
+  EXPECT_EQ(c_m.extents(), ext);
+  EXPECT_EQ(ext, c_m.extents());
+  EXPECT_EQ(m.is_exhaustive(), exhaustive);
+  EXPECT_EQ(c_m.is_exhaustive(), exhaustive);
+  EXPECT_EQ(M::is_strided(), true);
+  EXPECT_EQ(M::is_always_unique(), true);
+  EXPECT_EQ(M::is_always_exhaustive(), false);
+  EXPECT_EQ(M::is_always_strided(), true);
 
   ASSERT_NOEXCEPT(m.strides());
   ASSERT_NOEXCEPT(c_m.strides());
@@ -56,8 +61,8 @@ test_layout_mapping_stride(E ext, std::array<typename E::index_type, E::rank()> 
   ASSERT_NOEXCEPT(m.required_span_size());
   ASSERT_NOEXCEPT(c_m.required_span_size());
 
-  static_assert(std::is_trivially_copyable<M>::value, "");
-  static_assert(preview::regular<M>::value, "");
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<M>::value);
+  PREVIEW_STATIC_ASSERT(preview::regular<M>::value);
 }
 
 TEST(MdSpanLayoutStride, VERSIONED(properties)) {

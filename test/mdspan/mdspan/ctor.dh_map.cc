@@ -21,13 +21,14 @@
 //   - direct-non-list-initializes map_ with m, and
 //   - value-initializes acc_.
 
-#include <mdspan>
-#include <cassert>
-#include <concepts>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/concepts.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -37,29 +38,27 @@ template <bool ac, class H, class M, class A>
 constexpr void test_mdspan_types(const H& handle, const M& map, const A&) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
 
-  static_assert(ac == std::is_default_constructible_v<A>);
+  PREVIEW_STATIC_ASSERT(ac == std::is_default_constructible<A>::value);
+#if PREVIEW_CXX_VERSION >= 17
   if constexpr (ac) {
-    if (!std::is_constant_evaluated()) {
-      move_counted_handle<typename MDS::element_type>::move_counter() = 0;
-    }
+    move_counted_handle<typename MDS::element_type>::move_counter() = 0;
     // use formulation of constructor which tests that it is not explicit
     MDS m = {handle, map};
-    if (!std::is_constant_evaluated()) {
-      if constexpr (std::is_same_v<H, move_counted_handle<typename MDS::element_type>>) {
-        assert((H::move_counter() == 1));
-      }
+    if constexpr (std::is_same_v<H, move_counted_handle<typename MDS::element_type>>) {
+      EXPECT_EQ(H::move_counter(), 1);
     }
-    LIBCPP_STATIC_ASSERT(!noexcept(MDS(handle, map)));
-    assert(m.extents() == map.extents());
-    if constexpr (std::equality_comparable<H>)
-      assert(m.data_handle() == handle);
-    if constexpr (std::equality_comparable<M>)
-      assert(m.mapping() == map);
-    if constexpr (std::equality_comparable<A>)
-      assert(m.accessor() == A());
+    PREVIEW_STATIC_ASSERT(!noexcept(MDS(handle, map)));
+    EXPECT_EQ(m.extents(), map.extents());
+    if constexpr (preview::equality_comparable<H>::value)
+      EXPECT_EQ(m.data_handle(), handle);
+    if constexpr (preview::equality_comparable<M>::value)
+      EXPECT_EQ(m.mapping(), map);
+    if constexpr (preview::equality_comparable<A>::value)
+      EXPECT_EQ(m.accessor(), A());
   } else {
-    static_assert(!std::is_constructible_v<MDS, const H&, const M&>);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible_v<MDS, const H&, const M&>);
   }
+#endif
 }
 
 template <bool ac, class H, class L, class A>
@@ -88,8 +87,8 @@ constexpr void mixin_accessor() {
   // Using weird accessor/data_handle
   // Make sure they actually got the properties we want to test
   // checked_accessor is not default constructible except for const double, where it is not noexcept
-  static_assert(std::is_default_constructible_v<checked_accessor<T>> == std::is_same_v<T, const double>);
-  mixin_layout<std::is_same_v<T, const double>>(
+  PREVIEW_STATIC_ASSERT(std::is_default_constructible<checked_accessor<T>>::value == std::is_same<T, const double>::value);
+  mixin_layout<std::is_same<T, const double>::value>(
       typename checked_accessor<T>::data_handle_type(elements.get_ptr()), checked_accessor<T>(1024));
 }
 
@@ -108,23 +107,22 @@ constexpr bool test() {
   using mds_t        = preview::mdspan<float, preview::extents<int, 3, D, D>>;
 
   // sanity check
-  static_assert(std::is_constructible_v<mds_t, float*, mapping_t<preview::extents<int, 3, D, D>>>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<mds_t, float*, mapping_t<preview::extents<int, 3, D, D>>>::value);
 
   // test non-constructibility from wrong mapping type
   // wrong rank
-  static_assert(!std::is_constructible_v<mds_t, float*, mapping_t<preview::extents<int, D, D>>>);
-  static_assert(!std::is_constructible_v<mds_t, float*, mapping_t<preview::extents<int, D, D, D, D>>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, mapping_t<preview::extents<int, D, D>>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, mapping_t<preview::extents<int, D, D, D, D>>>::value);
   // wrong type in general: note the map constructor does NOT convert, since it takes by const&
-  static_assert(!std::is_constructible_v<mds_t, float*, mapping_t<preview::extents<int, D, D, D>>>);
-  static_assert(!std::is_constructible_v<mds_t, float*, mapping_t<preview::extents<unsigned, 3, D, D>>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, mapping_t<preview::extents<int, D, D, D>>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, mapping_t<preview::extents<unsigned, 3, D, D>>>::value);
 
   // test non-constructibility from wrong handle_type
-  static_assert(!std::is_constructible_v<mds_t, const float*, mapping_t<preview::extents<int, 3, D, D>>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, const float*, mapping_t<preview::extents<int, 3, D, D>>>::value);
 
   return true;
 }
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

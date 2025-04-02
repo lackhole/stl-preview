@@ -4,9 +4,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
-#include "mdspan/ConvertibleToIntegral.h"
-#include "mdspan/print_to.h"
+#include "../../test_utils.h"
+#include "../ConvertibleToIntegral.h"
+#include "../print_to.h"
 
 template <class E, class S>
 constexpr void test_construction(E e, S s) {

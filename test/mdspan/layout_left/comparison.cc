@@ -7,7 +7,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template<typename T>
@@ -27,8 +29,10 @@ constexpr void test_comparison(bool equal, To dest_exts, From src_exts) {
   preview::layout_left::mapping<From> src(src_exts);
 
   ASSERT_NOEXCEPT(dest == src);
-  ASSERT_EQ((dest == src), equal);
-  ASSERT_EQ((dest != src), !equal);
+  EXPECT_EQ((dest == src), equal);
+  EXPECT_EQ((src == dest), equal);
+  EXPECT_EQ((dest != src), !equal);
+  EXPECT_EQ((src != dest), !equal);
 }
 
 struct X {
@@ -48,25 +52,25 @@ constexpr void test_comparison_different_rank() {
   constexpr size_t D = preview::dynamic_extent;
 
   // sanity check same rank
-  static_assert(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, D>(5)), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, D>(5)), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, 5>()), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5>()), "");
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, D>(5)));
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, D>(5)));
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, 5>()));
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5>()));
 
   // not equality comparable when rank is not the same
-  static_assert(compare_layout_mappings(preview::extents<T1>(), preview::extents<T2, D>(1)).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1>(), preview::extents<T2, 1>()).does_not_match(), "");
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1>(), preview::extents<T2, D>(1)).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1>(), preview::extents<T2, 1>()).does_not_match());
 
-  static_assert(compare_layout_mappings(preview::extents<T1, D>(1), preview::extents<T2>()).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 1>(), preview::extents<T2>()).does_not_match(), "");
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, D>(1), preview::extents<T2>()).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 1>(), preview::extents<T2>()).does_not_match());
 
-  static_assert(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, D, D>(5, 5)).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5, D>(5)).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5, 1>()).does_not_match(), "");
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, D>(5), preview::extents<T2, D, D>(5, 5)).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5, D>(5)).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5>(), preview::extents<T2, 5, 1>()).does_not_match());
 
-  static_assert(compare_layout_mappings(preview::extents<T1, D, D>(5, 5), preview::extents<T2, D>(5)).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5, D>(5), preview::extents<T2, D>(5)).does_not_match(), "");
-  static_assert(compare_layout_mappings(preview::extents<T1, 5, 5>(), preview::extents<T2, 5>()).does_not_match(), "");
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, D, D>(5, 5), preview::extents<T2, D>(5)).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5, D>(5), preview::extents<T2, D>(5)).does_not_match());
+  PREVIEW_STATIC_ASSERT(compare_layout_mappings(preview::extents<T1, 5, 5>(), preview::extents<T2, 5>()).does_not_match());
 }
 
 template <class T1, class T2>

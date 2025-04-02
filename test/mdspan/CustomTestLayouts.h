@@ -214,10 +214,9 @@ public:
   }
 
   friend constexpr void swap(mapping& x, mapping& y) noexcept {
+    using std::swap;
     swap(x.extents_, y.extents_);
-//    if (!std::is_constant_evaluated()) {
-      swap_counter()++;
-//    }
+    swap_counter()++;
   }
 
   static int& swap_counter() {
@@ -314,7 +313,7 @@ public:
     index_type size = 1;
     for (size_t r = 0; r < extents_type::rank(); r++)
       size *= extents_.extent(r);
-    return std::max(size * scaling_ + offset_, offset_);
+    return (std::max)(size * scaling_ + offset_, offset_);
   }
 
   template <typename... Indices, std::enable_if_t<preview::conjunction_v<
@@ -357,9 +356,7 @@ public:
 
   friend constexpr void swap(mapping& x, mapping& y) noexcept {
     swap(x.extents_, y.extents_);
-//    if (!std::is_constant_evaluated()) {
-      swap_counter()++;
-//    }
+    swap_counter()++;
   }
 
   static int& swap_counter() {

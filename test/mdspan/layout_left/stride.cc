@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../ConvertibleToIntegral.h"
 #include "../print_to.h"
 
@@ -17,8 +17,10 @@ constexpr void test_stride(std::array<typename E::index_type, E::rank()> strides
   M m(E(args...));
 
   ASSERT_NOEXCEPT(m.stride(0));
-  for (size_t r = 0; r < E::rank(); r++)
-    ASSERT_EQ(strides[r], m.stride(r));
+  for (size_t r = 0; r < E::rank(); r++) {
+    EXPECT_EQ(strides[r], m.stride(r));
+    EXPECT_EQ(m.stride(r), strides[r]);
+  }
 }
 
 TEST(MdSpanLayoutLeft, VERSIONED(stride)) {

@@ -32,7 +32,7 @@
 
 #include "preview/concepts.h"
 #include "preview/span.h"
-#include "gtest.h"
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "CustomTestAccessors.h"
@@ -54,7 +54,7 @@ constexpr size_t expected_size() {
     result += MDS::rank_dynamic() * sizeof_idx;
   }
   using A = typename MDS::accessor_type;
-  if(!std::is_same_v<A, preview::default_accessor<typename MDS::element_type>>) {
+  if(!std::is_same<A, preview::default_accessor<typename MDS::element_type>>::value) {
     size_t alignof_acc = alignof(A);
     size_t sizeof_acc = sizeof(A);
     // add alignment if necessary
@@ -69,26 +69,26 @@ constexpr size_t expected_size() {
 
 // check triviality
 template <class T>
-constexpr bool trv_df_ctor = std::is_trivially_default_constructible_v<T>;
+constexpr bool trv_df_ctor = std::is_trivially_default_constructible<T>::value;
 template <class T>
-constexpr bool trv_cp_ctor = std::is_trivially_copy_constructible_v<T>;
+constexpr bool trv_cp_ctor = std::is_trivially_copy_constructible<T>::value;
 template <class T>
-constexpr bool trv_mv_ctor = std::is_trivially_move_constructible_v<T>;
+constexpr bool trv_mv_ctor = std::is_trivially_move_constructible<T>::value;
 template <class T>
-constexpr bool trv_dstruct = std::is_trivially_destructible_v<T>;
+constexpr bool trv_dstruct = std::is_trivially_destructible<T>::value;
 template <class T>
-constexpr bool trv_cp_asgn = std::is_trivially_copy_assignable_v<T>;
+constexpr bool trv_cp_asgn = std::is_trivially_copy_assignable<T>::value;
 template <class T>
-constexpr bool trv_mv_asgn = std::is_trivially_move_assignable_v<T>;
+constexpr bool trv_mv_asgn = std::is_trivially_move_assignable<T>::value;
 
 template <class MDS, bool default_ctor, bool copy_ctor, bool move_ctor, bool destr, bool copy_assign, bool move_assign>
 void check_triviality() {
-  static_assert(trv_df_ctor<MDS> == default_ctor);
-  static_assert(trv_cp_ctor<MDS> == copy_ctor);
-  static_assert(trv_mv_ctor<MDS> == move_ctor);
-  static_assert(trv_dstruct<MDS> == destr);
-  static_assert(trv_cp_asgn<MDS> == copy_assign);
-  static_assert(trv_mv_asgn<MDS> == move_assign);
+  PREVIEW_STATIC_ASSERT(trv_df_ctor<MDS> == default_ctor);
+  PREVIEW_STATIC_ASSERT(trv_cp_ctor<MDS> == copy_ctor);
+  PREVIEW_STATIC_ASSERT(trv_mv_ctor<MDS> == move_ctor);
+  PREVIEW_STATIC_ASSERT(trv_dstruct<MDS> == destr);
+  PREVIEW_STATIC_ASSERT(trv_cp_asgn<MDS> == copy_assign);
+  PREVIEW_STATIC_ASSERT(trv_mv_asgn<MDS> == move_assign);
 }
 
 template <class T, class E, class L, class A>
@@ -111,8 +111,8 @@ void test_mdspan_types() {
 // no-unique-address fully by default
 #ifndef _WIN32
   // check the size of mdspan
-  if constexpr (std::is_same_v<L, preview::layout_left> || std::is_same_v<L, preview::layout_right>) {
-    static_assert(sizeof(MDS) == expected_size<MDS>(), "");
+  if PREVIEW_CONSTEXPR_AFTER_CXX17 (std::is_same<L, preview::layout_left>::value || std::is_same<L, preview::layout_right>::value) {
+    EXPECT_EQ(sizeof(MDS), expected_size<MDS>());
   }
 #endif
 

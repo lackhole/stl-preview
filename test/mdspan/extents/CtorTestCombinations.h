@@ -9,10 +9,11 @@
 
 // <mdspan>
 
-#include <mdspan>
 #include <cassert>
 #include <array>
-#include <span>
+
+#include "preview/mdspan.h"
+#include "preview/span.h"
 
 #include "../ConvertibleToIntegral.h"
 
@@ -97,6 +98,8 @@ testing::AssertionResult test() {
   test_construction<preview::extents<T, 1, 2, 3, 4, 5, 6, 7, 8, 9>, Test>(std::array<TArg, 9>{1, 2, 3, 4, 5, 6, 7, 8, 9});
   test_construction<preview::extents<T, D, 2, 3, D, 5, D, 7, D, 9>, Test>(std::array<TArg, 9>{1, 2, 3, 4, 5, 6, 7, 8, 9});
   test_construction<preview::extents<T, D, D, D, D, D, D, D, D, D>, Test>(std::array<TArg, 9>{1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+  return result;
 }
 
 template <class Test>

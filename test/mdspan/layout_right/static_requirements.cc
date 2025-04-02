@@ -83,7 +83,7 @@
 #include "preview/mdspan.h"
 #include "preview/span.h" // dynamic_extent
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 // Common requirements of all layout mappings

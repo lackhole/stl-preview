@@ -13,13 +13,14 @@
 //
 // A specialization of mdspan is a trivially copyable type if its accessor_type, mapping_type, and data_handle_type are trivially copyable types.
 
-#include <mdspan>
-#include <cassert>
-#include <concepts>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/concepts.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -33,17 +34,21 @@ constexpr void test_mdspan_types(const H& handle, const M& map, const A& acc) {
   MDS m_copy(m_org);
   MDS m(std::move(m_copy));
 
-  assert(m.extents() == map.extents());
-  if constexpr (std::equality_comparable<H>)
-    assert(m.data_handle() == handle);
-  if constexpr (std::equality_comparable<M>)
-    assert(m.mapping() == map);
-  if constexpr (std::equality_comparable<A>)
-    assert(m.accessor() == acc);
+  EXPECT_EQ(m.extents(), map.extents());
+#if PREVIEW_CXX_VERSION >= 17
+  if constexpr (preview::equality_comparable<H>::value)
+    EXPECT_EQ(m.data_handle(), handle);
+  if constexpr (preview::equality_comparable<M>::value) {
+    EXPECT_EQ(m.mapping(), map);
+    EXPECT_EQ(map, m.mapping());
+  }
+  if constexpr (preview::equality_comparable<A>::value)
+    EXPECT_EQ(m.accessor(), acc);
+#endif
 
-  static_assert(std::is_trivially_move_assignable_v<MDS> ==
-                (std::is_trivially_move_assignable_v<H> && std::is_trivially_move_assignable_v<M> &&
-                 std::is_trivially_move_assignable_v<A>));
+  PREVIEW_STATIC_ASSERT(std::is_trivially_move_assignable<MDS>::value ==
+                (std::is_trivially_move_assignable<H>::value && std::is_trivially_move_assignable<M>::value &&
+                 std::is_trivially_move_assignable<A>::value));
 }
 
 template <class H, class L, class A>
@@ -60,11 +65,11 @@ constexpr void mixin_extents(const H& handle, const L& layout, const A& acc) {
 template <class H, class A>
 constexpr void mixin_layout(const H& handle, const A& acc) {
   // make sure we test a trivially copyable mapping
-  static_assert(std::is_trivially_move_assignable_v<preview::layout_left::mapping<preview::extents<int>>>);
+  PREVIEW_STATIC_ASSERT(std::is_trivially_move_assignable<preview::layout_left::mapping<preview::extents<int>>>::value);
   mixin_extents(handle, preview::layout_left(), acc);
   mixin_extents(handle, preview::layout_right(), acc);
   // make sure we test a not trivially copyable mapping
-  static_assert(!std::is_trivially_move_assignable_v<layout_wrapping_integral<4>::mapping<preview::extents<int>>>);
+  PREVIEW_STATIC_ASSERT(!std::is_trivially_move_assignable<layout_wrapping_integral<4>::mapping<preview::extents<int>>>::value);
   mixin_extents(handle, layout_wrapping_integral<4>(), acc);
 }
 
@@ -72,15 +77,15 @@ template <class T>
 constexpr void mixin_accessor() {
   ElementPool<T, 1024> elements;
   // make sure we test trivially constructible accessor and data_handle
-  static_assert(std::is_trivially_copyable_v<preview::default_accessor<T>>);
-  static_assert(std::is_trivially_copyable_v<typename preview::default_accessor<T>::data_handle_type>);
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<preview::default_accessor<T>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_trivially_copyable<typename preview::default_accessor<T>::data_handle_type>::value);
   mixin_layout(elements.get_ptr(), preview::default_accessor<T>());
 
   // Using weird accessor/data_handle
   // Make sure they actually got the properties we want to test
   // checked_accessor is noexcept copy constructible except for const double
   checked_accessor<T> acc(1024);
-  static_assert(noexcept(checked_accessor<T>(acc)) != std::is_same_v<T, const double>);
+  PREVIEW_STATIC_ASSERT(noexcept(checked_accessor<T>(acc)) != std::is_same<T, const double>::value);
   mixin_layout(typename checked_accessor<T>::data_handle_type(elements.get_ptr()), acc);
 }
 
@@ -95,6 +100,5 @@ constexpr bool test() {
 }
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

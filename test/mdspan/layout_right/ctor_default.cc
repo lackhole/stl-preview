@@ -17,7 +17,7 @@
 #include "preview/mdspan.h"
 #include "preview/span.h" // dynamic_extent
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template <class E>
@@ -29,13 +29,14 @@ constexpr void test_construction() {
 
   // check correct extents are returned
   ASSERT_NOEXCEPT(m.extents());
-  ASSERT_EQ(m.extents(), e);
+  EXPECT_EQ(m.extents(), e);
+  EXPECT_EQ(e, m.extents());
 
   // check required_span_size()
   typename E::index_type expected_size = 1;
   for (typename E::rank_type r = 0; r < E::rank(); r++)
     expected_size *= e.extent(r);
-  ASSERT_EQ(m.required_span_size(), expected_size);
+  EXPECT_EQ(m.required_span_size(), expected_size);
 }
 
 TEST(MdSpanLayoutRight, VERSIONED(ctor_default)) {

@@ -7,7 +7,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../ConvertibleToIntegral.h"
 #include "../print_to.h"
 
@@ -36,7 +38,7 @@ constexpr bool check_operator_constraints(Mapping, Indices ...) {
 template <int r, class M, class T, class... Args, std::enable_if_t<(-1 == r), int> = 0>
 constexpr void iterate_left(M m, T& count, Args... args) {
   ASSERT_NOEXCEPT(m(args...));
-  ASSERT_EQ(count, m(args...));
+  EXPECT_EQ(count, m(args...));
   count++;
 }
 
@@ -68,15 +70,15 @@ TEST(MdSpanLayoutLeft, VERSIONED(index_operator)) {
     test_iteration<preview::extents<signed char, D, D, D, D>>(1, 1, 1, 1);
 
     // Check operator constraint for number of arguments
-    static_assert(check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), 0), "");
-    static_assert(!check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), 0, 0), "");
+    PREVIEW_STATIC_ASSERT(check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), 0));
+    PREVIEW_STATIC_ASSERT(!check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), 0, 0));
 
     // Check operator constraint for convertibility of arguments to index_type
-    static_assert(check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), IntType(0)), "");
-    static_assert(!check_operator_constraints(preview::layout_left::mapping<preview::extents<unsigned, D>>(preview::extents<unsigned, D>(1)), IntType(0)), "");
+    PREVIEW_STATIC_ASSERT(check_operator_constraints(preview::layout_left::mapping<preview::extents<int, D>>(preview::extents<int, D>(1)), IntType(0)));
+    PREVIEW_STATIC_ASSERT(!check_operator_constraints(preview::layout_left::mapping<preview::extents<unsigned, D>>(preview::extents<unsigned, D>(1)), IntType(0)));
 
     // Check operator constraint for no-throw-constructibility of index_type from arguments
-    static_assert(!check_operator_constraints(preview::layout_left::mapping<preview::extents<unsigned char, D>>(preview::extents<unsigned char, D>(1)), IntType(0)), "");
+    PREVIEW_STATIC_ASSERT(!check_operator_constraints(preview::layout_left::mapping<preview::extents<unsigned char, D>>(preview::extents<unsigned char, D>(1)), IntType(0)));
   }
 
   { // test_large

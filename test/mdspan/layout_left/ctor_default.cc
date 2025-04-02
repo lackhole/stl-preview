@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 template <class E>
@@ -20,6 +20,7 @@ constexpr void test_construction() {
   // check correct extents are returned
   ASSERT_NOEXCEPT(m.extents());
   EXPECT_EQ(m.extents(), e);
+  EXPECT_EQ(e, m.extents());
 
   // check required_span_size()
   typename E::index_type expected_size = 1;

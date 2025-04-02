@@ -7,7 +7,7 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "../../test_utils.h"
 #include "../ConvertibleToIntegral.h"
 #include "../print_to.h"
 

@@ -29,15 +29,18 @@
 #  pragma GCC diagnostic ignored "-Wcomma-subscript"
 #endif
 
-#include <mdspan>
 #include <cassert>
 #include <cstdint>
-#include <span> // dynamic_extent
 
-#include "test_macros.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+
+#include "../../test_utils.h"
 
 #include "../ConvertibleToIntegral.h"
 #include "../CustomTestLayouts.h"
+
+#if PREVIEW_CXX_VERSION >= 26
 
 // Clang 16 does not support argument packs as input to operator []
 #if defined(__clang_major__) && __clang_major__ < 17
@@ -95,7 +98,7 @@ constexpr void iterate(MDS mds, Args... args) {
     std::array<typename MDS::index_type, MDS::rank()> args_arr{static_cast<typename MDS::index_type>(args)...};
     int* ptr3 = &mds[args_arr];
     assert(ptr3 == ptr2);
-    int* ptr4 = &mds[std::span(args_arr)];
+    int* ptr4 = &mds[preview::span(args_arr)];
     assert(ptr4 == ptr2);
   } else {
     for (typename MDS::index_type i = 0; i < mds.extents().extent(r); i++) {
@@ -188,32 +191,32 @@ constexpr void test_layout() {
 
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
     {
       std::array idx{IntConfig<o, o, t, t>(0)};
-      std::span s(idx);
+      preview::span s(idx);
       assert(!check_operator_constraints(preview::mdspan(data, construct_mapping(Layout(), preview::extents<int, D>(1))), s));
     }
   }
@@ -244,9 +247,21 @@ constexpr bool test_large() {
   return true;
 }
 
+#else
+
+constexpr bool test() {
+  return true;
+}
+
+constexpr bool test_large() {
+  return true;
+}
+
+#endif
+
 int main(int, char**) {
   test();
-  static_assert(test());
+  PREVIEW_STATIC_ASSERT(test());
 
   // The large test iterates over ~10k loop indices.
   // With assertions enabled this triggered the maximum default limit

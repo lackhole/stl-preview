@@ -5,7 +5,9 @@
 #include <cstddef>
 #include <ostream>
 
-#include "gtest.h"
+#include "preview/core.h"
+
+#include "../../test_utils.h"
 #include "../print_to.h"
 
 #include "../CustomTestLayouts.h"
@@ -46,22 +48,22 @@ constexpr void test_comparison_different_rank() {
 //  m1 == m2;
 
   // sanity check same rank
-  static_assert(layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, D>>::value, "");
-  static_assert(layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, D>>::value, "");
-  static_assert(layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, 5>>::value, "");
-  static_assert(layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5>>::value, "");
+  PREVIEW_STATIC_ASSERT(layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, D>>::value);
+  PREVIEW_STATIC_ASSERT(layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, D>>::value);
+  PREVIEW_STATIC_ASSERT(layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, 5>>::value);
+  PREVIEW_STATIC_ASSERT(layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5>>::value);
 
   // not equality comparable when rank is not the same
-  static_assert(!layout_mapping_comparable<preview::extents<T1>, preview::extents<T2, D>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1>, preview::extents<T2, 1>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, 1>, preview::extents<T2>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, D, D>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5, D>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5, 1>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, D, D>, preview::extents<T2, D>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, 5, D>, preview::extents<T2, 5>>::value, "");
-  static_assert(!layout_mapping_comparable<preview::extents<T1, 5, 1>, preview::extents<T2, 5>>::value, "");
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1>, preview::extents<T2, D>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1>, preview::extents<T2, 1>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, 1>, preview::extents<T2>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, D>, preview::extents<T2, D, D>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5, D>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, 5>, preview::extents<T2, 5, 1>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, D, D>, preview::extents<T2, D>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, 5, D>, preview::extents<T2, 5>>::value);
+  PREVIEW_STATIC_ASSERT(!layout_mapping_comparable<preview::extents<T1, 5, 1>, preview::extents<T2, 5>>::value);
 }
 
 template <class To, class From>
@@ -74,8 +76,10 @@ constexpr void test_comparison(
   preview::layout_stride::mapping<To> dest(dest_exts, dest_strides);
   preview::layout_stride::mapping<From> src(src_exts, src_strides);
   ASSERT_NOEXCEPT(dest == src);
-  ASSERT_EQ((dest == src), equal);
-  ASSERT_EQ((dest != src), !equal);
+  EXPECT_EQ((dest == src), equal);
+  EXPECT_EQ((src == dest), equal);
+  EXPECT_EQ((dest != src), !equal);
+  EXPECT_EQ((src != dest), !equal);
 }
 
 template <class T1, class T2>

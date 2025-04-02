@@ -3,7 +3,7 @@
 //
 
 #include "preview/mdspan.h"
-#include "gtest.h"
+#include "../../test_utils.h"
 
 #include <limits>
 
@@ -106,14 +106,17 @@ VERSIONED_TYPE_TEST(MdSpanExtents, compare_same_rank) {
 template <class To, class From>
 constexpr void test_implicit_conversion(To dest, From src) {
   EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 }
 
 template <bool implicit, class To, class From, std::enable_if_t<implicit, int> = 0>
 constexpr void test_conversion(From src) {
   To dest(src);
   EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
   dest = src;
   EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
   test_implicit_conversion<To, From>(src, src);
 }
 
@@ -121,6 +124,7 @@ template <bool implicit, class To, class From, std::enable_if_t<!implicit, int> 
 constexpr void test_conversion(From src) {
   To dest(src);
   EXPECT_EQ(dest, src);
+  EXPECT_EQ(src, dest);
 }
 
 VERSIONED_TYPE_TEST(MdSpanExtents, conversion) {

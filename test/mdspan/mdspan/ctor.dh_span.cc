@@ -29,13 +29,15 @@
 //   - value-initializes acc_.
 
 #include <array>
-#include <cassert>
-#include <concepts>
-#include <mdspan>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/core.h"
+#include "preview/concepts.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+#include "preview/type_traits.h"
+
+#include "../../test_utils.h"
 
 #include "../ConvertibleToIntegral.h"
 #include "../MinimalElementType.h"
@@ -47,47 +49,51 @@ constexpr auto array_from_extents(const Extents& exts, std::index_sequence<Idxs.
   return std::array<typename Extents::index_type, Extents::rank()>{exts.extent(Idxs)...};
 }
 
+#if PREVIEW_CONFORM_CXX20_STANDARD
 template <class MDS, class Exts>
 concept check_mdspan_ctor_implicit = requires(MDS m, typename MDS::data_handle_type h, const Exts& exts) {
   m = {h, exts};
 };
+#endif
 
 template <class H, class M, class A, size_t N>
 constexpr void
-test_mdspan_ctor_span(const H& handle, const M& map, const A&, std::span<typename M::index_type, N> exts) {
+test_mdspan_ctor_span(const H& handle, const M& map, const A&, preview::span<typename M::index_type, N> exts) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
-  if (!std::is_constant_evaluated()) {
-    move_counted_handle<typename MDS::element_type>::move_counter() = 0;
-  }
+  move_counted_handle<typename MDS::element_type>::move_counter() = 0;
   MDS m(handle, exts);
-  if (!std::is_constant_evaluated()) {
-    if constexpr (std::is_same_v<H, move_counted_handle<typename MDS::element_type>>) {
-      assert((H::move_counter() == 1));
-    }
+  if PREVIEW_CONSTEXPR_AFTER_CXX17 (std::is_same<H, move_counted_handle<typename MDS::element_type>>::value) {
+    EXPECT_EQ(H::move_counter(), 1);
   }
 
-  LIBCPP_STATIC_ASSERT(!noexcept(MDS(handle, exts)));
+  PREVIEW_STATIC_ASSERT(!noexcept(MDS(handle, exts)));
 
-  static_assert(check_mdspan_ctor_implicit<MDS, decltype(exts)> == (N == MDS::rank_dynamic()));
+#if PREVIEW_CONFORM_CXX20_STANDARD
+  PREVIEW_STATIC_ASSERT(check_mdspan_ctor_implicit<MDS, decltype(exts)> == (N == MDS::rank_dynamic()));
+#endif
 
-  assert(m.extents() == map.extents());
-  if constexpr (std::equality_comparable<H>)
-    assert(m.data_handle() == handle);
-  if constexpr (std::equality_comparable<M>)
-    assert(m.mapping() == map);
-  if constexpr (std::equality_comparable<A>)
-    assert(m.accessor() == A());
+  EXPECT_EQ(m.extents(), map.extents());
+#if PREVIEW_CXX_VERSION >= 17
+  if constexpr (preview::equality_comparable<H>::value)
+    EXPECT_EQ(m.data_handle(), handle);
+  if constexpr (preview::equality_comparable<M>::value)
+    EXPECT_EQ(m.mapping(), map);
+  if constexpr (preview::equality_comparable<A>::value)
+    EXPECT_EQ(m.accessor(), A());
+#endif
 }
 
 template <bool mec, bool ac, class H, class M, class A>
 constexpr void test_mdspan_ctor(const H& handle, const M& map, const A& acc) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
-  static_assert(mec == std::is_constructible_v<M, typename M::extents_type>);
-  static_assert(ac == std::is_default_constructible_v<A>);
+  PREVIEW_STATIC_ASSERT(mec == std::is_constructible<M, typename M::extents_type>::value);
+  PREVIEW_STATIC_ASSERT(ac == std::is_default_constructible<A>::value);
+
+#if PREVIEW_CXX_VERSION >= 17
   if constexpr (mec && ac) {
     // test from all extents
     auto exts = array_from_extents(map.extents(), std::make_index_sequence<MDS::rank()>());
-    test_mdspan_ctor_span(handle, map, acc, std::span(exts));
+    test_mdspan_ctor_span(handle, map, acc, preview::span(exts));
 
     // test from dynamic extents
     std::array<typename MDS::index_type, MDS::rank_dynamic()> exts_dynamic{};
@@ -96,10 +102,11 @@ constexpr void test_mdspan_ctor(const H& handle, const M& map, const A& acc) {
       if (MDS::static_extent(r) == preview::dynamic_extent)
         exts_dynamic[r_dyn++] = exts[r];
     }
-    test_mdspan_ctor_span(handle, map, acc, std::span(exts_dynamic));
+    test_mdspan_ctor_span(handle, map, acc, preview::span(exts_dynamic));
   } else {
-    static_assert(!std::is_constructible_v<MDS, const H&, std::span<typename MDS::index_type, MDS::rank()>>);
+    PREVIEW_STATIC_ASSERT(!std::is_constructible<MDS, const H&, preview::span<typename MDS::index_type, MDS::rank()>>::value);
   }
+#endif
 }
 
 template <bool mec, bool ac, class H, class L, class A>
@@ -120,14 +127,14 @@ constexpr void mixin_layout(const H& handle, const A& acc) {
   mixin_extents<true, ac>(handle, preview::layout_right(), acc);
 
   // Sanity check that this layouts mapping is constructible from extents (via its move constructor)
-  static_assert(std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::extents<int>>, preview::extents<int>>);
-  static_assert(
-      !std::is_constructible_v<layout_wrapping_integral<8>::mapping<preview::extents<int>>, const preview::extents<int>&>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<layout_wrapping_integral<8>::mapping<preview::extents<int>>, preview::extents<int>>::value);
+  PREVIEW_STATIC_ASSERT(
+      !std::is_constructible<layout_wrapping_integral<8>::mapping<preview::extents<int>>, const preview::extents<int>&>::value);
   mixin_extents<true, ac>(handle, layout_wrapping_integral<8>(), acc);
   // Sanity check that this layouts mapping is not constructible from extents
-  static_assert(!std::is_constructible_v<layout_wrapping_integral<4>::mapping<preview::extents<int>>, preview::extents<int>>);
-  static_assert(
-      !std::is_constructible_v<layout_wrapping_integral<4>::mapping<preview::extents<int>>, const preview::extents<int>&>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<layout_wrapping_integral<4>::mapping<preview::extents<int>>, preview::extents<int>>::value);
+  PREVIEW_STATIC_ASSERT(
+      !std::is_constructible<layout_wrapping_integral<4>::mapping<preview::extents<int>>, const preview::extents<int>&>::value);
   mixin_extents<false, ac>(handle, layout_wrapping_integral<4>(), acc);
 }
 
@@ -139,8 +146,8 @@ constexpr void mixin_accessor() {
   // Using weird accessor/data_handle
   // Make sure they actually got the properties we want to test
   // checked_accessor is not default constructible except for const double, where it is not noexcept
-  static_assert(std::is_default_constructible_v<checked_accessor<T>> == std::is_same_v<T, const double>);
-  mixin_layout<std::is_same_v<T, const double>>(
+  PREVIEW_STATIC_ASSERT(std::is_default_constructible<checked_accessor<T>>::value == std::is_same<T, const double>::value);
+  mixin_layout<std::is_same<T, const double>::value>(
       typename checked_accessor<T>::data_handle_type(elements.get_ptr()), checked_accessor<T>(1024));
 }
 
@@ -156,41 +163,40 @@ constexpr bool test() {
   constexpr size_t D = preview::dynamic_extent;
   using mds_t        = preview::mdspan<float, preview::extents<unsigned, 3, D, D>>;
   // sanity check
-  static_assert(std::is_constructible_v<mds_t, float*, std::span<int, 3>>);
-  static_assert(std::is_constructible_v<mds_t, float*, std::span<int, 2>>);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<mds_t, float*, preview::span<int, 3>>::value);
+  PREVIEW_STATIC_ASSERT(std::is_constructible<mds_t, float*, preview::span<int, 2>>::value);
   // wrong size
-  static_assert(!std::is_constructible_v<mds_t, float*, std::span<int, 1>>);
-  static_assert(!std::is_constructible_v<mds_t, float*, std::span<int, 4>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, preview::span<int, 1>>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, preview::span<int, 4>>::value);
   // not convertible to index_type
-  static_assert(std::is_convertible_v<const IntType&, int>);
-  static_assert(!std::is_convertible_v<const IntType&, unsigned>);
-  static_assert(!std::is_constructible_v<mds_t, float*, std::span<IntType, 2>>);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<const IntType&, int>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<const IntType&, unsigned>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, float*, preview::span<IntType, 2>>::value);
 
   // index_type is not nothrow constructible
   using mds_uchar_t = preview::mdspan<float, preview::extents<unsigned char, 3, D, D>>;
-  static_assert(std::is_convertible_v<IntType, unsigned char>);
-  static_assert(std::is_convertible_v<const IntType&, unsigned char>);
-  static_assert(!std::is_nothrow_constructible_v<unsigned char, const IntType&>);
-  static_assert(!std::is_constructible_v<mds_uchar_t, float*, std::span<IntType, 2>>);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<IntType, unsigned char>::value);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<const IntType&, unsigned char>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_nothrow_constructible<unsigned char, const IntType&>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_uchar_t, float*, preview::span<IntType, 2>>::value);
 
   // convertible from non-const to index_type but not  from const
   using mds_int_t = preview::mdspan<float, preview::extents<int, 3, D, D>>;
-  static_assert(std::is_convertible_v<IntTypeNC, int>);
-  static_assert(!std::is_convertible_v<const IntTypeNC&, int>);
-  static_assert(std::is_nothrow_constructible_v<int, IntTypeNC>);
-  static_assert(!std::is_constructible_v<mds_int_t, float*, std::span<IntTypeNC, 2>>);
+  PREVIEW_STATIC_ASSERT(std::is_convertible<IntTypeNC, int>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_convertible<const IntTypeNC&, int>::value);
+  PREVIEW_STATIC_ASSERT(std::is_nothrow_constructible<int, IntTypeNC>::value);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_int_t, float*, preview::span<IntTypeNC, 2>>::value);
 
   // can't test a combo where std::is_nothrow_constructible_v<int, const IntTypeNC&> is true,
   // but std::is_convertible_v<const IntType&, int> is false
 
   // test non-constructibility from wrong handle_type
-  static_assert(!std::is_constructible_v<mds_t, const float*, std::span<int, 2>>);
+  PREVIEW_STATIC_ASSERT(!std::is_constructible<mds_t, const float*, preview::span<int, 2>>::value);
 
   return true;
 }
 
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }

@@ -16,13 +16,14 @@
 //   swap(x.map_, y.map_);
 //   swap(x.acc_, y.acc_);
 
-#include <mdspan>
-#include <cassert>
-#include <concepts>
-#include <span> // dynamic_extent
 #include <type_traits>
 
-#include "test_macros.h"
+#include "preview/concepts.h"
+#include "preview/core.h"
+#include "preview/mdspan.h"
+#include "preview/span.h"
+
+#include "../../test_utils.h"
 
 #include "../MinimalElementType.h"
 #include "../CustomTestLayouts.h"
@@ -32,29 +33,31 @@ constexpr void test_swap(MDS a, MDS b) {
   auto org_a = a;
   auto org_b = b;
   swap(a, b);
-  assert(a.extents() == org_b.extents());
-  assert(b.extents() == org_a.extents());
-  if constexpr (std::equality_comparable<typename MDS::mapping_type>) {
-    assert(a.mapping() == org_b.mapping());
-    assert(b.mapping() == org_a.mapping());
+  EXPECT_EQ(a.extents(), org_b.extents());
+  EXPECT_EQ(b.extents(), org_a.extents());
+
+#if PREVIEW_CXX_VERSION >= 17
+  if constexpr (preview::equality_comparable<typename MDS::mapping_type>::value) {
+    EXPECT_EQ(a.mapping(), org_b.mapping());
+    EXPECT_EQ(b.mapping(), org_a.mapping());
   }
-  if constexpr (std::equality_comparable<typename MDS::data_handle_type>) {
-    assert(a.data_handle() == org_b.data_handle());
-    assert(b.data_handle() == org_a.data_handle());
+  if constexpr (preview::equality_comparable<typename MDS::data_handle_type>::value) {
+    EXPECT_EQ(a.data_handle(), org_b.data_handle());
+    EXPECT_EQ(b.data_handle(), org_a.data_handle());
   }
   // This check uses a side effect of layout_wrapping_integral::swap to make sure
   // mdspan calls the underlying components' swap via ADL
-  if (!std::is_constant_evaluated()) {
-    if constexpr (std::is_same_v<typename MDS::layout_type, layout_wrapping_integral<4>>) {
-      assert(MDS::mapping_type::swap_counter() > 0);
-    }
+  if constexpr (std::is_same_v<typename MDS::layout_type, layout_wrapping_integral<4>>) {
+    EXPECT_GE(MDS::mapping_type::swap_counter(), 0);
   }
+#endif
 }
 
 constexpr bool test() {
+#if PREVIEW_CXX_VERSION >= 17
   using extents_t = preview::extents<int, 4, preview::dynamic_extent>;
-  float data_a[1024];
-  float data_b[1024];
+  float data_a[1024]{};
+  float data_b[1024]{};
   {
     preview::mdspan a(data_a, extents_t(12));
     preview::mdspan b(data_b, extents_t(5));
@@ -67,11 +70,11 @@ constexpr bool test() {
     preview::mdspan b(data_b, map_b);
     test_swap(a, b);
   }
+#endif
   return true;
 }
 
 int main(int, char**) {
   test();
-  static_assert(test());
   return 0;
 }
