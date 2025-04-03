@@ -1,0 +1,5 @@
+{
+    "cmake.configureArgs": [
+        "-DPREVIEW_TEST=ON"
+    ]
+}

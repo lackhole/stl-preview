@@ -426,7 +426,7 @@ class span : private detail::span_storage_t<T, Extent> {
 template<typename T, std::size_t Extent>
 struct ranges::enable_view<span<T, Extent>> : std::true_type {};
 
-#if __cplusplus >= 201703L
+#if PREVIEW_CXX_VERSION >= 17
 
 template<typename It, typename EndOrSize, std::enable_if_t<contiguous_iterator<It>::value, int> = 0>
 span(It, EndOrSize) -> span<std::remove_reference_t<iter_reference_t<It>>, detail::maybe_static_ext<EndOrSize>::value>;
