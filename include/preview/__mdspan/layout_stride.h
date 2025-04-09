@@ -160,14 +160,14 @@ class layout_stride::mapping
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>
   >::value, int> = 0>
-  constexpr mapping(const extents_type& e, span<OtherIndexType, rank_> s) noexcept
+  constexpr mapping(const extents_type& e, span<OtherIndexType, extents_type::rank()> s) noexcept
       : mapping(in_place, e, s, std::make_integer_sequence<rank_type, rank_>{}) {}
 
   template<typename OtherIndexType, std::enable_if_t<conjunction<
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>
   >::value, int> = 0>
-  constexpr mapping(const extents_type& e, const std::array<OtherIndexType, rank_>& s) noexcept
+  constexpr mapping(const extents_type& e, const std::array<OtherIndexType, extents_type::rank()>& s) noexcept
       : mapping(in_place, e, s, std::make_integer_sequence<rank_type, rank_>{}) {}
 
   template<typename StridedLayoutMapping, std::enable_if_t<conjunction<
