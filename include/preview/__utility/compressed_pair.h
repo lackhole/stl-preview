@@ -120,6 +120,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       std::is_convertible<const U&, U>
   >::value, int> = 0>
   constexpr compressed_pair(const T& t, const U& u)
+      noexcept(std::is_nothrow_copy_constructible<T>::value &&
+               std::is_nothrow_copy_constructible<U>::value)
       : first_base(t)
       , second_base(u) {}
 
@@ -131,6 +133,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
           negation<std::is_convertible<const U&, U>>>
   >::value, int> = 0>
   constexpr explicit compressed_pair(const T& t, const U& u)
+      noexcept(std::is_nothrow_copy_constructible<T>::value &&
+               std::is_nothrow_copy_constructible<U>::value)
       : first_base(t)
       , second_base(u) {}
 
@@ -141,6 +145,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       std::is_convertible<U2, U>
   >::value, int> = 0>
   constexpr compressed_pair(T2&& t, U2&& u)
+      noexcept(std::is_nothrow_constructible<T, T2>::value &&
+               std::is_nothrow_constructible<U, U2>::value)
       : first_base(std::forward<T2>(t))
       , second_base(std::forward<U2>(u)) {}
 
@@ -153,6 +159,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       >
   >::value, int> = 0>
   constexpr explicit compressed_pair(T2&& t, U2&& u)
+      noexcept(std::is_nothrow_constructible<T, T2>::value &&
+               std::is_nothrow_constructible<U, U2>::value)
       : first_base(std::forward<T2>(t))
       , second_base(std::forward<U2>(u)) {}
 
@@ -163,6 +171,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       std::is_convertible<U2&, U>
   >::value, int> = 0>
   constexpr compressed_pair(compressed_pair<T2, U2>& p)
+      noexcept(std::is_nothrow_constructible<T, T2&>::value &&
+               std::is_nothrow_constructible<U, U2&>::value)
       : first_base(p.first())
       , second_base(p.second()) {}
 
@@ -175,6 +185,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       >
   >::value, int> = 0>
   constexpr explicit compressed_pair(compressed_pair<T2, U2>& p)
+      noexcept(std::is_nothrow_constructible<T, T2&>::value &&
+               std::is_nothrow_constructible<U, U2&>::value)
       : first_base(p.first())
       , second_base(p.second()) {}
 
@@ -185,6 +197,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       std::is_convertible<const U2&, U>
   >::value, int> = 0>
   constexpr compressed_pair(const compressed_pair<T2, U2>& p)
+      noexcept(std::is_nothrow_constructible<T, const T2&>::value &&
+               std::is_nothrow_constructible<U, const U2&>::value)
       : first_base(p.first())
       , second_base(p.second()) {}
 
@@ -197,6 +211,8 @@ class compressed_pair : public detail::compressed_slot<T, 0>, public detail::com
       >
   >::value, int> = 0>
   constexpr explicit compressed_pair(const compressed_pair<T2, U2>& p)
+      noexcept(std::is_nothrow_constructible<T, const T2&>::value &&
+               std::is_nothrow_constructible<U, const U2&>::value)
       : first_base(p.first())
       , second_base(p.second()) {}
 
