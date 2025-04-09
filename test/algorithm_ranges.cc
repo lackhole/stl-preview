@@ -10,6 +10,7 @@
 #include <numeric>
 #include <string>
 #include <random>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -425,6 +426,31 @@ TEST(VERSIONED(AlgorithmRanges), contains) {
 
   static_assert(preview::is_invocable<decltype(ranges::contains), void, int>::value == false, "");
   static_assert(preview::is_invocable<decltype(ranges::contains), int, int>::value == false, "");
+}
+
+TEST(VERSIONED(AlgorithmRanges), move) {
+  {
+    std::vector<std::thread> c1(10);
+    std::list<std::thread> c2;
+    preview::ranges::move(c1, std::back_inserter(c2));
+    EXPECT_EQ(c1.size(), 10);
+    EXPECT_EQ(c2.size(), 10);
+  }
+
+  {
+    std::vector<std::string> c1 = {"one"s, "two"s, "three"s};
+    std::string c2[5]{};
+    preview::ranges::move(c1, preview::ranges::begin(c2));
+
+    ASSERT_EQ(c1.size(), 3);
+    EXPECT_TRUE(preview::ranges::all_of(c1, &std::string::empty));
+
+    EXPECT_EQ(c2[0], "one"s);
+    EXPECT_EQ(c2[1], "two"s);
+    EXPECT_EQ(c2[2], "three"s);
+    EXPECT_EQ(c2[3], ""s);
+    EXPECT_EQ(c2[4], ""s);
+  }
 }
 
 TEST(VERSIONED(AlgorithmRanges), copy) {

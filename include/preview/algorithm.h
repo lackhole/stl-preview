@@ -50,6 +50,7 @@
 #include "preview/__algorithm/ranges/minmax_element.h"
 #include "preview/__algorithm/ranges/min_max_result.h"
 #include "preview/__algorithm/ranges/mismatch.h"
+#include "preview/__algorithm/ranges/move.h"
 #include "preview/__algorithm/ranges/none_of.h"
 #include "preview/__algorithm/ranges/out_value_result.h"
 #include "preview/__algorithm/ranges/pop_heap.h"
