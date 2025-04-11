@@ -191,7 +191,7 @@ class layout_stride::mapping
   constexpr mapping& operator=(const mapping&) noexcept = default;
 
   constexpr const extents_type& extents() const noexcept { return extents_; }
-  constexpr std::array<index_type, rank_> strides() const noexcept {
+  constexpr std::array<index_type, extents_type::rank()> strides() const noexcept {
     return strides_impl(bool_constant<(rank_ > 0)>{});
   }
 
@@ -207,7 +207,7 @@ class layout_stride::mapping
 
   template<typename... Indices, std::enable_if_t<conjunction_v<
       bool_constant<(extents_type::rank() != 0)>,
-      bool_constant<(sizeof...(Indices) == rank_)>,
+      bool_constant<(sizeof...(Indices) == extents_type::rank())>,
       std::is_convertible<Indices, index_type>...,
       std::is_nothrow_constructible<index_type, Indices>...
   >, int> = 0>
@@ -247,7 +247,7 @@ class layout_stride::mapping
 
   template<class OtherMapping, std::enable_if_t<conjunction_v<
       detail::layout_mapping_alike<OtherMapping>,
-      bool_constant<(rank_ == OtherMapping::extents_type::rank())>,
+      bool_constant<(extents_type::rank() == OtherMapping::extents_type::rank())>,
       bool_constant<OtherMapping::is_always_strided()>
 #if !PREVIEW_CONFORM_CXX20_STANDARD
       , negation<is_specialization<std::decay_t<OtherMapping>, layout_stride::mapping>>
@@ -260,7 +260,7 @@ class layout_stride::mapping
   }
 
 #if !PREVIEW_CONFORM_CXX20_STANDARD
-  template<typename OtherExtents, std::enable_if_t<(rank_ == OtherExtents::rank()), int> = 0>
+  template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>
   friend constexpr bool operator==(const mapping& x, const mapping<OtherExtents>& y) noexcept {
     return x.extents() == y.extents()
         && offset(y) == 0
@@ -269,7 +269,7 @@ class layout_stride::mapping
 
   template<class OtherMapping, std::enable_if_t<conjunction_v<
       detail::layout_mapping_alike<OtherMapping>,
-      bool_constant<(rank_ == OtherMapping::extents_type::rank())>,
+      bool_constant<(extents_type::rank() == OtherMapping::extents_type::rank())>,
       bool_constant<OtherMapping::is_always_strided()>,
       negation<is_specialization<OtherMapping, layout_stride::mapping>>
   >, int> = 0>
@@ -279,7 +279,7 @@ class layout_stride::mapping
 
   template<class OtherMapping, std::enable_if_t<conjunction_v<
       detail::layout_mapping_alike<OtherMapping>,
-      bool_constant<(rank_ == OtherMapping::extents_type::rank())>,
+      bool_constant<(extents_type::rank() == OtherMapping::extents_type::rank())>,
       bool_constant<OtherMapping::is_always_strided()>,
       negation<is_specialization<OtherMapping, layout_stride::mapping>>
   >, int> = 0>
@@ -289,7 +289,7 @@ class layout_stride::mapping
 
   template<class OtherMapping, std::enable_if_t<conjunction_v<
       detail::layout_mapping_alike<OtherMapping>,
-      bool_constant<(rank_ == OtherMapping::extents_type::rank())>,
+      bool_constant<(extents_type::rank() == OtherMapping::extents_type::rank())>,
       bool_constant<OtherMapping::is_always_strided()>,
       negation<is_specialization<OtherMapping, layout_stride::mapping>>
   >, int> = 0>
@@ -297,7 +297,7 @@ class layout_stride::mapping
     return !(y == x);
   }
 
-  template<typename OtherExtents, std::enable_if_t<(rank_ == OtherExtents::rank()), int> = 0>
+  template<typename OtherExtents, std::enable_if_t<(extents_type::rank() == OtherExtents::rank()), int> = 0>
   friend constexpr bool operator!=(const mapping& x, const mapping<OtherExtents>& y) noexcept {
     return !(x == y);
   }
@@ -307,7 +307,7 @@ class layout_stride::mapping
   constexpr stride_base& as_stride_base() noexcept { return static_cast<stride_base&>(*this); }
   constexpr const stride_base& as_stride_base() const noexcept { return static_cast<const stride_base&>(*this); }
 
-  constexpr std::array<index_type, rank_> strides_impl (std::true_type) const noexcept { return as_stride_base(); }
+  constexpr std::array<index_type, extents_type::rank()> strides_impl (std::true_type) const noexcept { return as_stride_base(); }
   constexpr std::array<index_type, 0> strides_impl (std::false_type) const noexcept { return {}; }
 
 #if PREVIEW_CXX_VERSION < 17

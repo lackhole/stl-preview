@@ -76,7 +76,8 @@ constexpr void iterate_right(M m, T& count, Args... args) {
 template <class E, class... Args>
 constexpr void test_iteration(Args... args) {
   using M = preview::layout_right::mapping<E>;
-  M m(E(args...));
+  E exts(args...);
+  M m(exts);
 
   typename E::index_type count = 0;
   iterate_right(m, count);

@@ -14,7 +14,8 @@
 template <class E, class... Args>
 constexpr void test_stride(std::array<typename E::index_type, E::rank()> strides, Args... args) {
   using M = preview::layout_left::mapping<E>;
-  M m(E(args...));
+  E exts(args...);
+  M m(exts);
 
   ASSERT_NOEXCEPT(m.stride(0));
   for (size_t r = 0; r < E::rank(); r++) {

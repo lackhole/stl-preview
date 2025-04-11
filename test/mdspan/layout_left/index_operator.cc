@@ -52,7 +52,8 @@ constexpr void iterate_left(M m, T& count, Args... args) {
 template <class E, class... Args>
 constexpr void test_iteration(Args... args) {
   using M = preview::layout_left::mapping<E>;
-  M m(E(args...));
+  E exts(args...);
+  M m(exts);
 
   typename E::index_type count = 0;
   iterate_left<static_cast<int>(M::extents_type::rank()) - 1>(m, count);

@@ -125,7 +125,9 @@ class mdspan {
   template<class... OtherIndexTypes, std::enable_if_t<conjunction_v<
       std::is_convertible<OtherIndexTypes, index_type>...,
       std::is_nothrow_constructible<index_type, OtherIndexTypes>...,
-      bool_constant<((sizeof...(OtherIndexTypes) == rank()) || (sizeof...(OtherIndexTypes) == rank_dynamic()))>,
+      bool_constant<(
+          sizeof...(OtherIndexTypes) == extents_type::rank() ||
+          sizeof...(OtherIndexTypes) == extents_type::rank_dynamic())>,
       std::is_constructible<mapping_type, extents_type>,
       std::is_default_constructible<accessor_type>
   >, int> = 0>
@@ -135,11 +137,11 @@ class mdspan {
   template<class OtherIndexType, std::size_t N, std::enable_if_t<conjunction_v<
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>,
-      bool_constant<(N == rank() || N == rank_dynamic())>,
+      bool_constant<(N == extents_type::rank() || N == extents_type::rank_dynamic())>,
       std::is_constructible<mapping_type, extents_type>,
       std::is_default_constructible<accessor_type>,
       // explicit (true)
-      bool_constant<(N != rank_dynamic())>
+      bool_constant<(N != extents_type::rank_dynamic())>
   >, int> = 0>
   constexpr explicit mdspan(data_handle_type p, span<OtherIndexType, N> exts)
       : storage_(std::move(p), extents_type(exts)) {}
@@ -147,11 +149,11 @@ class mdspan {
   template<class OtherIndexType, std::size_t N, std::enable_if_t<conjunction_v<
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>,
-      bool_constant<(N == rank() || N == rank_dynamic())>,
+      bool_constant<(N == extents_type::rank() || N == extents_type::rank_dynamic())>,
       std::is_constructible<mapping_type, extents_type>,
       std::is_default_constructible<accessor_type>,
       // explicit (false)
-      bool_constant<(N == rank_dynamic())>
+      bool_constant<(N == extents_type::rank_dynamic())>
   >, int> = 0>
   constexpr mdspan(data_handle_type p, span<OtherIndexType, N> exts)
       : storage_(std::move(p), extents_type(exts)) {}
@@ -159,11 +161,11 @@ class mdspan {
   template<class OtherIndexType, std::size_t N, std::enable_if_t<conjunction_v<
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>,
-      bool_constant<(N == rank() || N == rank_dynamic())>,
+      bool_constant<(N == extents_type::rank() || N == extents_type::rank_dynamic())>,
       std::is_constructible<mapping_type, extents_type>,
       std::is_default_constructible<accessor_type>,
       // explicit (true)
-      bool_constant<(N != rank_dynamic())>
+      bool_constant<(N != extents_type::rank_dynamic())>
   >, int> = 0>
   constexpr explicit mdspan(data_handle_type p, const std::array<OtherIndexType, N>& exts)
       : storage_(std::move(p), extents_type(exts)) {}
@@ -171,11 +173,11 @@ class mdspan {
   template<class OtherIndexType, std::size_t N, std::enable_if_t<conjunction_v<
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>,
-      bool_constant<(N == rank() || N == rank_dynamic())>,
+      bool_constant<(N == extents_type::rank() || N == extents_type::rank_dynamic())>,
       std::is_constructible<mapping_type, extents_type>,
       std::is_default_constructible<accessor_type>,
       // explicit (false)
-      bool_constant<(N == rank_dynamic())>
+      bool_constant<(N == extents_type::rank_dynamic())>
   >, int> = 0>
   constexpr mdspan(data_handle_type p, const std::array<OtherIndexType, N>& exts)
       : storage_(std::move(p), extents_type(exts)) {}
@@ -200,8 +202,8 @@ class mdspan {
           std::is_constructible<accessor_type, const OtherAccessorPolicy&>,
           // explicit(true)
           bool_constant<(
-              !std::is_convertible<const typename OtherLayoutPolicy::template mapping<OtherExtents>&, mapping_type>::value
-              || !std::is_convertible<const OtherAccessorPolicy&, accessor_type>::value)>
+              !std::is_convertible<const typename OtherLayoutPolicy::template mapping<OtherExtents>&, mapping_type>::value ||
+              !std::is_convertible<const OtherAccessorPolicy&, accessor_type>::value)>
   >, int> = 0>
   constexpr explicit mdspan(const mdspan<OtherElementType, OtherExtents, OtherLayoutPolicy, OtherAccessorPolicy>& other)
       : storage_(other.data_handle(), other.mapping(), other.accessor()) {}
@@ -212,8 +214,8 @@ class mdspan {
           std::is_constructible<accessor_type, const OtherAccessorPolicy&>,
           // explicit(false)
           bool_constant<!(
-              !std::is_convertible<const typename OtherLayoutPolicy::template mapping<OtherExtents>&, mapping_type>::value
-              || !std::is_convertible<const OtherAccessorPolicy&, accessor_type>::value)>
+              !std::is_convertible<const typename OtherLayoutPolicy::template mapping<OtherExtents>&, mapping_type>::value ||
+              !std::is_convertible<const OtherAccessorPolicy&, accessor_type>::value)>
   >, int> = 0>
   constexpr mdspan(const mdspan<OtherElementType, OtherExtents, OtherLayoutPolicy, OtherAccessorPolicy>& other)
       : storage_(other.data_handle(), other.mapping(), other.accessor()) {}
@@ -224,7 +226,7 @@ class mdspan {
   template<typename... OtherIndexTypes, std::enable_if_t<conjunction_v<
       std::is_convertible<OtherIndexTypes, index_type>...,
       std::is_nothrow_constructible<index_type, OtherIndexTypes>...,
-      bool_constant<(sizeof...(OtherIndexTypes) == rank())>
+      bool_constant<(sizeof...(OtherIndexTypes) == extents_type::rank())>
   >, int> = 0>
   PREVIEW_DEPRECATED_SINCE_CXX23("Use subscript operator instead")
   constexpr reference at(OtherIndexTypes... indices) const {
@@ -234,7 +236,7 @@ class mdspan {
   template<typename... OtherIndexTypes, std::enable_if_t<conjunction_v<
       std::is_convertible<OtherIndexTypes, index_type>...,
       std::is_nothrow_constructible<index_type, OtherIndexTypes>...,
-      bool_constant<(sizeof...(OtherIndexTypes) == rank())>
+      bool_constant<(sizeof...(OtherIndexTypes) == extents_type::rank())>
   >, int> = 0>
   constexpr reference operator[](OtherIndexTypes... indices) const {
     return accessor().access(storage_.ptr_, storage_.mapping()(static_cast<index_type>(std::move(indices))...));
@@ -244,7 +246,7 @@ class mdspan {
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>
   >, int> = 0>
-  constexpr reference operator[](span<OtherIndexType, rank()> indices) const {
+  constexpr reference operator[](span<OtherIndexType, extents_type::rank()> indices) const {
     return at_span_array(indices, std::make_index_sequence<rank()>{});
   }
 
@@ -252,7 +254,7 @@ class mdspan {
       std::is_convertible<const OtherIndexType&, index_type>,
       std::is_nothrow_constructible<index_type, const OtherIndexType&>
   >, int> = 0>
-  constexpr reference operator[](const std::array<OtherIndexType, rank()>& indices) const {
+  constexpr reference operator[](const std::array<OtherIndexType, extents_type::rank()>& indices) const {
     return at_span_array(indices, std::make_index_sequence<rank()>{});
   }
 
