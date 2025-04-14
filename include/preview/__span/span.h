@@ -32,6 +32,7 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
+#include "preview/__type_traits/void_t.h"
 
 #if PREVIEW_CXX_VERSION >= 20
 #include <span>
@@ -39,6 +40,12 @@
 
 namespace preview {
 namespace detail {
+
+template<typename T, typename = void>
+struct has_static_member_value : std::false_type {};
+template<typename T>
+struct has_static_member_value<T, void_t<decltype(T::value)>>
+    : negation<std::is_member_pointer<decltype(&T::value)>> {};
 
 struct static_constexpr_value_tester {
   template<typename T>
@@ -56,8 +63,11 @@ struct static_constexpr_operator_tester {
   static constexpr auto test(...) -> std::false_type;
 };
 
+template<typename T, bool = /* false */ has_static_member_value<T>::value>
+struct has_static_constexpr_value : std::false_type {};
+
 template<typename T>
-struct has_static_constexpr_value
+struct has_static_constexpr_value<T, true>
     : conjunction<
         decltype(static_constexpr_value_tester::test<std::remove_reference_t<T>>(0)),
         decltype(static_constexpr_operator_tester::test<std::remove_reference_t<T>>(0))
@@ -426,7 +436,7 @@ class span : private detail::span_storage_t<T, Extent> {
 template<typename T, std::size_t Extent>
 struct ranges::enable_view<span<T, Extent>> : std::true_type {};
 
-#if __cplusplus >= 201703L
+#if PREVIEW_CXX_VERSION >= 17
 
 template<typename It, typename EndOrSize, std::enable_if_t<contiguous_iterator<It>::value, int> = 0>
 span(It, EndOrSize) -> span<std::remove_reference_t<iter_reference_t<It>>, detail::maybe_static_ext<EndOrSize>::value>;
