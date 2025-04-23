@@ -28,6 +28,7 @@
 #include "preview/__type_traits/is_list_initializable.h"
 #include "preview/__type_traits/is_specialization.h"
 #include "preview/__type_traits/is_swappable.h"
+#include "preview/__type_traits/maybe_const.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
@@ -288,7 +289,7 @@ struct variant_assign_raw_visitor {
 
 template<typename F, bool Const, typename... Types>
 struct variant_op_visitor {
-  using base_type = std::conditional_t<Const, const variant_base<Types...>, variant_base<Types...>>;
+  using base_type = maybe_const<Const, variant_base<Types...>>;
   base_type& thiz;
 
   template<typename T, std::size_t I>
@@ -710,6 +711,23 @@ class variant : private detail::variant_control_smf<Types...> {
   template<typename R, typename Visitor>
   constexpr R visit(Visitor&& vis) const && {
     return detail::visit_single<R>(std::forward<Visitor>(vis), std::move(*this));
+  }
+
+  template<typename Visitor>
+  constexpr decltype(auto) _visit_raw(Visitor&& vis) & {
+    return preview::detail::variant_raw_visit(index(), _base().storage(), std::forward<Visitor>(vis));
+  }
+  template<typename Visitor>
+  constexpr decltype(auto) _visit_raw(Visitor&& vis) const & {
+    return preview::detail::variant_raw_visit(index(), _base().storage(), std::forward<Visitor>(vis));
+  }
+  template<typename Visitor>
+  constexpr decltype(auto) _visit_raw(Visitor&& vis) && {
+    return preview::detail::variant_raw_visit(index(), std::move(_base().storage()), std::forward<Visitor>(vis));
+  }
+  template<typename Visitor>
+  constexpr decltype(auto) _visit_raw(Visitor&& vis) const && {
+    return preview::detail::variant_raw_visit(index(), std::move(_base().storage()), std::forward<Visitor>(vis));
   }
 
   detail::variant_base<Types...>& _base() & { return static_cast<detail::variant_base<Types...>&>(*this); }

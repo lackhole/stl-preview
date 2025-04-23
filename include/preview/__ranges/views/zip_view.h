@@ -36,6 +36,7 @@
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/view_interface.h"
 #include "preview/__ranges/views/all.h"
+#include "preview/__ranges/views/helpers.h"
 #include "preview/__tuple/apply.h"
 #include "preview/__tuple/tuple_fold.h"
 #include "preview/__tuple/tuple_for_each.h"
@@ -121,9 +122,9 @@ class zip_view : public view_interface<zip_view<Views...>> {
 
   template<bool Const>
   class iterator : public detail::zip_view_iterator_category<conjunction<forward_range<maybe_const<Const, Views>>...>::value> {
-    using all_forward = conjunction<forward_range<maybe_const<Const, Views>>...>;
-    using all_bidirectional = conjunction<bidirectional_range<maybe_const<Const, Views>>...>;
-    using all_random_access = conjunction<random_access_range<maybe_const<Const, Views>>...>;
+    using all_forward = detail::all_forward<Const, Views...>;
+    using all_bidirectional = detail::all_bidirectional<Const, Views...>;
+    using all_random_access = detail::all_random_access<Const, Views...>;
 
     friend class iterator<true>;
     friend class sentinel<true>;
