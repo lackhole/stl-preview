@@ -115,7 +115,7 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/325/698-grey)![][p047] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/233/429-grey)![][p054] | ![](https://img.shields.io/badge/68/145-grey)![][p047] | ![](https://img.shields.io/badge/20/138-grey)![][p014] |
+|                                     | ![](https://img.shields.io/badge/327/698-grey)![][p047] |   | ![](https://img.shields.io/badge/46/113-grey)![][p041] | ![](https://img.shields.io/badge/233/428-grey)![][p054] | ![](https://img.shields.io/badge/68/145-grey)![][p047] | ![](https://img.shields.io/badge/20/138-grey)![][p014] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/56/115-grey)![][p049]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/47/96-grey)![][p049]   | ![](https://img.shields.io/badge/9/18-grey)![][p050]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
@@ -125,7 +125,7 @@ Implementation available in C++14 ~ :
 | [cstddef](#cstddef)                 | ![](https://img.shields.io/badge/2/2-grey)![][p100]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         |                                                        |                                                        |
 | [expected](#expected)               | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        |                                                         | ![](https://img.shields.io/badge/4/4-grey)![][p100]    |                                                        |
 | [functional](#functional)           | ![](https://img.shields.io/badge/10/16-grey)![][p063]   |   | ![](https://img.shields.io/badge/4/6-grey)![][p067]    | ![](https://img.shields.io/badge/12/14-grey)![][p086]   | ![](https://img.shields.io/badge/3/4-grey)![][p075]    | ![](https://img.shields.io/badge/4/6-grey)![][p067]    |
-| [iterator](#iterator)               | ![](https://img.shields.io/badge/57/59-grey)![][p097]   |   | ![](https://img.shields.io/badge/1/3-grey)![][p033]    | ![](https://img.shields.io/badge/51/52-grey)![][p098]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
+| [iterator](#iterator)               | ![](https://img.shields.io/badge/59/59-grey)![][p100]   |   | ![](https://img.shields.io/badge/3/3-grey)![][p100]    | ![](https://img.shields.io/badge/51/51-grey)![][p100]   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |
 | [mdspan](#mdspan)                   | ![](https://img.shields.io/badge/9/15-grey)![][p060]    |   |                                                        |                                                         | ![](https://img.shields.io/badge/7/7-grey)![][p100]    | ![](https://img.shields.io/badge/2/8-grey)![][p025]    |
 | [memory](#memory)                   | ![](https://img.shields.io/badge/9/44-grey)![][p020]    |   | ![](https://img.shields.io/badge/4/11-grey)![][p036]   | ![](https://img.shields.io/badge/9/35-grey)![][p026]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [numbers](#numbers)                 | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |                                                        |                                                        |
@@ -713,8 +713,8 @@ Description
   | `ranges::prev`                                      | ![][c20ok]   |             |
   | `size(C)`                                           | ![][c17ok]   | ![][c20ok]  |
   | `ssize(C)`                                          | ![][c20ok]   |             |
-  | `empty(C)`                                          | ![][c17no]   | ![][c20no]  |
-  | `data(C)`                                           | ![][c17no]   |             |
+  | `empty(C)`                                          | ![][c17ok]   |             |
+  | `data(C)`                                           | ![][c17ok]   |             |
 
   * Notes
     * `contiguous_iterator_tag`
