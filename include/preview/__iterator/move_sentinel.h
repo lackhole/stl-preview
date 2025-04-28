@@ -5,6 +5,20 @@
 #ifndef PREVIEW_ITERATOR_MOVE_SENTINEL_H_
 #define PREVIEW_ITERATOR_MOVE_SENTINEL_H_
 
+#include "preview/__core/cxx_version.h"
+
+#if PREVIEW_CONFORM_CXX20_STANDARD
+
+#include <iterator>
+
+namespace preview {
+
+using std::move_sentinel;
+
+} // namespace preview
+
+#else
+
 #include <iterator>
 #include <type_traits>
 #include <utility>
@@ -75,5 +89,7 @@ class move_sentinel {
 };
 
 } // namespace preview
+
+#endif
 
 #endif // PREVIEW_ITERATOR_MOVE_SENTINEL_H_
