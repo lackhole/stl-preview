@@ -11,18 +11,19 @@
 #include "preview/__concepts/copyable.h"
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/common_iterator.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/borrowed_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/common_range.h"
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/iterator_t.h"
 #include "preview/__ranges/random_access_range.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/size.h"
 #include "preview/__ranges/sized_range.h"
 #include "preview/__ranges/view_interface.h"
 #include "preview/__ranges/views/all.h"
 #include "preview/__type_traits/conjunction.h"
-#include "preview/__type_traits/negation.h"
 
 namespace preview {
 namespace ranges {
@@ -74,6 +75,15 @@ class common_view : public view_interface<common_view<V>> {
   template<typename V2 = V, std::enable_if_t<sized_range<const V2>::value, int> = 0>
   constexpr auto size() const {
     return ranges::size(base_);
+  }
+
+  template<bool B = approximately_sized_range<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    return ranges::reserve_hint(base_);
+  }
+  template<bool B = approximately_sized_range<const V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    return ranges::reserve_hint(base_);
   }
 
  private:

@@ -9,6 +9,7 @@
 
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__concepts/movable.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/contiguous_range.h"
 #include "preview/__ranges/data.h"
@@ -17,6 +18,7 @@
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/iterator_t.h"
 #include "preview/__ranges/range.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/size.h"
 #include "preview/__ranges/sized_range.h"
 #include "preview/__ranges/view_interface.h"
@@ -91,6 +93,14 @@ class owning_view : public view_interface<owning_view<R>> {
     return ranges::size(r_);
   }
 
+  template<bool B = approximately_sized_range<R>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    return ranges::reserve_hint(r_);
+  }
+  template<bool B = approximately_sized_range<const R>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    return ranges::reserve_hint(r_);
+  }
 
   template<typename T = R, std::enable_if_t<contiguous_range<T>::value, int> = 0>
   constexpr auto data() {

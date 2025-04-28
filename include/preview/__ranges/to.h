@@ -17,6 +17,7 @@
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iter_key_t.h"
 #include "preview/__iterator/iter_mapped_t.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/detail/container_appender.h"
 #include "preview/__ranges/detail/reservable_container.h"
 #include "preview/__ranges/begin.h"
@@ -29,6 +30,7 @@
 #include "preview/__ranges/range_mapped_t.h"
 #include "preview/__ranges/range_size_t.h"
 #include "preview/__ranges/ref_view.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/sentinel_t.h"
 #include "preview/__ranges/size.h"
 #include "preview/__ranges/sized_range.h"
@@ -50,11 +52,11 @@ namespace preview {
 namespace ranges {
 namespace detail {
 
-template<typename C, typename R, std::enable_if_t<conjunction<sized_range<R>, reservable_container<C>>::value, int> = 0>
+template<typename C, typename R, std::enable_if_t<conjunction<approximately_sized_range<R>, reservable_container<C>>::value, int> = 0>
 constexpr void try_reserve(C& c, R&& r) {
-  c.reserve(static_cast<range_size_t<C>>(ranges::size(r)));
+  c.reserve(static_cast<range_size_t<C>>(ranges::reserve_hint(r)));
 }
-template<typename C, typename R, std::enable_if_t<conjunction<sized_range<R>, reservable_container<C>>::value == false, int> = 0>
+template<typename C, typename R, std::enable_if_t<conjunction<approximately_sized_range<R>, reservable_container<C>>::value == false, int> = 0>
 constexpr void try_reserve(C&, R&&) {}
 
 template<typename R, typename T, bool = input_range<R>::value /* true */>

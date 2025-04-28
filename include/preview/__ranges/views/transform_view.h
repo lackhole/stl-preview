@@ -19,6 +19,7 @@
 #include "preview/__iterator/sized_sentinel_for.h"
 #include "preview/__functional/invoke.h"
 #include "preview/__memory/addressof.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
 #include "preview/__ranges/forward_range.h"
@@ -384,6 +385,15 @@ class transform_view : public view_interface<transform_view<V, F>> {
   >::value, int> = 0>
   constexpr auto size() const {
     return ranges::size(base_);
+  }
+
+  template<bool B = approximately_sized_range<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    return ranges::reserve_hint(base_);
+  }
+  template<bool B = approximately_sized_range<const V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    return ranges::reserve_hint(base_);
   }
 
  private:
