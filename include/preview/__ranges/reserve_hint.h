@@ -35,7 +35,7 @@ struct reserve_hint_niebloid {
   struct has_mem_fn_reserve_hint : std::false_type {};
   template<typename T>
   struct has_mem_fn_reserve_hint<T, void_t<decltype(std::declval<T>().reserve_hint())>>
-      : integer_like<decltype(preview_decay_copy(reserve_hint(std::declval<T>())))> {};
+      : integer_like<decltype(preview_decay_copy(std::declval<T>().reserve_hint()))> {};
 
   template<typename T>
   using tag = preview::detail::conditional_tag<

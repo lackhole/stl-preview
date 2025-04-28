@@ -55,8 +55,4 @@ PREVIEW_INLINE_VARIABLE constexpr detail::as_rvalue_adaptor_object as_rvalue{};
 } // namespace ranges
 } // namespace preview
 
-} // namespace views
-} // namespace ranges
-} // namespace preview 
-
 #endif // PREVIEW_RANGES_VIEWS_AS_RVALUE_H_

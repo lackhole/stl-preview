@@ -16,7 +16,7 @@ namespace ranges {
 template<typename T>
 struct approximately_sized_range : conjunction<
     ranges::range<T>,
-    invocable<decltype(ranges::reserve_hint, std::declval<T&>())>
+    invocable<decltype(ranges::reserve_hint), T&>
 > {};
 
 } // namespace ranges
