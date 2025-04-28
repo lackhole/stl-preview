@@ -14,6 +14,10 @@
 #include "preview/__memory/pointer_cast.h"
 #include "preview/__memory/pointer_traits.h"
 #include "preview/__memory/to_address.h"
+#include "preview/__memory/uninitialized_default_construct.h"
+#include "preview/__memory/uninitialized_default_construct_n.h"
+#include "preview/__memory/uninitialized_value_construct.h"
+#include "preview/__memory/uninitialized_value_construct_n.h"
 #include "preview/__memory/uses_allocator_construction_args.h"
 
 #endif // PREVIEW_MEMORY_H_
