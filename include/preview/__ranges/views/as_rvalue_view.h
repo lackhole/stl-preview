@@ -38,7 +38,7 @@ class as_rvalue_view : public view_interface<as_rvalue_view<V>> {
   static_assert(view<V>::value, "Constraints not satisfied");
   static_assert(input_range<V>::value, "Constraints not satisfied");
 
-  as_rvalue_view() PREVIEW_AFTER_CXX20(requires std::default_initializable<V>) = default;
+  as_rvalue_view() = default;
 
   constexpr explicit as_rvalue_view(V base)
       : base_(std::move(base)) {}
