@@ -12,6 +12,7 @@
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/next.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
 #include "preview/__ranges/common_range.h"
@@ -19,6 +20,7 @@
 #include "preview/__ranges/end.h"
 #include "preview/__ranges/iterator_t.h"
 #include "preview/__ranges/non_propagating_cache.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/views/all.h"
 
@@ -98,6 +100,15 @@ class reverse_view
   template<typename V2 = V, std::enable_if_t<sized_range<const V2>::value, int> = 0>
   constexpr auto size() const {
     return ranges::size(base_);
+  }
+
+  template<bool B = approximately_sized_range<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    return ranges::reserve_hint(base_);
+  }
+  template<bool B = approximately_sized_range<const V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    return ranges::reserve_hint(base_);
   }
 
  private:

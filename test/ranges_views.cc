@@ -14,6 +14,7 @@
 #include <set>
 #include <istream>
 #include <iostream>
+#include <iterator>
 #include <numeric>
 #include <sstream>
 #include <stack>
@@ -1006,4 +1007,19 @@ TEST(VERSIONED(RangesViews), lazy_split_view) {
       {"Hello"_sv, "C++"_sv, "20"_sv, "!"_sv},
       ranges::equal
   ));
+}
+
+TEST(VERSIONED(RangesViews), as_rvalue_view) {
+  using namespace std::literals;
+  using namespace preview::literals;
+
+  std::vector<std::string> words = {"the", "quick", "brown", "fox", "ate", "a", "pterodactyl"};
+  std::vector<std::string> new_words;
+  ranges::copy(words | views::as_rvalue, std::back_inserter(new_words));
+
+  ASSERT_EQ(new_words.size(), words.size());
+  EXPECT_TRUE(ranges::all_of(words, &std::string::empty));
+  EXPECT_TRUE(ranges::none_of(new_words, &std::string::empty));
+  EXPECT_EQ(new_words.front(), "the");
+  EXPECT_EQ(new_words.back(), "pterodactyl");
 }

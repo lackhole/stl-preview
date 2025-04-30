@@ -115,7 +115,7 @@ Implementation available in C++14 ~ :
 
 | Header                              | Total                                                   |   | C++17                                                  | C++20                                                   | C++23                                                  | C++26                                                  |
 |-------------------------------------|---------------------------------------------------------|---|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------|--------------------------------------------------------|
-|                                     | ![](https://img.shields.io/badge/325/698-grey)![][p047] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/233/429-grey)![][p054] | ![](https://img.shields.io/badge/68/145-grey)![][p047] | ![](https://img.shields.io/badge/20/138-grey)![][p014] |
+|                                     | ![](https://img.shields.io/badge/328/702-grey)![][p047] |   | ![](https://img.shields.io/badge/44/113-grey)![][p039] | ![](https://img.shields.io/badge/233/429-grey)![][p054] | ![](https://img.shields.io/badge/69/145-grey)![][p048] | ![](https://img.shields.io/badge/22/142-grey)![][p015] |
 |                                     |                                                         |   |                                                        |                                                         |                                                        |                                                        |
 | [algorithm](#algorithm)             | ![](https://img.shields.io/badge/56/115-grey)![][p049]  |   | ![](https://img.shields.io/badge/2/4-grey)![][p050]    | ![](https://img.shields.io/badge/47/96-grey)![][p049]   | ![](https://img.shields.io/badge/9/18-grey)![][p050]   | ![](https://img.shields.io/badge/7/23-grey)![][p030]   |
 | [any](#any)                         | ![](https://img.shields.io/badge/5/5-grey)![][p100]     |   | ![](https://img.shields.io/badge/5/5-grey)![][p100]    |                                                         |                                                        |                                                        |
@@ -132,7 +132,7 @@ Implementation available in C++14 ~ :
 | [numeric](#numeric)                 | ![](https://img.shields.io/badge/1/15-grey)![][p007]    |   | ![](https://img.shields.io/badge/0/9-grey)![][p000]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
 | [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
 | [random](#random)                   | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
-| [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/29/36-grey)![][p081]  | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
+| [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/30/36-grey)![][p083]  | ![](https://img.shields.io/badge/3/5-grey)![][p060]    |
 | [span](#span)                       | ![](https://img.shields.io/badge/4/4-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/4/4-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]    |
 | [string_view](#string_view)         | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/4/4-grey)![][p100]    | ![](https://img.shields.io/badge/1/1-grey)![][p100]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/3/3-grey)![][p100] *  |
 | [tuple](#tuple)                     | ![](https://img.shields.io/badge/7/8-grey)![][p088]     |   | ![](https://img.shields.io/badge/2/2-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/2/2-grey)![][p100]    | ![](https://img.shields.io/badge/5/6-grey)![][p083]    |
@@ -961,90 +961,94 @@ Description
 
 #### `<ranges>`
 
-  |                                                                   | Introduced   | Revision   |
-  |-------------------------------------------------------------------|--------------|------------|
-  | `ranges::range`                                                   | ![][c20ok]   |            |
-  | `ranges::borrowed_range`                                          | ![][c20ok]   |            |
-  | `ranges::sized_range`                                             | ![][c20ok]   |            |
-  | `ranges::view`                                                    | ![][c20ok]   |            |
-  | `ranges::input_range`                                             | ![][c20ok]   |            |
-  | `ranges::output_range`                                            | ![][c20ok]   |            |
-  | `ranges::forward_range`                                           | ![][c20ok]   |            |
-  | `ranges::bidirectional_range`                                     | ![][c20ok]   |            |
-  | `ranges::random_access_range`                                     | ![][c20ok]   |            |
-  | `ranges::contiguous_range`                                        | ![][c20ok]   |            |
-  | `ranges::common_range`                                            | ![][c20ok]   |            |
-  | `ranges::viewable_range`                                          | ![][c20ok]   |            |
-  | `ranges::constant_range`                                          | ![][c23ok]   |            |
-  | `ranges::to`                                                      | ![][c23ok] * |            |
-  | `ranges::iterator_t`                                              | ![][c20ok]   |            |
-  | `ranges::const_iterator_t`                                        | ![][c23ok]   |            |
-  | `ranges::sentinel_t`                                              | ![][c20ok]   |            |
-  | `ranges::const_sentinel_t`                                        | ![][c23ok]   |            |
-  | `ranges::range_difference_t`                                      | ![][c20ok]   |            |
-  | `ranges::range_size_t`                                            | ![][c20ok]   |            |
-  | `ranges::range_value_t`                                           | ![][c20ok]   |            |
-  | `ranges::range_refernce_t`                                        | ![][c20ok]   |            |
-  | `ranges::range_const_reference_t`                                 | ![][c23ok]   |            |
-  | `ranges::range_rvalue_reference_t`                                | ![][c20ok]   |            |
-  | `ranges::range_common_reference_t`                                | ![][c20ok]   |            |
-  | `ranges::view_interface`                                          | ![][c20ok]   | ![][c23ok] |
-  | `ranges::subrange`                                                | ![][c20ok]   | ![][c23ok] |
-  | `ranges::dangling`                                                | ![][c20ok]   |            |
-  | `ranges::borrowed_iterator_t`                                     | ![][c20ok]   |            |
-  | `ranges::borrowed_subrange_t`                                     | ![][c20ok]   |            |
-  | `ranges::range_adaptor_closure`                                   | ![][c23ok]   |            |
-  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20ok]   |            |
-  | `ranges::single_view`<br/>`views::single`                         | ![][c20ok]   |            |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |            |
-  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |            |
-  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20ok]   |            |
-  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23ok]   |            |
-  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23ok]   |            |
-  | `views::all_t`<br/>`views::all`                                   | ![][c20ok]   |            |
-  | `ranges::ref_view`                                                | ![][c20ok]   |            |
-  | `ranges::owning_view`                                             | ![][c20ok]   |            |
-  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]   |            |
-  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]   |            |
-  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]   |            |
-  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]   | ![][c23ok] |
-  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]   |            |
-  | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]   |            |
-  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20ok]   |            |
-  | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]   |            |
-  | `views::counted`                                                  | ![][c20ok]   |            |
-  | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]   |            |
-  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20ok]   |            |
-  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23ok]   |            |
-  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23no]   |            |
-  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20ok]   |            |
-  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20ok]   |            |
-  | `ranges::values_view`<br/>`views::values`                         | ![][c20ok]   |            |
-  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23ok]   |            |
-  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23ok]   |            |
-  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23ok]   |            |
-  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23no]   |            |
-  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23no]   |            |
-  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23ok]   |            |
-  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23no]   |            |
-  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]   |            |
-  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]   |            |
-  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]   |            |
-  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok] * |            |
-  | `ranges::begin`                                                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::end`                                                     | ![][c20ok]   | ![][c23ok] |
-  | `ranges::cbegin`                                                  | ![][c20ok]   | ![][c23ok] |
-  | `ranges::cend`                                                    | ![][c20ok]   | ![][c23ok] |
-  | `ranges::crbegin`                                                 | ![][c20ok]   | ![][c23ok] |
-  | `ranges::crend`                                                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::size`                                                    | ![][c20ok]   | ![][c23ok] |
-  | `ranges::ssize`                                                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::empty`                                                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::data`                                                    | ![][c20ok]   | ![][c23ok] |
-  | `ranges::cdata`                                                   | ![][c20ok]   | ![][c23ok] |
-  | `ranges::subrange_kind`                                           | ![][c20ok]   |            |
-  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]   |            |
+  |                                                                   | Introduced   | Revision              |
+  |-------------------------------------------------------------------|--------------|-----------------------|
+  | `ranges::range`                                                   | ![][c20ok]   |                       |
+  | `ranges::borrowed_range`                                          | ![][c20ok]   |                       |
+  | `ranges::approximately_sized_range`                               | ![][c26ok]   |                       |
+  | `ranges::sized_range`                                             | ![][c20ok]   |                       |
+  | `ranges::view`                                                    | ![][c20ok]   |                       |
+  | `ranges::input_range`                                             | ![][c20ok]   |                       |
+  | `ranges::output_range`                                            | ![][c20ok]   |                       |
+  | `ranges::forward_range`                                           | ![][c20ok]   |                       |
+  | `ranges::bidirectional_range`                                     | ![][c20ok]   |                       |
+  | `ranges::random_access_range`                                     | ![][c20ok]   |                       |
+  | `ranges::contiguous_range`                                        | ![][c20ok]   |                       |
+  | `ranges::common_range`                                            | ![][c20ok]   |                       |
+  | `ranges::viewable_range`                                          | ![][c20ok]   |                       |
+  | `ranges::constant_range`                                          | ![][c23ok]   |                       |
+  | `ranges::to`                                                      | ![][c23ok] * | ![][c26ok]            |
+  | `ranges::iterator_t`                                              | ![][c20ok]   |                       |
+  | `ranges::const_iterator_t`                                        | ![][c23ok]   |                       |
+  | `ranges::sentinel_t`                                              | ![][c20ok]   |                       |
+  | `ranges::const_sentinel_t`                                        | ![][c23ok]   |                       |
+  | `ranges::range_difference_t`                                      | ![][c20ok]   |                       |
+  | `ranges::range_size_t`                                            | ![][c20ok]   |                       |
+  | `ranges::range_value_t`                                           | ![][c20ok]   |                       |
+  | `ranges::range_refernce_t`                                        | ![][c20ok]   |                       |
+  | `ranges::range_const_reference_t`                                 | ![][c23ok]   |                       |
+  | `ranges::range_rvalue_reference_t`                                | ![][c20ok]   |                       |
+  | `ranges::range_common_reference_t`                                | ![][c20ok]   |                       |
+  | `ranges::view_interface`                                          | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::subrange`                                                | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::dangling`                                                | ![][c20ok]   |                       |
+  | `ranges::borrowed_iterator_t`                                     | ![][c20ok]   |                       |
+  | `ranges::borrowed_subrange_t`                                     | ![][c20ok]   |                       |
+  | `ranges::range_adaptor_closure`                                   | ![][c23ok]   |                       |
+  | `ranges::empty_view`<br/>`views::empty`                           | ![][c20ok]   |                       |
+  | `ranges::single_view`<br/>`views::single`                         | ![][c20ok]   |                       |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |                       |
+  | `ranges::iota_view`<br/>`views::iota`                             | ![][c20ok]   |                       |
+  | `ranges::basic_istream_view`<br/>`views::istream`                 | ![][c20ok]   |                       |
+  | `ranges::repeat_view`<br/>`views::repeat`                         | ![][c23ok]   |                       |
+  | `ranges::cartesian_product_view`<br/>`views::cartesian_product`   | ![][c23ok]   |                       |
+  | `ranges::cache_latest_view`<br/>`views::cache_latest`             | ![][c26no]   |                       |
+  | `ranges::to_input_view`<br/>`views::to_input`                     | ![][c26no]   |                       |
+  | `views::all_t`<br/>`views::all`                                   | ![][c20ok]   |                       |
+  | `ranges::ref_view`                                                | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::owning_view`                                             | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::filter_view`<br/>`views::filter`                         | ![][c20ok]   |                       |
+  | `ranges::transform_view`<br/>`views::transform`                   | ![][c20ok]   | ![][c23ok] ![][c26ok] |
+  | `ranges::take_view`<br/>`views::take`                             | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::take_while_view`<br/>`views::take_while`                 | ![][c20ok]   |                       |
+  | `ranges::drop_view`<br/>`views::drop`                             | ![][c20ok]   | ![][c23ok] ![][c26ok] |
+  | `ranges::drop_while_view`<br/>`views::drop_while`                 | ![][c20ok]   |                       |
+  | `ranges::join_view`<br/>`views::join`                             | ![][c20ok]   |                       |
+  | `ranges::lazy_split_view`<br/>`views::lazy_split`                 | ![][c20ok]   |                       |
+  | `ranges::split_view`<br/>`views::split`                           | ![][c20ok]   |                       |
+  | `views::counted`                                                  | ![][c20ok]   |                       |
+  | `ranges::common_view`<br/>`views::common`                         | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::reverse_view`<br/>`views::reverse`                       | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::as_const_view`<br/>`views::as_const`                     | ![][c23ok]   | ![][c26ok]            |
+  | `ranges::as_rvalue_view`<br/>`views::as_rvalue`                   | ![][c23ok]   | ![][c26ok]            |
+  | `ranges::elements_view`<br/>`views::elements`                     | ![][c20ok]   | ![][c26ok]            |
+  | `ranges::keys_view`<br/>`views::keys`                             | ![][c20ok]   |                       |
+  | `ranges::values_view`<br/>`views::values`                         | ![][c20ok]   |                       |
+  | `ranges::enumerate_view`<br/>`views::enumerate`                   | ![][c23ok]   | ![][c26ok]            |
+  | `ranges::zip_view`<br/>`views::zip`                               | ![][c23ok]   |                       |
+  | `ranges::zip_transform_view`<br/>`views::zip_transform`           | ![][c23ok]   |                       |
+  | `ranges::adjacent_view`<br/>`views::adjacent`                     | ![][c23no]   |                       |
+  | `ranges::adjacent_transform_view`<br/>`views::adjacent_transform` | ![][c23no]   |                       |
+  | `ranges::join_with_view`<br/>`views::join_with`                   | ![][c23ok]   |                       |
+  | `ranges::stride_view`<br/>`views::stride`                         | ![][c23no]   |                       |
+  | `ranges::slide_view`<br/>`views::slide`                           | ![][c23no]   |                       |
+  | `ranges::chunk_view`<br/>`views::chunk`                           | ![][c23no]   |                       |
+  | `ranges::chunk_by_view`<br/>`views::chunk_by`                     | ![][c23no]   |                       |
+  | `ranges::concat_view`<br/>`views::concat`                         | ![][c26ok] * |                       |
+  | `ranges::begin`                                                   | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::end`                                                     | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::cbegin`                                                  | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::cend`                                                    | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::crbegin`                                                 | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::crend`                                                   | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::reserve_hint`                                            | ![][c26ok]   |                       |
+  | `ranges::size`                                                    | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::ssize`                                                   | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::empty`                                                   | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::data`                                                    | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::cdata`                                                   | ![][c20ok]   | ![][c23ok]            |
+  | `ranges::subrange_kind`                                           | ![][c20ok]   |                       |
+  | `ranges::from_range_t`<br/>`ranges::from_range`                   | ![][c23ok]   |                       |
 
   * Notes
     * `ranges::to`

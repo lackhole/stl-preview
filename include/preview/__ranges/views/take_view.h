@@ -14,6 +14,7 @@
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/counted_iterator.h"
 #include "preview/__iterator/sentinel_for.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/enable_borrowed_range.h"
@@ -33,6 +34,7 @@
 #include "preview/__type_traits/negation.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
+#include "preview/__utility/to_unsigned_like.h"
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -262,6 +264,13 @@ class take_view : public view_interface<take_view<V>> {
     return sentinel<true>(ranges::end(base_));
   }
 
+  constexpr auto reserve_hint() {
+    return reserve_hint_impl<false>(*this, approximately_sized_range<V>{});
+  }
+  constexpr auto reserve_hint() const {
+    return reserve_hint_impl<true>(*this, approximately_sized_range<const V>{});
+  }
+
   template<typename Dummy = void, std::enable_if_t<conjunction<std::is_void<Dummy>,
       ranges::sized_range<V>
   >::value, int> = 0>
@@ -279,6 +288,16 @@ class take_view : public view_interface<take_view<V>> {
   }
 
  private:
+  template<bool Const, typename Self>
+  static constexpr auto reserve_hint_impl(Self&& self, std::true_type /* approximately_sized_range */) {
+    auto n = static_cast<range_difference_t<maybe_const<Const, V>>>(ranges::reserve_hint(self.base_));
+    return preview::to_unsigned_like((std::min)(n, self.count_));
+  }
+  template<bool /* Const */, typename Self>
+  static constexpr auto reserve_hint_impl(Self&& self, std::false_type /* approximately_sized_range */) {
+    return preview::to_unsigned_like(self.count_);
+  }
+
   V base_{};
   range_difference_t<V> count_ = 0;
 };

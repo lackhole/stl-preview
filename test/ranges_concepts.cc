@@ -23,6 +23,7 @@
 #include "preview/string_view.h"
 
 namespace ranges = preview::ranges;
+namespace views = preview::views;
 
 TEST(VERSIONED(RangesConcepts), range) {
   // A minimum range
@@ -241,4 +242,19 @@ TEST(VERSIONED(RangesConcepts), constant_range) {
   EXPECT_FALSE_TYPE(ranges::constant_range<std::vector<int>>);
   EXPECT_FALSE_TYPE(ranges::constant_range<preview::span<int>>);
   EXPECT_FALSE_TYPE(ranges::constant_range<const preview::span<int>>);
+}
+
+TEST(VERSIONED(Ranges), approximately_sized_range) {
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<std::array<int, 5>>);
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<std::list<int>>);
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<std::map<int, int>>);
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<std::vector<int>>);
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<std::deque<int>>);
+
+  EXPECT_FALSE_TYPE(ranges::approximately_sized_range<int>);
+
+  auto filter = [](int x) { return x < 5; };
+  EXPECT_TRUE_TYPE(ranges::approximately_sized_range<decltype(std::vector<int>{} | views::drop_while(filter))>);
+  EXPECT_FALSE_TYPE(ranges::approximately_sized_range<decltype(std::vector<int>{} | views::take_while(filter))>);
+  EXPECT_FALSE_TYPE(ranges::approximately_sized_range<decltype(std::vector<int>{} | views::filter(filter))>);
 }

@@ -7,6 +7,7 @@
 
 #include "preview/__ranges/__forward_declare.h"
 #include "preview/__ranges/as_const_pointer.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
 #include "preview/__ranges/borrowed_iterator_t.h"
@@ -49,6 +50,7 @@
 #include "preview/__ranges/range_rvalue_reference_t.h"
 #include "preview/__ranges/range_size_t.h"
 #include "preview/__ranges/range_value_t.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/rbegin.h"
 #include "preview/__ranges/ref_view.h"
 #include "preview/__ranges/rend.h"

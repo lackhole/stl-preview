@@ -45,4 +45,23 @@
 #define PREVIEW_BEFORE_CXX23(...) __VA_ARGS__
 #endif
 
+#define PREVIEW_AFTER_CXX17(...)
+#define PREVIEW_AFTER_CXX20(...)
+#define PREVIEW_AFTER_CXX23(...)
+
+#if PREVIEW_CXX_VERSION >= 17
+#undef PREVIEW_AFTER_CXX17
+#define PREVIEW_AFTER_CXX17(...) __VA_ARGS__
+#endif
+
+#if PREVIEW_CXX_VERSION >= 20
+#undef PREVIEW_AFTER_CXX20
+#define PREVIEW_AFTER_CXX20(...) __VA_ARGS__
+#endif
+
+#if PREVIEW_CXX_VERSION >= 23
+#undef PREVIEW_AFTER_CXX23
+#define PREVIEW_AFTER_CXX23(...) __VA_ARGS__
+#endif
+
 #endif // PREVIEW_CORE_CXX_VERSION_H_

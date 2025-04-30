@@ -19,8 +19,7 @@ template<typename F, typename Seq, typename = void>
 struct explicit_invocable : std::false_type {};
 
 template<typename F, typename... Args>
-struct explicit_invocable<
-      F, type_sequence<Args...>,
+struct explicit_invocable<F, type_sequence<Args...>,
       void_t<decltype(
           preview::invoke(
               std::declval<decltype( std::forward<F>   (std::declval<F&&>   ()) )>(),
@@ -30,7 +29,7 @@ struct explicit_invocable<
     > : std::true_type {};
 
 template<typename F, typename Seq>
-struct invocable_impl : std::false_type {};
+struct invocable_impl;
 
 template<typename F, typename... Args>
 struct invocable_impl<F, type_sequence<Args...>> : explicit_invocable<F, type_sequence<Args...>> {};
