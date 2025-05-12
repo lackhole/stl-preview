@@ -5,11 +5,13 @@
 #include <complex>
 #include <cstdlib>
 #include <forward_list>
+#include <iterator>
 #include <list>
 #include <map>
 #include <numeric>
 #include <string>
 #include <random>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -665,4 +667,96 @@ TEST(VERSIONED(AlgorithmRanges), starts_with) {
   EXPECT_TRUE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key));
 
   EXPECT_FALSE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key, [](auto x) { return x * x; }));
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), unique) {
+  {
+    std::vector<int> v{1, 2, 1, 1, 3, 3, 3, 4, 5, 4};
+    const auto ret = ranges::unique(v);
+
+    // v = { 1, 2, 1, 3, 4, 5, 4, x, x, x }
+    EXPECT_EQ(v.begin() + 7, ret.begin());
+    v.erase(ret.begin(), ret.end());
+    EXPECT_TRUE(ranges::equal(v, {1, 2, 1, 3, 4, 5, 4}));
+
+    ranges::sort(v);
+    EXPECT_TRUE(ranges::equal(v, {1, 1, 2, 3, 4, 4, 5}));
+
+    const auto ret2 = ranges::unique(v);
+    // v = { 1, 2, 3, 4, 5, x, x, x }
+    EXPECT_EQ(v.begin() + 5, ret2.begin());
+    v.erase(ret2.begin(), ret2.end());
+    EXPECT_TRUE(ranges::equal(v, {1, 2, 3, 4, 5}));
+  }
+  {
+    std::vector<std::complex<int>> vc { {1, 1}, {-1, 2}, {-2, 3}, {2, 4}, {-3, 5} };
+    const auto ret = ranges::unique(vc,
+        [](int x, int y) { return std::abs(x) == std::abs(y); },
+        [](std::complex<int> z) { return z.real(); });
+    vc.erase(ret.begin(), ret.end());
+    EXPECT_TRUE(ranges::equal(vc, {{1, 1}, {-2, 3}, {-3, 5}}));
+  }
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), unique_copy) {
+  {
+    std::string s1 = "The      string    with many       spaces!";
+    std::string s2;
+    ranges::unique_copy(s1.begin(), s1.end(), std::back_inserter(s2),
+        [](char x, char y) { return x == ' ' && y == ' '; });
+    EXPECT_EQ(s2, "The string with many spaces!"s);
+  }
+  {
+    const auto v1 = {-1, +1, +2, -2, -3, +3, -3};
+    std::list<int> v2;
+    ranges::unique_copy(v1, std::back_inserter(v2), {}, &std::abs<int>);
+    EXPECT_TRUE(ranges::equal(v2, {-1, +2, -3}));
+  }
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), move) {
+  std::vector<std::string> v1 = {"hello", "world", "!"};
+  std::vector<std::string> v2;
+  ranges::move(v1.begin(), v1.end(), std::back_inserter(v2));
+  ASSERT_EQ(v2.size(), 3);
+  EXPECT_EQ(v2[0], "hello");
+  EXPECT_EQ(v2[1], "world");
+  EXPECT_EQ(v2[2], "!");
+  EXPECT_TRUE(ranges::equal(v1, {""s, ""s, ""s}));
+
+  // Move overlapping ranges to the left
+  v2.emplace(v2.begin());
+  EXPECT_TRUE(ranges::equal(v2, {""s, "hello"s, "world"s, "!"s}));
+  ranges::move(v2.begin() + 1, v2.end(), v2.begin());
+  EXPECT_TRUE(ranges::equal(v2, {"hello"s, "world"s, "!"s, ""s}));
+
+  std::vector<std::thread> v3(10);
+  std::vector<std::thread> v4;
+  ranges::move(v3, std::back_inserter(v4));
+  (void)v4;
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), move_backward) {
+  std::vector<std::string> v1 = {"hello", "world", "!"};
+  std::vector<std::string> v2(3);
+  ranges::move_backward(v1.begin(), v1.end(), v2.begin() + 3);
+  EXPECT_EQ(v2[0], "hello");
+  EXPECT_EQ(v2[1], "world");
+  EXPECT_EQ(v2[2], "!");
+  EXPECT_TRUE(ranges::equal(v1, {""s, ""s, ""s}));
+
+  // Move overlapping ranges to the right
+  v2.emplace_back();
+  EXPECT_TRUE(ranges::equal(v2, {"hello"s, "world"s, "!"s, ""s}));
+  ranges::move_backward(v2.begin(), v2.begin() + 3, v2.begin() + 4);
+  EXPECT_TRUE(ranges::equal(v2, {""s, "hello"s, "world"s, "!"s}));
+
+  std::vector<std::thread> v3(10);
+  std::vector<std::thread> v4(10);
+  ranges::move_backward(v3, v4.begin() + 3);
+  (void)v4;
 }

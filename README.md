@@ -266,8 +266,8 @@ Description
   | `ranges::shift_right`               | ![][c23no] |            |
   | `ranges::sample`                    | ![][c20no] |            |
   | `ranges::shuffle`                   | ![][c20no] |            |
-  | `ranges::unique`                    | ![][c20no] |            |
-  | `ranges::unique_copy`               | ![][c20no] |            |
+  | `ranges::unique`                    | ![][c20ok] |            |
+  | `ranges::unique_copy`               | ![][c20ok] |            |
   | `ranges::is_partitioned`            | ![][c20no] |            |
   | `ranges::partition`                 | ![][c20no] |            |
   | `ranges::partition_copy`            | ![][c20no] |            |

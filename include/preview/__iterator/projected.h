@@ -57,7 +57,7 @@ struct projected_impl<I, Proj, false> {};
 template<typename I, typename Proj>
 using projected = typename detail::projected_impl<I, Proj>::type;
 
-// Test if expression `preview::projected<I, Proj>` is valid in an unqualified context (required until C++20)
+// Test if the expression `preview::projected<I, Proj>` is valid in an unqualified context (required until C++20)
 template<typename I, typename Proj>
 using projectable = has_typename_type<detail::projected_impl<I, Proj>>;
 

@@ -50,6 +50,8 @@
 #include "preview/__algorithm/ranges/minmax_element.h"
 #include "preview/__algorithm/ranges/min_max_result.h"
 #include "preview/__algorithm/ranges/mismatch.h"
+#include "preview/__algorithm/ranges/move.h"
+#include "preview/__algorithm/ranges/move_backward.h"
 #include "preview/__algorithm/ranges/none_of.h"
 #include "preview/__algorithm/ranges/out_value_result.h"
 #include "preview/__algorithm/ranges/pop_heap.h"
@@ -60,5 +62,7 @@
 #include "preview/__algorithm/ranges/sort_heap.h"
 #include "preview/__algorithm/ranges/starts_with.h"
 #include "preview/__algorithm/ranges/swap_ranges.h"
+#include "preview/__algorithm/ranges/unique.h"
+#include "preview/__algorithm/ranges/unique_copy.h"
 
 #endif // PREVIEW_ALGORITHM_H_
