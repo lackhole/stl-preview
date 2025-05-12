@@ -616,7 +616,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
   >::value, int> = 0>
   constexpr expected& operator=(U&& v) {
     if (has_value()) {
-      **this = std::forward<U>(v);
+      base::value() = std::forward<U>(v);
     } else {
       base::reinit_value_and_destroy_error(std::forward<U>(v));
       base::has_value(true);
@@ -716,25 +716,25 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
   template<typename U = T, std::enable_if_t<!std::is_void<U>::value, int> = 0>
   constexpr U& value() & {
     check_throw();
-    return **this;
+    return base::value();
   }
 
   template<typename U = T, std::enable_if_t<!std::is_void<U>::value, int> = 0>
   constexpr const U& value() const & {
     check_throw();
-    return **this;
+    return base::value();
   }
 
   template<typename U = T, std::enable_if_t<!std::is_void<U>::value, int> = 0>
   constexpr U&& value() && {
     check_throw();
-    return std::move(**this);
+    return std::move(base::value());
   }
 
   template<typename U = T, std::enable_if_t<!std::is_void<U>::value, int> = 0>
   constexpr const U&& value() const && {
     check_throw();
-    return std::move(**this);
+    return std::move(base::value());
   }
 
   template<typename U = T, std::enable_if_t<std::is_void<U>::value, int> = 0>
@@ -758,7 +758,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
       convertible_to<U&&, T>
   >::value, int> = 0>
   constexpr T value_or(U&& default_value) const & {
-    return bool(*this) ? **this : static_cast<T>(std::forward<U>(default_value));
+    return bool(*this) ? base::value() : static_cast<T>(std::forward<U>(default_value));
   }
 
   template<typename U, std::enable_if_t<conjunction<
@@ -767,7 +767,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
       convertible_to<U&&, T>
   >::value, int> = 0>
   constexpr T value_or(U&& default_value) && {
-    return bool(*this) ? std::move(**this) : static_cast<T>(std::forward<U>(default_value));
+    return bool(*this) ? std::move(base::value()) : static_cast<T>(std::forward<U>(default_value));
   }
 
   template<typename G = E, std::enable_if_t<conjunction<
@@ -964,7 +964,7 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
     if (has_value() == other.has_value()) {
       using std::swap;
       using preview::swap;
-      has_value() ? swap_value(**this, *other) : swap(error(), other.error());
+      has_value() ? swap_value(base::value(), *other) : swap(error(), other.error());
     } else {
       has_value() ? swap_value_with_error(*this, other) : swap_value_with_error(other, *this);
     }
@@ -1102,7 +1102,15 @@ class expected : private detail::expected_control_smf<detail::void_placdholder_o
     if (!has_value())
       throw bad_expected_access<std::decay_t<E>>(preview::as_const(error()));
   }
+  constexpr void check_throw() const & {
+    if (!has_value())
+      throw bad_expected_access<std::decay_t<E>>(preview::as_const(error()));
+  }
   constexpr void check_throw() && {
+    if (!has_value())
+      throw bad_expected_access<std::decay_t<E>>(std::move(error()));
+  }
+  constexpr void check_throw() const && {
     if (!has_value())
       throw bad_expected_access<std::decay_t<E>>(std::move(error()));
   }
