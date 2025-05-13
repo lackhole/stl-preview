@@ -34,6 +34,13 @@ struct equality_comparable_precxx20<T, U, void_t<decltype( std::declval<T>() == 
     : std::is_convertible<decltype( std::declval<T>() == std::declval<U>() ), bool> {};
 
 template<typename T, typename U, typename = void>
+struct non_equality_comparable_precxx20 : std::false_type {};
+
+template<typename T, typename U>
+struct non_equality_comparable_precxx20<T, U, void_t<decltype( std::declval<T>() != std::declval<U>() )>>
+    : std::is_convertible<decltype( std::declval<T>() != std::declval<U>() ), bool> {};
+
+template<typename T, typename U, typename = void>
 struct less_than_comparable_precxx20 : std::false_type {};
 template<typename T, typename U>
 struct less_than_comparable_precxx20<
@@ -43,13 +50,14 @@ struct less_than_comparable_precxx20<
 
 } // namespace detail_adl_check
 
-#if __cplusplus < 202002L
+#if PREVIEW_CXX_VERSION < 20
 
 // synthesized from `U == T`
-template<typename T, typename U, std::enable_if_t<conjunction<
-    negation<std::is_same<T, U>>,
-    detail_adl_check::equality_comparable_precxx20<const U&, const T&>
->::value, int> = 0>
+template<typename T, typename U, std::enable_if_t<
+    !std::is_same<T, U>::value &&
+    !detail_adl_check::equality_comparable_precxx20<const T&, const U&>::value &&
+    detail_adl_check::equality_comparable_precxx20<const U&, const T&>::value
+, int> = 0>
 constexpr bool operator==(const T& a, const U& b) noexcept(noexcept(b == a)) {
   return b == a;
 }
@@ -114,7 +122,10 @@ template<typename T, typename U>
 struct is_less_than_comparable : detail_adl_check::is_less_than_comparable_impl::type<T, U> {};
 
 // return `!(a == b)`. Synthesized from `T == U`
-template<typename T, typename U, std::enable_if_t<is_equality_comparable<T, U>::value, int> = 0>
+template<typename T, typename U, std::enable_if_t<conjunction_v<
+    negation<detail_adl_check::non_equality_comparable_precxx20<const T&, const U&>>,
+    is_equality_comparable<T, U>
+>, int> = 0>
 constexpr bool operator!=(const T& a, const U& b) noexcept(noexcept(!(a == b))) {
   return !(a == b);
 }
