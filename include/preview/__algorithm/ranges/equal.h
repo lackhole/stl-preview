@@ -40,12 +40,30 @@ struct equal_niebloid {
       : indirectly_comparable<iterator_t<R1>, iterator_t<R2>, Pred, Proj1, Proj2> {};
 
   template<typename I1, typename S1, typename I2, typename S2>
-  constexpr bool compare_size(I1 first1, S1 last1, I2 first2, S2 last2, std::true_type /* sized_sentinel_for */) const {
+  static constexpr bool try_compare_size(I1 first1, S1 last1, I2 first2, S2 last2, std::true_type /* sized_sentinel_for */) {
     return ranges::distance(first1, last1) == ranges::distance(first2, last2);
   }
   template<typename I1, typename S1, typename I2, typename S2>
-  constexpr bool compare_size(I1, S1, I2, S2, std::false_type /* sized_sentinel_for */) const {
+  static constexpr bool try_compare_size(I1, S1, I2, S2, std::false_type /* sized_sentinel_for */) {
     return true;
+  }
+
+  template<typename R1, typename R2>
+  static constexpr bool try_compare_size(R1&& r1, R2&& r2, std::true_type /* sized_range */) {
+    return ranges::distance(r1) == ranges::distance(r2);
+  }
+  template<typename R1, typename R2>
+  static constexpr bool try_compare_size(R1&&, R2&&, std::false_type /* sized_range */) {
+    return true;
+  }
+
+  template<typename I1, typename S1, typename I2, typename S2, typename Pred, typename Proj1, typename Proj2>
+  static constexpr bool compare_application(I1 first1, S1 last1, I2 first2, S2 last2, Pred pred, Proj1 proj1, Proj2 proj2) {
+    for (; first1 != last1; ++first1, (void)++first2) {
+      if (!preview::invoke(pred, preview::invoke(proj1, *first1), preview::invoke(proj2, *first2)))
+        return false;
+    }
+    return first2 == last2;
   }
 
  public:
@@ -62,14 +80,13 @@ struct equal_niebloid {
   >
   PREVIEW_NODISCARD constexpr bool
   operator()(I1 first1, S1 last1, I2 first2, S2 last2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
-    if (!compare_size(first1, last1, first2, last2, conjunction<sized_sentinel_for<S1, I1>, sized_sentinel_for<S2, I2>>{}))
+    if (!try_compare_size(first1, last1, first2, last2, conjunction<sized_sentinel_for<S1, I1>, sized_sentinel_for<S2, I2>>{}))
       return false;
 
-    for (; first1 != last1; ++first1, (void)++first2) {
-      if (!preview::invoke(pred, preview::invoke(proj1, *first1), preview::invoke(proj2, *first2)))
-        return false;
-    }
-    return true;
+    return compare_application(
+        std::move(first1), std::move(last1),
+        std::move(first2), std::move(last2),
+        preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 
   template<
@@ -81,8 +98,13 @@ struct equal_niebloid {
   >
   PREVIEW_NODISCARD constexpr bool
   operator()(R1&& r1, R2&& r2, Pred pred = {}, Proj1 proj1 = {}, Proj2 proj2 = {}) const {
-    return (*this)(ranges::begin(r1), ranges::end(r1), ranges::begin(r2), ranges::end(r2),
-                   preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
+    if (!try_compare_size(r1, r2, conjunction<sized_range<R1>, sized_range<R2>>{}))
+      return false;
+
+    return compare_application(
+        ranges::begin(r1), ranges::end(r1),
+        ranges::begin(r2), ranges::end(r2),
+        preview::wrap_functor(pred), preview::wrap_functor(proj1), preview::wrap_functor(proj2));
   }
 
   template<

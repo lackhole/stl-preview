@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "preview/algorithm.h"
+#include "preview/array.h"
 #include "preview/ranges.h"
 
 #include "test_utils.h"

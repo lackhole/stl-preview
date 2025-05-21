@@ -286,8 +286,8 @@ TEST(VERSIONED(Ranges), to) {
   std::cout << map[1] << std::endl;
   std::cout << map[2] << std::endl;
   EXPECT_EQ(map[0], 'A');
-  EXPECT_TRUE((ranges::equal(map | views::keys, {0, 1, 2, 3, 4})));
-  EXPECT_TRUE((ranges::equal(map | views::values, {'A', 'B', 'C', 'D', 'E'})));
+  EXPECT_TRUE((ranges::equal(map | views::keys, {0, 1, 2, 3})));
+  EXPECT_TRUE((ranges::equal(map | views::values, {'A', 'B', 'C', 'D'})));
 
   auto f1 = views::iota(1, 5) | views::transform([](auto const v){ return v * 2; });
 
