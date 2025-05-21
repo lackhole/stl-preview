@@ -14,21 +14,15 @@
 
 #include "preview/__iterator/iterator_traits/forward_declare.h"
 #include "preview/__iterator/iterator_traits.h"
-#include "preview/__iterator/input_iterator.h"
 
 namespace preview {
 namespace detail {
 
-template<typename I>
-concept input_iterator_concept = requires (I i) {
-  preview::input_iterator<I>::value;
-};
+template<typename I, typename S>
+struct is_specialized_iterator_traits<std::iterator_traits< std::common_iterator<I, S> >> : std::true_type {};
 
-template<input_iterator_concept I>
-struct is_specialized_iterator_traits<std::iterator_traits< std::counted_iterator<I> >> : is_specialized_iterator_traits<I> {};
-
-template<input_iterator_concept I>
-struct is_specialized_iterator_traits<iterator_traits<std::counted_iterator<I> >> : is_specialized_iterator_traits<I> {};
+template<typename I, typename S>
+struct is_specialized_iterator_traits<iterator_traits<std::common_iterator<I, S> >> : std::true_type {};
 
 } // namespace detail
 } // namespace preview

@@ -14,16 +14,16 @@
 #include "preview/__concepts/common_with.h"
 #include "preview/__concepts/convertible_to.h"
 #include "preview/__concepts/dereferenceable.h"
-#include "preview/__iterator/detail/have_cxx20_iterator.h"
-#include "preview/__iterator/contiguous_iterator.h"
-#include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/bidirectional_iterator.h"
+#include "preview/__iterator/contiguous_iterator.h"
 #include "preview/__iterator/default_sentinel_t.h"
+#include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/forward_iterator.h"
 #include "preview/__iterator/indirectly_readable.h"
 #include "preview/__iterator/indirectly_swappable.h"
 #include "preview/__iterator/input_iterator.h"
 #include "preview/__iterator/input_or_output_iterator.h"
+#include "preview/__iterator/iterator_traits.h"
 #include "preview/__iterator/iter_difference_t.h"
 #include "preview/__iterator/iter_move.h"
 #include "preview/__iterator/iter_rvalue_reference_t.h"
@@ -312,7 +312,7 @@ struct iterator_traits<counted_iterator<I>>
 namespace std {
 
 template<std::input_iterator I>
-requires(preview::detail::is_primary_iterator_traits<I>::value == false)
+    requires(preview::detail::is_primary_iterator_traits<iterator_traits<I>>::value == false)
 struct iterator_traits<preview::counted_iterator<I>> : iterator_traits<I> {
   using pointer = typename preview::iterator_traits<preview::counted_iterator<I>>::pointer;
 };
