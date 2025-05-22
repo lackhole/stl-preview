@@ -8,6 +8,7 @@
 #include <cstddef>
 
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/type_identity.h"
 
 namespace preview {
 
@@ -53,6 +54,19 @@ template<std::size_t N, typename T , typename... Us>
 struct type_sequence_type_count_impl<N, T, type_sequence<T, Us...>>
     : type_sequence_type_count_impl<N + 1, T, type_sequence<Us...>> {};
 
+template<std::size_t Acc, typename TS, template<typename, typename...> class Pred, template<typename, typename...> class Proj>
+struct type_sequence_count_if_impl;
+
+// end case
+template<std::size_t Acc, template<typename, typename...> class Pred, template<typename, typename...> class Proj>
+struct type_sequence_count_if_impl<Acc, type_sequence<>, Pred, Proj>
+    : std::integral_constant<std::size_t, Acc> {};
+
+// recursive case
+template<std::size_t Acc, typename U1, typename... Us, template<typename, typename...> class Pred, template<typename, typename...> class Proj>
+struct type_sequence_count_if_impl<Acc, type_sequence<U1, Us...>, Pred, Proj>
+    : type_sequence_count_if_impl<Acc + static_cast<bool>(Pred<Proj<U1>>::value), type_sequence<Us...>, Pred, Proj> {};
+
 template<std::size_t I, typename T, typename TS>
 struct type_sequence_type_index_impl;
 
@@ -77,6 +91,9 @@ using make_type_sequence = typename detail::make_type_sequence_impl<T, N>::type;
 // count the number of occurrences of `T` in `type_sequence`
 template<typename T, typename TS>
 struct type_sequence_type_count : detail::type_sequence_type_count_impl<0, T, TS> {};
+
+template<typename TS, template<typename, typename...> class Pred, template<typename, typename...> class Proj = type_identity_t>
+struct type_sequence_count_if : detail::type_sequence_count_if_impl<0, TS, Pred, Proj> {};
 
 // get the index of `T` in `type_sequence`.
 // value is `sizeof...(U)` if `T` is not found in `type_sequence`
@@ -110,6 +127,9 @@ struct type_sequence {
 
   template<typename T>
   static constexpr std::size_t index = type_sequence_type_index<T, type_sequence>::value;
+
+  template<template<typename, typename...> class Pred, template<typename, typename...> class Proj = type_identity_t>
+  static constexpr std::size_t count_if = type_sequence_count_if<type_sequence, Pred, Proj>::value;
 
   template<std::size_t I>
   using element_type = type_sequence_element_type_t<I, type_sequence>;

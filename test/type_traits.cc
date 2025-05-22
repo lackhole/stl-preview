@@ -1,4 +1,7 @@
+#include "preview/concepts.h"
+#include "preview/iterator.h"
 #include "preview/type_traits.h"
+#include "preview/__type_traits/meta.h"
 #include "test_utils.h"
 
 struct common_a {};
@@ -166,4 +169,25 @@ TEST(VERSIONED(type_traits), unwrap_reference) {
     reset(std::ref(y));
     EXPECT_EQ(y, 0);
   }
+}
+
+namespace meta = preview::meta;
+
+
+TEST(VERSIONED(type_traits), meta) {
+  static_assert(preview::type_sequence_count_if<preview::type_sequence<int, int>, std::is_integral>::value == 2, "");
+
+  using b = meta::binder<std::is_same, int, meta::placeholder<0>>;
+  static_assert(b::placeholder_count == 1, "");
+
+  static_assert(b::rebind<int>::value, "");
+  static_assert(b::rebind<float>::value == false, "");
+
+  using namespace preview;
+
+  auto f = [](auto&&) -> bool { return true; };
+
+  static_assert(projectable_v<int*, identity>, "");
+  // static_assert(conjunction_v<projectable<int, int>, indirect_unary_predicate<identity, projected<int, int>>::value == false, "");
+  static_assert(projectable_and_v<int*, identity, meta::binder<indirect_unary_predicate, decltype(f), meta::placeholder<0>>::rebind>, "");
 }
