@@ -18,7 +18,7 @@
     enum class endian {
       little = PREVIEW_LITTLE_ENDIAN,
       big = PREVIEW_BIG_ENDIAN,
-      native = PREVIEW_ENDIAN
+      native = PREVIEW_NATIVE_ENDIAN
     };
   };
 #endif

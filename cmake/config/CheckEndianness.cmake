@@ -32,28 +32,24 @@ int main(int argc, char* argv[]) {
 }")
 
 if (PREVIEW_ARE_ALL_TYPES_1_BYTE EQUAL 1)
-    add_compile_definitions(PREVIEW_BIG_ENDIAN=0)
-    add_compile_definitions(PREVIEW_LITTLE_ENDIAN=0)
-    add_compile_definitions(PREVIEW_OTHER_ENDIAN=0)
+    set(PREVIEW_BIG_ENDIAN 0)
+    set(PREVIEW_LITTLE_ENDIAN 0)
+    set(PREVIEW_NATIVE_ENDIAN 0)
 else()
-    add_compile_definitions(PREVIEW_BIG_ENDIAN=${PREVIEW_BIG_ENDIAN})
-    add_compile_definitions(PREVIEW_LITTLE_ENDIAN=${PREVIEW_LITTLE_ENDIAN})
-    add_compile_definitions(PREVIEW_OTHER_ENDIAN=${PREVIEW_OTHER_ENDIAN})
-endif()
+    try_run(
+        PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
+        SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
+        ARGS ${CMAKE_BINARY_DIR}/endian.txt
+    )
 
-try_run(
-    PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
-    SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
-    ARGS ${CMAKE_BINARY_DIR}/endian.txt
-)
-
-if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
-    message(STATUS "Big endian")
-    add_compile_definitions(PREVIEW_ENDIAN=${PREVIEW_BIG_ENDIAN})
-elseif(PREVIEW_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
-    message(STATUS "Little endian")
-    add_compile_definitions(PREVIEW_ENDIAN=${PREVIEW_LITTLE_ENDIAN})
-else()
-    message(STATUS "Other endian")
-    add_compile_definitions(PREVIEW_ENDIAN=${PREVIEW_OTHER_ENDIAN})
+    if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
+        message(STATUS "Big endian")
+        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_BIG_ENDIAN})
+    elseif(PREVIEW_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
+        message(STATUS "Little endian")
+        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_LITTLE_ENDIAN})
+    else()
+        message(STATUS "Other endian")
+        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_OTHER_ENDIAN})
+    endif()
 endif()
