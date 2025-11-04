@@ -3,9 +3,10 @@
 #include <vector>
 
 #include "preview/algorithm.h"
+#include "preview/array.h"
 #include "preview/ranges.h"
 
-#include "gtest.h"
+#include "test_utils.h"
 
 namespace ranges = preview::ranges;
 namespace views  = preview::views;

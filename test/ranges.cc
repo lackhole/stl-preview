@@ -1,9 +1,10 @@
 #include "preview/ranges.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <deque>
 #include <list>
 #include <vector>
 
@@ -285,8 +286,8 @@ TEST(VERSIONED(Ranges), to) {
   std::cout << map[1] << std::endl;
   std::cout << map[2] << std::endl;
   EXPECT_EQ(map[0], 'A');
-  EXPECT_TRUE((ranges::equal(map | views::keys, {0, 1, 2, 3, 4})));
-  EXPECT_TRUE((ranges::equal(map | views::values, {'A', 'B', 'C', 'D', 'E'})));
+  EXPECT_TRUE((ranges::equal(map | views::keys, {0, 1, 2, 3})));
+  EXPECT_TRUE((ranges::equal(map | views::values, {'A', 'B', 'C', 'D'})));
 
   auto f1 = views::iota(1, 5) | views::transform([](auto const v){ return v * 2; });
 
@@ -470,4 +471,23 @@ TEST(VERSIONED(Ranges), iterator_conforming) {
   for (auto c : views::concat(v, s, sv, l)) {
     std::cout << c;
   }
+}
+
+TEST(VERSIONED(Ranges), reserve_hint) {
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>{}), 0);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10)), 10);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::as_const), 10);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::take(5)), 5);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::take(15)), 10);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::drop(4)), 6);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::drop(15)), 0);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::take(5) | views::enumerate), 5);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::reverse), 10);
+  EXPECT_EQ(ranges::reserve_hint(std::vector<int>(10) | views::reverse | views::transform(preview::identity{})), 10);
+
+  EXPECT_EQ(ranges::reserve_hint(std::list<int>{}), 0);
+  EXPECT_EQ(ranges::reserve_hint(std::list<int>(10)), 10);
+
+  EXPECT_EQ(ranges::reserve_hint(std::deque<int>{}), 0);
+  EXPECT_EQ(ranges::reserve_hint(std::map<int, int>{{1, 2}}), 1);
 }

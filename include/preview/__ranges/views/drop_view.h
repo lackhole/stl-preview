@@ -12,6 +12,8 @@
 #include "preview/__concepts/copy_constructible.h"
 #include "preview/__concepts/default_initializable.h"
 #include "preview/__iterator/next.h"
+#include "preview/__ranges/approximately_sized_range.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/simple_view.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/enable_borrowed_range.h"
@@ -26,6 +28,12 @@
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/views/all.h"
 #include "preview/__type_traits/conjunction.h"
+#include "preview/__utility/to_unsigned_like.h"
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wshadow"
+#endif
 
 namespace preview {
 namespace ranges {
@@ -137,6 +145,18 @@ class drop_view : public detail::drop_view_cached_begin<drop_view<V>, V> {
     return s < c ? 0 : s - c;
   }
 
+  template<bool B = approximately_sized_range<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    const auto s = static_cast<range_difference_t<V>>(ranges::reserve_hint(base_));
+    return preview::to_unsigned_like(s < count_ ? 0 : s - count_);
+  }
+
+  template<bool B = approximately_sized_range<const V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    const auto s = static_cast<range_difference_t<const V>>(ranges::reserve_hint(base_));
+    return preview::to_unsigned_like(s < count_ ? 0 : s - count_);
+  }
+
  private:
   V base_{};
   range_difference_t<V> count_ = 0;
@@ -161,5 +181,9 @@ drop_view(R&&, range_difference_t<R>) -> drop_view<views::all_t<R>>;
 template<typename T>
 PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::drop_view<T>)
     = preview::ranges::enable_borrowed_range<T>;
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #endif // PREVIEW_RANGES_VIEWS_DROP_VIEW_H_

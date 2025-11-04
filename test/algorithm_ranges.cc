@@ -1,14 +1,16 @@
 #include "preview/algorithm.h"
 
 #include <algorithm>
+#include <cctype>
 #include <complex>
 #include <cstdlib>
 #include <forward_list>
 #include <list>
 #include <map>
 #include <numeric>
-#include <string>
 #include <random>
+#include <set>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -16,9 +18,11 @@
 #include "preview/core.h"
 #include "preview/functional.h"
 #include "preview/ranges.h"
+#include "preview/span.h"
+#include "preview/string_view.h"
 #include "preview/utility.h"
 
-#include "gtest.h"
+#include "test_utils.h"
 
 
 #if PREVIEW_CXX_VERSION >= 20 && \
@@ -640,5 +644,73 @@ TEST(VERSIONED(AlgorithmRanges), minmax) {
       ASSERT_EQ(min, (std::min)(x1, x2));
       ASSERT_EQ(max, (std::max)(x1, x2));
     }
+  }
+}
+
+
+TEST(VERSIONED(AlgorithmRanges), starts_with) {
+  EXPECT_FALSE(ranges::starts_with("hello world", "hello"));
+  EXPECT_TRUE(ranges::starts_with("hello world", "hello"_sv));
+  EXPECT_TRUE(ranges::starts_with("hello world"_sv, "hello"_sv));
+#if PREVIEW_CXX_VERSION >= 17
+  EXPECT_TRUE(ranges::starts_with("hello world", "hello"sv));
+  EXPECT_TRUE(ranges::starts_with("hello world"sv, "hello"sv));
+#endif
+
+  EXPECT_TRUE(ranges::starts_with(std::vector<int>{1, 2, 3}, preview::span<const int>{1, 2, 3}));
+  EXPECT_FALSE(ranges::starts_with(std::list<int>{1, 2, 3}, preview::to_array({1, 2, 3, 4})));
+
+  EXPECT_TRUE(ranges::starts_with(views::iota(0) | views::take(10), views::iota(0, 5)));
+
+  std::map<int, std::string> map{{1, "one"}, {2, "two"}, {3, "three"}};
+  EXPECT_TRUE(ranges::starts_with(map, std::map<int, std::string>{{1, "one"}}));
+  EXPECT_TRUE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key));
+
+  EXPECT_FALSE(ranges::starts_with(map, views::iota(1, 3), {}, preview::key, [](auto x) { return x * x; }));
+}
+
+TEST(VERSIONED(AlgorithmRanges), equal) {
+  {
+    std::vector<int> v1 = {1, 2, 3, 4, 5};
+    std::vector<int> v2 = {1, 2, 3, 4, 5};
+    EXPECT_TRUE(ranges::equal(v1, v2));
+    EXPECT_TRUE(ranges::equal(v2, v1));
+
+    v2[0] = 0;
+    EXPECT_FALSE(ranges::equal(v1, v2));
+    EXPECT_FALSE(ranges::equal(v2, v1));
+
+    std::set<int> s1 = {1, 2, 3, 4};
+    EXPECT_FALSE(ranges::equal(v1, s1));
+    EXPECT_FALSE(ranges::equal(s1, v1));
+
+    s1.emplace(5);
+    EXPECT_TRUE(ranges::equal(v1, s1));
+    EXPECT_TRUE(ranges::equal(s1, v1));
+
+    std::set<int> s2 = {1, 2, 3, 4};
+    EXPECT_FALSE(ranges::equal(s1, s2));
+    EXPECT_FALSE(ranges::equal(s2, s1));
+
+    s2.emplace(5);
+    EXPECT_TRUE(ranges::equal(s1, s2));
+    EXPECT_TRUE(ranges::equal(s2, s1));
+  }
+
+  {
+    std::set<preview::string_view> r1 = {"x"};
+    std::set<std::string> r2 = {"x", "y"};
+
+    EXPECT_FALSE(ranges::equal(r1, r2));
+    EXPECT_FALSE(ranges::equal(r2, r1));
+  }
+
+  { // test uncommon range
+    EXPECT_FALSE(ranges::equal(views::iota(0) | views::take(5), views::iota(0) | views::take(10)));
+    EXPECT_FALSE(ranges::equal(views::iota(0) | views::take(10), views::iota(0) | views::take(5)));
+
+    EXPECT_TRUE(ranges::equal(views::iota(0) | views::take(5), views::iota(0) | views::take(5)));
+    EXPECT_TRUE(ranges::equal(views::iota(0) | views::take(5), views::iota(0, 5)));
+    EXPECT_TRUE(ranges::equal(views::iota(0, 5), views::iota(0) | views::take(5)));
   }
 }

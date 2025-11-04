@@ -18,6 +18,7 @@
 #include "preview/__iterator/detail/have_cxx20_iterator.h"
 #include "preview/__iterator/iterator_tag.h"
 #include "preview/__iterator/iterator_traits.h"
+#include "preview/__ranges/approximately_sized_range.h"
 #include "preview/__ranges/begin.h"
 #include "preview/__ranges/bidirectional_range.h"
 #include "preview/__ranges/common_range.h"
@@ -29,6 +30,7 @@
 #include "preview/__ranges/random_access_range.h"
 #include "preview/__ranges/range_reference_t.h"
 #include "preview/__ranges/range_value_t.h"
+#include "preview/__ranges/reserve_hint.h"
 #include "preview/__ranges/size.h"
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/view_interface.h"
@@ -413,6 +415,15 @@ class elements_view : public view_interface<elements_view<V, N>> {
   template<typename V2 = V, std::enable_if_t<sized_range<const V2>::value, int> = 0>
   constexpr auto size() const {
     return ranges::size(base_);
+  }
+
+  template<bool B = approximately_sized_range<V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() {
+    return ranges::reserve_hint(base_);
+  }
+  template<bool B = approximately_sized_range<const V>::value, std::enable_if_t<B, int> = 0>
+  constexpr auto reserve_hint() const {
+    return ranges::reserve_hint(base_);
   }
 
  private:

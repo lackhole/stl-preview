@@ -8,6 +8,8 @@
 #include "preview/__ranges/views/all.h"
 #include "preview/__ranges/views/as_const.h"
 #include "preview/__ranges/views/as_const_view.h"
+#include "preview/__ranges/views/as_rvalue.h"
+#include "preview/__ranges/views/as_rvalue_view.h"
 #include "preview/__ranges/views/basic_istream.h"
 #include "preview/__ranges/views/basic_istream_view.h"
 #include "preview/__ranges/views/cartesian_product.h"

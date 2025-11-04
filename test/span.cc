@@ -1,5 +1,5 @@
 #include "preview/span.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <array>
 #include <list>

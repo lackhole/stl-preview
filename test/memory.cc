@@ -1,5 +1,5 @@
 #include "preview/memory.h"
-#include "gtest.h"
+#include "test_utils.h"
 
 #include <algorithm>
 #include <functional>

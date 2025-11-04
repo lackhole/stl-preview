@@ -7,7 +7,7 @@
 
 #include <bitset>
 
-#include "../gtest.h"
+#include "../test_utils.h"
 
 static std::bitset<8> ToBit(preview::byte b) {
   return preview::to_integer<int>(b);

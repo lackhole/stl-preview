@@ -7,7 +7,7 @@
 
 #include <type_traits>
 
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 #include "preview/__type_traits/is_referenceable.h"
@@ -17,6 +17,7 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wzero-as-null-pointer-constant"
+#pragma clang diagnostic ignored "-Wfloat-equal"
 #endif
 
 // automatically generates comparison operators based on user-defined `operator==` and `operator<` in C++20 way

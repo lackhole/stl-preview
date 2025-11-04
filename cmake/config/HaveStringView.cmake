@@ -16,6 +16,6 @@ int main() {
 
 function(HaveStringView out)
     set(CMAKE_REQUIRED_FLAGS ${ARGN})
-    check_cxx_source_compiles("${HaveStringView_Source}" ${out})
+    PREVIEW_CHECK_CXX_SOURCE_COMPILES_UNTIL_CXX(17 "${HaveStringView_Source}" ${out})
     set(${out} ${${out}} PARENT_SCOPE)
 endfunction()

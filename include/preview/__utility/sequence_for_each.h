@@ -27,21 +27,31 @@ struct sequence_for_each_invocable<std::integer_sequence<T, v...>, F, Args...>
           is_invocable<F, std::integral_constant<T, v>, Args...>...
       > {};
 
-} // namespace detail
-
-
-// performs f(std::integral_constant<T, i>{}, args...) for i in v...
-template<typename T, T... v, typename F, typename... Args, std::enable_if_t<(sizeof...(v) > 1), int> = 0>
-constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::integer_sequence<T, v...>, F>::value>
-sequence_for_each(std::integer_sequence<T, v...>, F&& f, Args&&... args)
-    noexcept(conjunction<
-        bool_constant<noexcept(preview::invoke(f, std::integral_constant<T, v>{}))>...
-    >::value)
-{
+template<typename T, T... v, typename F, typename... Args, std::enable_if_t<(sizeof...(v) > 0), int> = 0>
+constexpr void sequence_for_each_impl(std::integer_sequence<T, v...>, F&& f, Args&&... args) {
   int dummy[] = {
       (preview::invoke(f, std::integral_constant<T, v>{}, std::forward<Args>(args)...), 0)...
   };
   (void)dummy;
+}
+
+template<typename T, typename F, typename... Args>
+constexpr void sequence_for_each_impl(std::integer_sequence<T>, F&&, Args&&...) {
+  // no-op
+}
+
+} // namespace detail
+
+
+// performs f(std::integral_constant<T, i>{}, args...) for i in v...
+template<typename T, T... v, typename F, typename... Args>
+constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::integer_sequence<T, v...>, F, Args...>::value>
+sequence_for_each(std::integer_sequence<T, v...>, F&& f, Args&&... args)
+    noexcept(conjunction<
+        bool_constant<noexcept(preview::invoke(f, std::integral_constant<T, v>{}, std::forward<Args>(args)...))>...
+    >::value)
+{
+  preview::detail::sequence_for_each_impl(std::integer_sequence<T, v...>{}, std::forward<F>(f), std::forward<Args>(args)...);
 }
 
 // performs f(std::integral_constant<T, i>{}, args...) for i in [0, N)
@@ -65,7 +75,7 @@ sequence_for_each(F&& f, Args&&... args)
 
 // performs f(std::integral_constant<std::size_t, i>{}, args...) for i in [0, N)
 template<std::size_t N, typename F, typename... Args>
-constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::make_index_sequence<N>, F>::value>
+constexpr std::enable_if_t<detail::sequence_for_each_invocable<std::make_index_sequence<N>, F, Args...>::value>
 sequence_for_each(F&& f, Args&&... args)
     noexcept(noexcept(
         preview::sequence_for_each(

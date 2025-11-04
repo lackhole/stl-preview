@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "preview/config.h"
-#include "preview/__core/std_version.h"
+#include "preview/__core/cxx_version.h"
 #include "preview/__compare/synth_three_way.h"
 #include "preview/__functional/is_reference_wrapper.h"
 #include "preview/__memory/addressof.h"
