@@ -51,7 +51,7 @@ else()
         endif()
     else()
         try_run(
-            PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
+            PREVIEW_DETECTED_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
             SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
             ARGS ${CMAKE_BINARY_DIR}/endian.txt
         )
@@ -59,10 +59,10 @@ else()
             message(FATAL_ERROR "Internal error - Cannot build endian check")
         endif()
 
-        if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
+        if(PREVIEW_DETECTED_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
             message(STATUS "Big endian (detected)")
             set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_BIG_ENDIAN})
-        elseif(PREVIEW_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
+        elseif(PREVIEW_DETECTED_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
             message(STATUS "Little endian (detected)")
             set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_LITTLE_ENDIAN})
         else()
