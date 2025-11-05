@@ -4,6 +4,7 @@ include(CheckCXXSymbolExists)
 include(CheckCXXSourceRuns)
 
 include(PreviewUtils)
+include(config/CheckEndianness)
 include(config/HaveBuiltinBitCast)
 include(config/HaveBuiltinConstexprAddressof)
 include(config/HaveAtomicWaitAndNotify)
