@@ -53,10 +53,12 @@ else()
         try_run(
             PREVIEW_DETECTED_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
             SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
+            COMPILE_DEFINITIONS ${CMAKE_CXX_FLAGS}
+            COMPILE_OUTPUT_VARIABLE COMPILE_LOG
             ARGS ${CMAKE_BINARY_DIR}/endian.txt
         )
         if(NOT COMPILE_RES)
-            message(FATAL_ERROR "Internal error - Cannot build endian check")
+            message(FATAL_ERROR "Internal error - Cannot build endian check with CXXFLAGS = ${CMAKE_CXX_FLAGS} :\n${COMPILE_LOG}")
         endif()
 
         if(PREVIEW_DETECTED_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
