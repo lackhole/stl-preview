@@ -36,20 +36,38 @@ if (PREVIEW_ARE_ALL_TYPES_1_BYTE EQUAL 1)
     set(PREVIEW_LITTLE_ENDIAN 0)
     set(PREVIEW_NATIVE_ENDIAN 0)
 else()
-    try_run(
-        PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
-        SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
-        ARGS ${CMAKE_BINARY_DIR}/endian.txt
-    )
-
-    if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
-        message(STATUS "Big endian")
-        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_BIG_ENDIAN})
-    elseif(PREVIEW_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
-        message(STATUS "Little endian")
-        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_LITTLE_ENDIAN})
+    if(DEFINED PREVIEW_ENDIAN)
+        if(PREVIEW_ENDIAN STREQUAL "BIG")
+        message(STATUS "Big endian (forced by config)")
+            set(PREVIEW_NATIVE_ENDIAN PREVIEW_BIG_ENDIAN)
+        elseif(PREVIEW_ENDIAN STREQUAL "LITTLE")
+            set(PREVIEW_NATIVE_ENDIAN PREVIEW_LITTLE_ENDIAN)
+            message(STATUS "Little endian (forced by config)")
+        elseif(PREVIEW_ENDIAN STREQUAL "OTHER")
+            set(PREVIEW_NATIVE_ENDIAN PREVIEW_OTHER_ENDIAN)
+            message(STATUS "Other endian (forced by config)")
+        else()
+            message(FATAL_ERROR "PREVIEW_ENDIAN is '${PREVIEW_ENDIAN}', but must be either BIG, LITTLE or OTHER.")
+        endif()
     else()
-        message(STATUS "Other endian")
-        set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_OTHER_ENDIAN})
+        try_run(
+            PREVIEW_ENDIAN COMPILE_RES ${CMAKE_BINARY_DIR}
+            SOURCES ${CMAKE_BINARY_DIR}/CheckEndian.cpp
+            ARGS ${CMAKE_BINARY_DIR}/endian.txt
+        )
+        if(NOT COMPILE_RES)
+            message(FATAL_ERROR "Internal error - Cannot build endian check")
+        endif()
+
+        if(PREVIEW_ENDIAN EQUAL ${PREVIEW_BIG_ENDIAN})
+            message(STATUS "Big endian (detected)")
+            set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_BIG_ENDIAN})
+        elseif(PREVIEW_ENDIAN EQUAL ${PREVIEW_LITTLE_ENDIAN})
+            message(STATUS "Little endian (detected)")
+            set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_LITTLE_ENDIAN})
+        else()
+            message(STATUS "Other endian (detected)")
+            set(PREVIEW_NATIVE_ENDIAN ${PREVIEW_OTHER_ENDIAN})
+        endif()
     endif()
 endif()
