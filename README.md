@@ -129,7 +129,7 @@ Implementation available in C++14 ~ :
 | [mdspan](#mdspan)                   | ![](https://img.shields.io/badge/9/15-grey)![][p060]    |   |                                                        |                                                         | ![](https://img.shields.io/badge/7/7-grey)![][p100]    | ![](https://img.shields.io/badge/2/8-grey)![][p025]    |
 | [memory](#memory)                   | ![](https://img.shields.io/badge/9/44-grey)![][p020]    |   | ![](https://img.shields.io/badge/4/11-grey)![][p036]   | ![](https://img.shields.io/badge/9/35-grey)![][p026]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]    | ![](https://img.shields.io/badge/0/2-grey)![][p000]    |
 | [numbers](#numbers)                 | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |   |                                                        | ![](https://img.shields.io/badge/13/13-grey)![][p100]   |                                                        |                                                        |
-| [numeric](#numeric)                 | ![](https://img.shields.io/badge/1/15-grey)![][p007]    |   | ![](https://img.shields.io/badge/0/9-grey)![][p000]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
+| [numeric](#numeric)                 | ![](https://img.shields.io/badge/3/15-grey)![][p020]    |   | ![](https://img.shields.io/badge/2/9-grey)![][p022]    | ![](https://img.shields.io/badge/0/4-grey)![][p000]     | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/5-grey)![][p000]    |
 | [optional](#optional)               | ![](https://img.shields.io/badge/7/7-grey)![][p100]     |   | ![](https://img.shields.io/badge/7/7-grey)![][p100]    |                                                         | ![](https://img.shields.io/badge/1/1-grey)![][p100]    | ![](https://img.shields.io/badge/0/1-grey)![][p000]    |
 | [random](#random)                   | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |   |                                                        | ![](https://img.shields.io/badge/1/1-grey)![][p100]     |                                                        |                                                        |
 | [ranges](#ranges)                   | ![](https://img.shields.io/badge/76/82-grey)![][p093]   |   |                                                        | ![](https://img.shields.io/badge/60/60-grey)![][p100]   | ![](https://img.shields.io/badge/30/36-grey)![][p083]  | ![](https://img.shields.io/badge/3/5-grey)![][p060]    |
@@ -912,8 +912,8 @@ Description
   | `transform_exclusive_scan` | ![][c17no] | ![][c20no] |
   | `inclusive_scan`           | ![][c17no] | ![][c20no] |
   | `transform_inclusive_scan` | ![][c17no] | ![][c20no] |
-  | `gcd`                      | ![][c17no] |            |
-  | `lcm`                      | ![][c17no] |            |
+  | `gcd`                      | ![][c17ok] |            |
+  | `lcm`                      | ![][c17ok] |            |
   | `reduce`                   | ![][c17no] |            |
   | `transform_reduce`         | ![][c17no] |            |
   | `midpoint`                 | ![][c17no] |            |
