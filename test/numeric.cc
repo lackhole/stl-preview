@@ -33,30 +33,32 @@ TEST(VERSIONED(Numeric), iota) {
 TEST(VERSIONED(Numeric), gcd) {
   constexpr int p{2 * 2 * 3};
   constexpr int q{2 * 3 * 3};
-  static_assert(2 * 3 == preview::gcd(p, q), "");
 
-  static_assert(preview::gcd( 6,  10) == 2, "");
-  static_assert(preview::gcd( 6, -10) == 2, "");
-  static_assert(preview::gcd(-6, -10) == 2, "");
+  EXPECT_EQ(preview::gcd(p, q), 2 * 3);
 
-  static_assert(preview::gcd( 24, 0) == 24, "");
-  static_assert(preview::gcd(-24, 0) == 24, "");
+  EXPECT_EQ(preview::gcd( 6,  10), 2);
+  EXPECT_EQ(preview::gcd( 6, -10), 2);
+  EXPECT_EQ(preview::gcd(-6, -10), 2);
+
+  EXPECT_EQ(preview::gcd( 24, 0), 24);
+  EXPECT_EQ(preview::gcd(-24, 0), 24);
 }
 
 TEST(VERSIONED(Numeric), lcm) {
   constexpr int p{2 * 2 * 3};
   constexpr int q{2 * 3 * 3};
-  static_assert(2 * 2 * 3 * 3 == preview::lcm(p, q), "");
-  static_assert(225 == preview::lcm(45, 75), "");
 
-  static_assert(preview::lcm( 6,  10) == 30, "");
-  static_assert(preview::lcm( 6, -10) == 30, "");
-  static_assert(preview::lcm(-6, -10) == 30, "");
+  EXPECT_EQ(preview::lcm(p, q), 2 * 2 * 3 * 3);
+  EXPECT_EQ(preview::lcm(45, 75), 225);
 
-  static_assert(preview::lcm( 24, 0) == 0, "");
-  static_assert(preview::lcm(-24, 0) == 0, "");
+  EXPECT_EQ(preview::lcm( 6,  10), 30);
+  EXPECT_EQ(preview::lcm( 6, -10), 30);
+  EXPECT_EQ(preview::lcm(-6, -10), 30);
 
-  static_assert(preview::lcm(preview::lcm(2 * 3, 3 * 4), 4 * 5) == 60, "");
-  static_assert(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6) == 120, "");
-  static_assert(preview::lcm(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6), 5 * 6 * 7) == 840, "");
+  EXPECT_EQ(preview::lcm( 24, 0), 0);
+  EXPECT_EQ(preview::lcm(-24, 0), 0);
+
+  EXPECT_EQ(preview::lcm(preview::lcm(2 * 3, 3 * 4), 4 * 5), 60);
+  EXPECT_EQ(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6), 120);
+  EXPECT_EQ(preview::lcm(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6), 5 * 6 * 7), 840);
 }
