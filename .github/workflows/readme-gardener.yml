@@ -1,0 +1,80 @@
+name: README gardener
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - README.md
+      - docs/status.md
+      - docs/status.json
+      - tools/readme_gardener.py
+      - .github/workflows/readme-gardener.yml
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '24 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Check generated status
+      run: python3 tools/readme_gardener.py --check
+
+  update-main:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Update generated status
+      run: python3 tools/readme_gardener.py --write
+
+    - name: Commit generated status
+      run: |
+        if git diff --quiet -- README.md docs/status.md docs/status.json; then
+          echo "No generated status changes."
+          exit 0
+        fi
+
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add README.md docs/status.md docs/status.json
+        git commit -m "Update generated README status [skip ci]"
+        git push
+
+  scheduled-pr:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Update generated status
+      run: python3 tools/readme_gardener.py --write
+
+    - name: Open review PR
+      uses: peter-evans/create-pull-request@v6
+      with:
+        branch: automation/readme-gardener
+        delete-branch: true
+        commit-message: Update generated README status
+        title: Update generated README status
+        body: |
+          Scheduled README gardener refresh.
+
+          This PR is intentionally review-only. If WG21/cppreference status changed,
+          update the detailed C++23/C++26 rows in README.md on this branch, rerun
+          `python3 tools/readme_gardener.py --write`, then merge normally.

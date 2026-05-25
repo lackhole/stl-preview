@@ -4,3 +4,11 @@
 .idea
 cmake-build-*
 build
+build-coverage
+site
+coverage
+__pycache__
+*.pyc
+*.gcda
+*.gcno
+*.gcov

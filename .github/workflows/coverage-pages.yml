@@ -1,0 +1,85 @@
+name: Coverage Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: coverage-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/configure-pages@v5
+
+    - name: Install coverage tools
+      run: python3 -m pip install --user gcovr
+
+    - name: Configure coverage build
+      env:
+        CC: gcc
+        CXX: g++
+      run: >
+        cmake -B build-coverage
+        -DCMAKE_C_COMPILER=${{ env.CC }}
+        -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+        -DCMAKE_BUILD_TYPE=Debug
+        -DPREVIEW_TEST=ON
+        -DCMAKE_CXX_FLAGS="--coverage -O0 -g"
+        -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build build-coverage --config Debug -j 2
+
+    - name: Test
+      run: ctest --test-dir build-coverage --build-config Debug --output-on-failure
+
+    - name: Generate implementation dashboard
+      run: python3 tools/readme_gardener.py --status-html site/index.html
+
+    - name: Generate coverage dashboard
+      run: |
+        mkdir -p site/coverage
+        python3 -m gcovr -r "${{ github.workspace }}" \
+          --filter "${{ github.workspace }}/include/preview" \
+          --exclude "${{ github.workspace }}/test" \
+          --html --html-details \
+          -o site/coverage/index.html
+        python3 -m gcovr -r "${{ github.workspace }}" \
+          --filter "${{ github.workspace }}/include/preview" \
+          --exclude "${{ github.workspace }}/test" \
+          --json-pretty \
+          -o site/coverage/coverage.json
+        python3 -m gcovr -r "${{ github.workspace }}" \
+          --filter "${{ github.workspace }}/include/preview" \
+          --exclude "${{ github.workspace }}/test" \
+          --txt \
+          -o site/coverage/summary.txt
+
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v4
