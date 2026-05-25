@@ -237,7 +237,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-14, macos-15, macos-26]
+        os: [macos-14, macos-15, macos-15-intel, macos-26, macos-26-intel]
         build_type: [Debug, Release]
         compiler: [clang]
         include:
