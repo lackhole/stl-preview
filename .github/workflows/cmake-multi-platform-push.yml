@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, windows-2019]
+        os: [windows-latest, windows-2025, windows-2022]
         build_type: [Debug]
         arch: [amd64]
 
@@ -213,7 +213,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13, macos-14, macos-15]
+        os: [macos-14, macos-15, macos-15-intel, macos-26]
         build_type: [Debug]
         compiler: [clang]
         include:
