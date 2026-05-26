@@ -29,3 +29,36 @@ TEST(VERSIONED(Numeric), iota) {
       ranges::indirect{}
   ));
 }
+
+TEST(VERSIONED(Numeric), gcd) {
+  constexpr int p{2 * 2 * 3};
+  constexpr int q{2 * 3 * 3};
+
+  EXPECT_EQ(preview::gcd(p, q), 2 * 3);
+
+  EXPECT_EQ(preview::gcd( 6,  10), 2);
+  EXPECT_EQ(preview::gcd( 6, -10), 2);
+  EXPECT_EQ(preview::gcd(-6, -10), 2);
+
+  EXPECT_EQ(preview::gcd( 24, 0), 24);
+  EXPECT_EQ(preview::gcd(-24, 0), 24);
+}
+
+TEST(VERSIONED(Numeric), lcm) {
+  constexpr int p{2 * 2 * 3};
+  constexpr int q{2 * 3 * 3};
+
+  EXPECT_EQ(preview::lcm(p, q), 2 * 2 * 3 * 3);
+  EXPECT_EQ(preview::lcm(45, 75), 225);
+
+  EXPECT_EQ(preview::lcm( 6,  10), 30);
+  EXPECT_EQ(preview::lcm( 6, -10), 30);
+  EXPECT_EQ(preview::lcm(-6, -10), 30);
+
+  EXPECT_EQ(preview::lcm( 24, 0), 0);
+  EXPECT_EQ(preview::lcm(-24, 0), 0);
+
+  EXPECT_EQ(preview::lcm(preview::lcm(2 * 3, 3 * 4), 4 * 5), 60);
+  EXPECT_EQ(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6), 120);
+  EXPECT_EQ(preview::lcm(preview::lcm(preview::lcm(2 * 3 * 4, 3 * 4 * 5), 4 * 5 * 6), 5 * 6 * 7), 840);
+}
