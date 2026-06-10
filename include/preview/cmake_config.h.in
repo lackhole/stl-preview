@@ -34,11 +34,55 @@
 #    define PREVIEW_HAVE_STRING_VIEW 1
 #  endif
 
+#  define PREVIEW_BIG_ENDIAN ${PREVIEW_BIG_ENDIAN}
+#  define PREVIEW_LITTLE_ENDIAN ${PREVIEW_LITTLE_ENDIAN}
+#  define PREVIEW_NATIVE_ENDIAN ${PREVIEW_NATIVE_ENDIAN}
+
 #else
 
 #define PREVIEW_HAVE_BUILTIN_BIT_CAST            PREVIEW_CONFORM_CXX20_STANDARD
 #define PREVIEW_HAVE_BUILTIN_CONSTEXPR_ADDRESSOF (PREVIEW_CXX_VERSION >= 17)
 
 #define PREVIEW_HAVE_STRING_VIEW             (PREVIEW_CXX_VERSION >= 17)
+
+#define PREVIEW_BIG_ENDIAN 0
+#define PREVIEW_LITTLE_ENDIAN 1
+#define PREVIEW_OTHER_ENDIAN 2
+
+#if defined (__GLIBC__)
+#   include <endian.h>
+#   if __BYTE_ORDER == __LITTLE_ENDIAN
+#       define PREVIEW_NATIVE_ENDIAN PREVIEW_LITTLE_ENDIAN
+#   elif __BYTE_ORDER == __BIG_ENDIAN
+#       define PREVIEW_NATIVE_ENDIAN PREVIEW_BIG_ENDIAN
+#   else
+#       define PREVIEW_NATIVE_ENDIAN PREVIEW_OTHER_ENDIAN
+#   endif
+#elif defined(_BIG_ENDIAN) && !defined(_LITTLE_ENDIAN)
+#   define PREVIEW_NATIVE_ENDIAN PREVIEW_BIG_ENDIAN
+#elif defined(_LITTLE_ENDIAN) && !defined(_BIG_ENDIAN)
+#   define PREVIEW_NATIVE_ENDIAN PREVIEW_LITTLE_ENDIAN
+
+#elif defined(__sparc) || defined(__sparc__) \
+   || defined(_POWER) || defined(__powerpc__) \
+   || defined(__ppc__) || defined(__hpux) || defined(__hppa) \
+   || defined(_MIPSEB) || defined(_POWER) \
+   || defined(__s390__)
+
+#   define define PREVIEW_NATIVE_ENDIAN PREVIEW_BIG_ENDIAN
+
+#elif defined(__i386__) || defined(__alpha__) \
+   || defined(__ia64) || defined(__ia64__) \
+   || defined(_M_IX86) || defined(_M_IA64) \
+   || defined(_M_ALPHA) || defined(__amd64) \
+   || defined(__amd64__) || defined(_M_AMD64) \
+   || defined(__x86_64) || defined(__x86_64__) \
+   || defined(_M_X64) || defined(__bfin__)
+
+#   define PREVIEW_NATIVE_ENDIAN PREVIEW_LITTLE_ENDIAN
+
+#else
+#   define PREVIEW_NATIVE_ENDIAN PREVIEW_OTHER_ENDIAN
+#endif
 
 #endif
