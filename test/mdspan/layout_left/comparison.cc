@@ -98,7 +98,6 @@ constexpr void test_comparison_same_rank() {
 }
 
 VERSIONED_TYPE_TEST(MdSpanLayoutLeft, comparison) {
-  constexpr std::size_t D = preview::dynamic_extent;
   using T1 = typename TypeParam::first_type;
   using T2 = typename TypeParam::second_type;
 

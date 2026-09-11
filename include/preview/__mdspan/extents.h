@@ -15,11 +15,14 @@
 #include "preview/span.h"
 #include "preview/__concepts/integer_like.h"
 #include "preview/__type_traits/bool_constant.h"
+#include "preview/__type_traits/common_type.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
+#include "preview/__type_traits/index_constant.h"
 #include "preview/__type_traits/negation.h"
 #include "preview/__utility/as_const.h"
 #include "preview/__utility/integer_sequence.h"
+#include "preview/__utility/cxx20_rel_ops.h"
 
 // TODO: Integrate contract
 
@@ -220,22 +223,23 @@ class extents_storage<IndexType, 0, Extents...> {
   constexpr extents_storage() noexcept = default;
 
   template<typename OtherIndexType, std::size_t RankDynamic, std::size_t... OtherExtents>
-  constexpr extents_storage(const extents_storage<OtherIndexType, RankDynamic, OtherExtents...>& other) noexcept {
+  constexpr extents_storage(PREVIEW_MAYBE_UNUSED const extents_storage<OtherIndexType, RankDynamic, OtherExtents...>& other) noexcept {
     // Preconditions
     PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_extent(other));
+    PREVIEW_CXX14_SUPPRESS_UNUSED(other);
   }
 
   template<typename OtherIndexType, std::size_t N>
   constexpr extents_storage(PREVIEW_MAYBE_UNUSED span<OtherIndexType, N> exts) noexcept {
     // Preconditions
-    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript<N>(exts));
+    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(index_constant<N>{}, exts));
     PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
   }
 
   template<typename OtherIndexType, std::size_t N>
   constexpr extents_storage(PREVIEW_MAYBE_UNUSED const std::array<OtherIndexType, N>& exts) noexcept {
     // Preconditions
-    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript<N>(exts));
+    PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(index_constant<N>{}, exts));
     PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
   }
 
@@ -279,14 +283,17 @@ class extents_storage<IndexType, 0, Extents...> {
   }
 
   template<std::size_t N, typename Other>
-  constexpr bool my_static_extent_is_equal_to_other_subscript(const Other& other) const noexcept {
-    if (N != 0) {
-      using namespace preview::rel_ops;
-      for (rank_type r = 0; r < kRank; ++r) {
-        if (kExtents[r] != dynamic_extent && kExtents[r] != static_cast<IndexType>(other[r]))
-          return false;
-      }
+  constexpr bool my_static_extent_is_equal_to_other_subscript(index_constant<N>, const Other& other) const noexcept {
+    using namespace preview::rel_ops;
+    for (rank_type r = 0; r < kRank; ++r) {
+      if (kExtents[r] != dynamic_extent && static_cast<IndexType>(kExtents[r]) != static_cast<IndexType>(other[r]))
+        return false;
     }
+    return true;
+  }
+
+  template<typename Other>
+  constexpr bool my_static_extent_is_equal_to_other_subscript(index_constant<0>, const Other&) const noexcept {
     return true;
   }
 };
@@ -463,11 +470,13 @@ class extents
   friend constexpr bool operator==(const extents& x, const extents<OtherIndexType, OtherExtents...>& y) noexcept {
     using x_type = extents;
     using y_type = extents<OtherIndexType, OtherExtents...>;
+    using common_index_type = common_type_t<IndexType, OtherIndexType>;
+    using namespace preview::rel_ops;
 
     if (x_type::rank() != y_type::rank())
       return false;
     for (rank_type r = 0; r < x_type::rank(); ++r) {
-      if (x.extent(r) != y.extent(r))
+      if (static_cast<common_index_type>(x.extent(r)) != static_cast<common_index_type>(y.extent(r)))
         return false;
     }
     return true;
@@ -516,4 +525,4 @@ using dims = dextents<IndexType, Rank>;
 
 #undef PREVIEW_MDSPAN_DEBUG_ASSERT
 
-#endif // PREVIEW_MDSPAN_EXTENTS_H_
+#endif // PREVIEW_MDSPAN_EXTENTS_

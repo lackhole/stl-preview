@@ -28,17 +28,13 @@
 #include "preview/__ranges/subrange.h"
 #include "preview/__ranges/view.h"
 #include "preview/__ranges/view_interface.h"
-#include "preview/__ranges/viewable_range.h"
 #include "preview/__ranges/views/all.h"
 #include "preview/__ranges/views/single.h"
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/remove_cvref.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-#endif
+#include "preview/__compiler/disable_shadow_warning_header.h"
 
 namespace preview {
 namespace ranges {
@@ -287,8 +283,6 @@ split_view(R&&, range_value_t<R>)
 } // namespace ranges
 } // namespace preview
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+#include "preview/__compiler/disable_shadow_warning_footer.h"
 
 #endif // PREVIEW_RANGES_VIEWS_SPLIT_VIEW_H_

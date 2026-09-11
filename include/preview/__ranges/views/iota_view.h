@@ -38,11 +38,11 @@
 #include "preview/__type_traits/is_subtractable.h"
 #include "preview/__type_traits/make_signed_like.h"
 #include "preview/__type_traits/negation.h"
-#include "preview/__type_traits/remove_cvref.h"
 #include "preview/__type_traits/type_identity.h"
-#include "preview/__type_traits/void_t.h"
 #include "preview/__utility/cxx20_rel_ops.h"
 #include "preview/__utility/to_unsigned_like.h"
+
+#include "preview/__compiler/disable_shadow_warning_header.h"
 
 namespace preview {
 namespace ranges {
@@ -473,5 +473,7 @@ PREVIEW_INLINE_VARIABLE constexpr detail::iota_niebloid iota{};
 // TODO: Implement constraints
 template<typename W, typename Bound>
 PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::iota_view<W, Bound>) = true;
+
+#include "preview/__compiler/disable_shadow_warning_footer.h"
 
 #endif // PREVIEW_RANGES_VIEWS_IOTA_H_

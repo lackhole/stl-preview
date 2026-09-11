@@ -9,9 +9,12 @@
 
 #include "preview/__core/inline_variable.h"
 
-#ifdef __clang__
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wsign-conversion"
+#elif defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4245) // conversion from 'size_t' to 'int', possible loss of data
 #endif
 
 namespace preview {
@@ -20,8 +23,10 @@ PREVIEW_INLINE_VARIABLE constexpr std::size_t variant_npos = -1;
 
 } // namespace preview
 
-#ifdef __clang__
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#elif defined(_MSC_VER)
+#pragma warning(pop)
 #endif
 
 #endif // PREVIEW_VARIANT_VARIANT_NPOS_H_

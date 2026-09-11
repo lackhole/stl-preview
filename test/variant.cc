@@ -30,9 +30,9 @@ template<std::size_t I, typename V>
 struct is_gettable_i<I, V, preview::void_t<decltype(std::get<I>(std::declval<V>()))>> : std::true_type {};
 
 template<typename T, typename V>
-constexpr bool gettable(V&& v) { return is_gettable<T, V&&>::value; }
+constexpr bool gettable(V&&) { return is_gettable<T, V&&>::value; }
 template<std::size_t I, typename V>
-constexpr bool gettable(V&& v) { return is_gettable_i<I, V&&>::value; }
+constexpr bool gettable(V&&) { return is_gettable_i<I, V&&>::value; }
 
 TEST(VERSIONED(Variant), basics) {
   preview::variant<int, float> v, w;

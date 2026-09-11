@@ -49,7 +49,7 @@ concept check_mdspan_ctor_implicit = requires(MDS m, Args... args) { m = {args..
 #endif
 
 template <bool mec, bool ac, class H, class M, class A, class... Idxs>
-constexpr void test_mdspan_types(const H& handle, const M& map, const A&, Idxs... idxs) {
+constexpr void test_mdspan_types(const H& handle, PREVIEW_MAYBE_UNUSED const M& map, const A&, PREVIEW_MAYBE_UNUSED Idxs... idxs) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
 
   PREVIEW_STATIC_ASSERT(mec == std::is_constructible<M, typename M::extents_type>::value);

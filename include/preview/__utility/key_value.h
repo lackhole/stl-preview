@@ -31,9 +31,7 @@ struct element_niebloid {
 } // namespace detail
 
 PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<0> key;
-PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<0> first;
 PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<1> value;
-PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<1> second;
 
 template<std::size_t I>
 PREVIEW_INLINE_VARIABLE constexpr detail::element_niebloid<I> element{};

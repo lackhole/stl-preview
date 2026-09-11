@@ -22,8 +22,8 @@ using std::unreachable;
 #  if defined(_MSC_VER)
 
 namespace preview {
-PREVIEW_NORETURN inline void unreachable() {
-  __assume(0);
+PREVIEW_NORETURN __forceinline void unreachable() {
+  __assume(false);
 }
 } // namespace preview
 

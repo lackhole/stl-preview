@@ -389,12 +389,12 @@ TEST(VERSIONED(RangesViews), transform_view) {
   {
     std::string s{"The length of this string is 42 characters"};
 #if PREVIEW_CXX_VERSION >= 17
-    auto tv = ranges::transform_view{s, [](char c) -> char {
-      return std::toupper(c);
+    auto tv = ranges::transform_view{s, [](char c) {
+      return static_cast<char>(std::toupper(c));
     }};
 #else
-    auto tv = views::transform(s, [](char c) -> char {
-      return std::toupper(c);
+    auto tv = views::transform(s, [](char c) {
+      return static_cast<char>(std::toupper(c));
     });
 #endif
     std::vector<char> out;
@@ -536,8 +536,8 @@ TEST(VERSIONED(RangesViews), take_while_view) {
       | views::take_while([](int y){ return y < 2026; })) { (void)year; }
 #endif
 
-  auto r1 = views::iota(10) | views::take_while([](int x) { return true; });
-  auto r2 = views::iota(10, 20) | views::take_while([](int x) { return true; });
+  auto r1 = views::iota(10) | views::take_while([](int) { return true; });
+  auto r2 = views::iota(10, 20) | views::take_while([](int) { return true; });
 
   auto it1 = r1.end();
   auto it2 = r2.end();

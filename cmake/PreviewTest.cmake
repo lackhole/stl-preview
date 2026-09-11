@@ -21,7 +21,9 @@ function(preview_add_test name source)
     elseif (MSVC)
         target_compile_options(${name}
             PRIVATE "/bigobj"
-            PRIVATE "/WX")
+            PRIVATE "/W4"
+            PRIVATE "/WX"
+        )
         target_compile_definitions(${name}
             PRIVATE _CRT_SECURE_NO_WARNINGS)
     elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

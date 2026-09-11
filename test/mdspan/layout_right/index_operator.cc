@@ -59,10 +59,9 @@ constexpr bool check_operator_constraints(Mapping, Indices ...) {
 
 template <class M, class T, class... Args, std::enable_if_t<(M::extents_type::rank() == sizeof...(Args)), int> = 0>
 constexpr void iterate_right(M m, T& count, Args... args) {
-  constexpr size_t r = sizeof...(Args);
   ASSERT_NOEXCEPT(m(args...));
   EXPECT_EQ(count, m(args...));
-  count++;
+  ++count;
 }
 
 template <class M, class T, class... Args, std::enable_if_t<(M::extents_type::rank() != sizeof...(Args)), int> = 0>
