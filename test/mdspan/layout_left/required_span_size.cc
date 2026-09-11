@@ -13,7 +13,7 @@
 
 
 template <class E>
-constexpr void test_required_span_size(E e, typename E::index_type expected_size) {
+constexpr void test_required_span_size(E e, PREVIEW_MAYBE_UNUSED typename E::index_type expected_size) {
   using M = preview::layout_left::mapping<E>;
   const M m(e);
 

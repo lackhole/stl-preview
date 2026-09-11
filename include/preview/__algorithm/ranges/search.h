@@ -62,9 +62,6 @@ struct search_niebloid {
           break;
       }
     }
-
-    // unreachable
-    return {last1, last1};
   }
 
   template<

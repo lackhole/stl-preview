@@ -38,8 +38,7 @@ constexpr bool check_operator_constraints(Mapping, Indices...) {
 }
 
 template <class M, class... Args, std::enable_if_t<(-1 == static_cast<int>(M::extents_type::rank()) - 1 - static_cast<int>(sizeof...(Args))), int> = 0>
-constexpr void iterate_stride(M m, const std::array<int, M::extents_type::rank()>& strides, Args... args) {
-  constexpr int r = static_cast<int>(M::extents_type::rank()) - 1 - static_cast<int>(sizeof...(Args));
+constexpr void iterate_stride(M m, const std::array<int, M::extents_type::rank()>& strides, Args... args) {\
   ASSERT_NOEXCEPT(m(args...));
   std::size_t expected_val = 0;
   preview::sequence_for_each<M::extents_type::rank()>([&](auto i, auto&& arg) {

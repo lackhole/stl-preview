@@ -84,7 +84,7 @@ test_mdspan_ctor_span(const H& handle, const M& map, const A&, preview::span<typ
 }
 
 template <bool mec, bool ac, class H, class M, class A>
-constexpr void test_mdspan_ctor(const H& handle, const M& map, const A& acc) {
+constexpr void test_mdspan_ctor(const H& handle, const M& map, PREVIEW_MAYBE_UNUSED const A& acc) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
   PREVIEW_STATIC_ASSERT(mec == std::is_constructible<M, typename M::extents_type>::value);
   PREVIEW_STATIC_ASSERT(ac == std::is_default_constructible<A>::value);

@@ -27,6 +27,8 @@
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__type_traits/disjunction.h"
 
+#include "preview/__compiler/disable_shadow_warning_header.h"
+
 namespace preview {
 namespace ranges {
 namespace detail {
@@ -231,5 +233,7 @@ repeat_view(T, Bound) -> repeat_view<T, Bound>;
 
 } // namespace ranges
 } // namespace preview
+
+#include "preview/__compiler/disable_shadow_warning_footer.h"
 
 #endif // PREVIEW_RANGES_VIEWS_REPEAT_VIEW_H_

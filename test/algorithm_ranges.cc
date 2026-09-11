@@ -48,7 +48,6 @@ TEST(VERSIONED(AlgorithmRanges), all_of) {
   auto is_a = [](auto x) { return preview::bind_front(ranges::equal_to{}, x); };
 
   int arr[] = {1, 2, 3};
-  auto p = arr;
 
   arr | views::take(4);
   EXPECT_TRUE ((ranges::all_of(v, is_a(1))));
@@ -549,7 +548,7 @@ TEST(VERSIONED(AlgorithmRanges), search_n) {
 #endif
 
   constexpr char symbol{'B'};
-  auto to_ascii = [](const int z) -> char { return 'A' + z - 1; };
+  auto to_ascii = [](const int z) -> char { return static_cast<char>(static_cast<int>('A') + z - 1); };
   auto is_equ = [](const char x, const char y) { return x == y; };
 
 //  TODO

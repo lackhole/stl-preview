@@ -9,6 +9,12 @@
 #include "../../test_utils.h"
 #include "../print_to.h"
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4127)
+#endif
+
+
 template<typename T>
 class MdSpanExtentsObsStatic : public testing::Test {};
 using MdSpanExtentsObsStaticTypes = ::testing::Types<
@@ -67,3 +73,6 @@ VERSIONED_TYPE_TEST(MdSpanExtentsObsStatic, test) {
   test_static_observers<preview::extents<T, D, D, D>, 3, 3, D, D, D>();
 }
 
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

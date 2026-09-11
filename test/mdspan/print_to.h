@@ -13,6 +13,11 @@
 #include "preview/mdspan.h"
 #include "preview/utility.h"
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4127)
+#endif
+
 template<typename T>
 struct TypeId {
   static std::string name() {
@@ -52,9 +57,10 @@ struct TypeId<preview::extents<IndexType, Extents...>> {
     std::string result = "preview::extents<";
     result += TypeId<IndexType>::name();
     {
-      PREVIEW_MAYBE_UNUSED int dummy[] = {
+      int dummy[] = {
           ((result += std::string{", "} + (Extents == preview::dynamic_extent ? "dynamic_extent" : std::to_string(Extents))), 0)...
       };
+      (void) dummy;
     }
     result += ">";
     return result;
@@ -162,5 +168,9 @@ void PrintTo(const preview::layout_right::mapping<Extents>& m, ::std::ostream* o
 }
 
 } // namespace preview
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
 #endif // PREVIEW_TEST_MDSPAN_PRINT_TO_H_

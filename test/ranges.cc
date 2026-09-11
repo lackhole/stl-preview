@@ -373,7 +373,7 @@ TEST(VERSIONED(Ranges), view_interface) {
 
   // We get operator[] for free when inheriting from view_interface
   // since we satisfy the random_access_range concept.
-  for (std::ptrdiff_t i = 0; i != view_over_v.size(); ++i)
+  for (decltype(view_over_v.size()) i = 0; i != view_over_v.size(); ++i)
     std::cout << "v[" << i << "] = " << view_over_v[i] << '\n';
 }
 

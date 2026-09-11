@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "preview/__compiler/disable_shadow_warning_header.h"
+
 namespace preview {
 
 // Implementation taken from https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
@@ -82,5 +84,7 @@ std::size_t hash_array(const T(&bytes)[N]) {
 }
 
 } // namespace preview
+
+#include "preview/__compiler/disable_shadow_warning_footer.h"
 
 #endif // PREVIEW_FUNCTIONAL_HASH_ARRAY_H_

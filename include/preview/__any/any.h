@@ -281,6 +281,10 @@ struct any_small_handler {
     }
   }
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4702)
+#endif
   template<typename... Args>
   static T& create(any* thiz, Args&&... args) {
     T* ptr = any_small_handler<T>::get_ptr(*thiz);
@@ -288,6 +292,9 @@ struct any_small_handler {
     thiz->vptr_ = &any_small_handler<T>::handle;
     return *ptr;
   }
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
  private:
   using pointer = T*;

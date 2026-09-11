@@ -35,7 +35,7 @@
 #include "CustomTestAccessors.h"
 
 template <bool ac, class H, class M, class A>
-constexpr void test_mdspan_types(const H& handle, const M& map, const A&) {
+constexpr void test_mdspan_types(const H& handle, PREVIEW_MAYBE_UNUSED const M& map, const A&) {
   using MDS = preview::mdspan<typename A::element_type, typename M::extents_type, typename M::layout_type, A>;
 
   PREVIEW_STATIC_ASSERT(ac == std::is_default_constructible<A>::value);

@@ -30,10 +30,7 @@
 #include "preview/__type_traits/conjunction.h"
 #include "preview/__utility/to_unsigned_like.h"
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wshadow"
-#endif
+#include "preview/__compiler/disable_shadow_warning_header.h"
 
 namespace preview {
 namespace ranges {
@@ -182,8 +179,6 @@ template<typename T>
 PREVIEW_SPECIALIZE_ENABLE_BORROWED_RANGE(preview::ranges::drop_view<T>)
     = preview::ranges::enable_borrowed_range<T>;
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+#include "preview/__compiler/disable_shadow_warning_footer.h"
 
 #endif // PREVIEW_RANGES_VIEWS_DROP_VIEW_H_

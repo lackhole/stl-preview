@@ -21,7 +21,6 @@ TEST(VERSIONED(Functional), bind_partial) {
   EXPECT_EQ(fifty_minus(3), 47); // equivalent to: minus(50, 3) == 47
 
   auto member_minus = preview::bind_front(&S::minus, S{50});
-  auto x = member_minus(3);
   EXPECT_EQ(member_minus(3), 47); //: S tmp{50}; tmp.minus(3) == 47
 
   // Noexcept-specification is preserved:
@@ -143,7 +142,7 @@ TEST(VERSIONED(Functional), not_fn) {
 }
 
 template<typename T>
-void foo(std::reference_wrapper<T> x) {}
+void foo(std::reference_wrapper<T>) {}
 
 struct A {
   explicit A(int data) : data(data) {}

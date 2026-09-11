@@ -398,16 +398,17 @@ class layout_stride::mapping
   template<typename OtherMapping, rank_type... R>
   constexpr bool equal_stride(const OtherMapping& y, std::integer_sequence<rank_type, R...>) const noexcept {
     static_assert(rank_ == OtherMapping::extents_type::rank(), "Rank mismatch");
+    using common_index_type = common_type_t<index_type, typename OtherMapping::index_type>;
     using namespace preview::rel_ops;
 #if PREVIEW_CXX_VERSION < 17
     for (rank_type r = 0; r < rank_; ++r) {
-      if (stride(r) != y.stride(r)) {
+      if (static_cast<common_index_type>(stride(r)) != static_cast<common_index_type>(y.stride(r))) {
         return false;
       }
     }
     return true;
 #else
-    return ((stride(R) == y.stride(R)) && ... && true);
+    return ((static_cast<common_index_type>(stride(R)) == static_cast<common_index_type>(y.stride(R))) && ... && true);
 #endif
   }
 

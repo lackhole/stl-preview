@@ -47,7 +47,6 @@ void testExtents() {
 VERSIONED_TYPE_TEST(MdSpanExtents, Types) {
   using T = TypeParam;
   constexpr std::size_t D = preview::dynamic_extent;
-  constexpr size_t S = 5;
 
   testExtents<T, D>();
   testExtents<T, 3>();

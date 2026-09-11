@@ -48,8 +48,9 @@ struct DefaultCtorTest {
            ? typename AllExtents::value_type(0)
            : all_ext[Indices])...};
       return test_runtime_observers(E{}, expected_exts);
+    } else {
+      return testing::AssertionSuccess();
     }
-    return testing::AssertionSuccess();
   }
 };
 

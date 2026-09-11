@@ -28,10 +28,8 @@ struct visitor_global {
   }
 
   template<typename U, typename Vis, std::size_t... I, typename... Variants>
-  constexpr R operator()(U&&, in_place_index_t<variant_npos>, Vis&& vis, std::index_sequence<I...>, Variants&&... vars) const {
+  constexpr R operator()(U&&, in_place_index_t<variant_npos>, Vis&&, std::index_sequence<I...>, Variants&&...) const {
     throw bad_variant_access{};
-    return visitor_global<Cursor - 1, R>{}.visit(
-        std::forward<Vis>(vis), std::index_sequence<I..., 0>{}, std::forward<Variants>(vars)...);
   }
 
   template<typename Vis, std::size_t...I, typename... Variants>

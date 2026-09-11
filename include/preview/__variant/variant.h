@@ -367,6 +367,10 @@ struct variant_base {
     return emplace_valueless<I>(std::forward<Args>(args)...);
   }
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable: 4702) // unreachable code
+#endif
   template<std::size_t I, typename... Args>
   PREVIEW_CONSTEXPR_AFTER_CXX20 type_sequence_element_type_t<I, type_sequence<Types...>>&
   emplace_valueless(Args&&... args) {
@@ -376,6 +380,9 @@ struct variant_base {
     index_ = I;
     return elem;
   }
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif
 
   template<std::size_t I>
   struct swapper_inner {
