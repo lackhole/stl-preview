@@ -223,24 +223,24 @@ class extents_storage<IndexType, 0, Extents...> {
   constexpr extents_storage() noexcept = default;
 
   template<typename OtherIndexType, std::size_t RankDynamic, std::size_t... OtherExtents>
-  constexpr extents_storage(PREVIEW_MAYBE_UNUSED const extents_storage<OtherIndexType, RankDynamic, OtherExtents...>& other) noexcept {
+  constexpr extents_storage(const extents_storage<OtherIndexType, RankDynamic, OtherExtents...>& other) noexcept {
     // Preconditions
     PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_extent(other));
-    PREVIEW_CXX14_SUPPRESS_UNUSED(other);
+    preview::detail::suppress_unused(other);
   }
 
   template<typename OtherIndexType, std::size_t N>
-  constexpr extents_storage(PREVIEW_MAYBE_UNUSED span<OtherIndexType, N> exts) noexcept {
+  constexpr extents_storage(span<OtherIndexType, N> exts) noexcept {
     // Preconditions
     PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(index_constant<N>{}, exts));
-    PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
+    preview::detail::suppress_unused(exts);
   }
 
   template<typename OtherIndexType, std::size_t N>
-  constexpr extents_storage(PREVIEW_MAYBE_UNUSED const std::array<OtherIndexType, N>& exts) noexcept {
+  constexpr extents_storage(const std::array<OtherIndexType, N>& exts) noexcept {
     // Preconditions
     PREVIEW_MDSPAN_DEBUG_ASSERT(my_static_extent_is_equal_to_other_subscript(index_constant<N>{}, exts));
-    PREVIEW_CXX14_SUPPRESS_UNUSED(exts);
+    preview::detail::suppress_unused(exts);
   }
 
   constexpr IndexType extent(rank_type i) const noexcept {
