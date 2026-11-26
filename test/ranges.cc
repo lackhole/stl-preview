@@ -6,6 +6,7 @@
 #include <cstring>
 #include <deque>
 #include <list>
+#include <map>
 #include <vector>
 
 #include "preview/algorithm.h"
